@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DataViz</title>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0e14;
+      color: #d8d9da;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #111217;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #323544;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #464b5e;
+    }
+
+    .react-grid-layout {
+      position: relative;
+      transition: height 200ms ease;
+    }
+
+    .react-grid-item {
+      transition: all 200ms ease;
+      transition-property: left, top;
+    }
+
+    .react-grid-item.resizing {
+      z-index: 1;
+      will-change: width, height;
+    }
+
+    .react-grid-item.react-draggable-dragging {
+      transition: none;
+      z-index: 3;
+      will-change: transform;
+    }
+
+    .react-grid-item.dropping {
+      visibility: hidden;
+    }
+
+    .react-grid-placeholder {
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 12px;
+      border: 2px dashed rgba(59, 130, 246, 0.3);
+      margin: 0;
+      z-index: 0;
+      transition-duration: 100ms;
+    }
+
+    .react-resizable-handle {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      bottom: 0;
+      right: 0;
+      cursor: se-resize;
+    }
+
+    .react-resizable-handle::after {
+      content: "";
+      position: absolute;
+      right: 3px;
+      bottom: 3px;
+      width: 5px;
+      height: 5px;
+      border-right: 2px solid rgba(255, 255, 255, 0.2);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .layout-locked .react-resizable-handle {
+      display: none !important;
+    }
+
+    .cm-editor {
+      border-radius: 0.75rem;
+      background-color: #0b0e14 !important;
+    }
+
+    .cm-scroller {
+      font-family: 'JetBrains Mono', monospace !important;
+    }
+  </style>
+  <script type="importmap">
+      {}
+      </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>

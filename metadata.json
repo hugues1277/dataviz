@@ -1,0 +1,5 @@
+{
+  "name": "DataViz Pro V11.1",
+  "description": "A powerful Grafana-inspired dashboarding tool to visualize PostgreSQL data with custom SQL queries, interactive charts, and multi-dashboard management.",
+  "requestFramePermissions": []
+}

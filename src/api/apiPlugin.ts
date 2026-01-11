@@ -1,0 +1,155 @@
+import type { Plugin } from 'vite';
+import type { IncomingMessage, ServerResponse } from 'http';
+import { readBody } from './utils/request';
+
+// Use cases
+import { queryProxyUseCase } from './core/useCases/queryProxyUseCase';
+import { dashboardRepository } from './repositories/dashboardRepository';
+import { chartRepository } from './repositories/chartRepository';
+import { connectionRepository } from './repositories/connectionRepository';
+import { getUrlParam, requestHandler } from './utils/requestHandler';
+import { getAppDatasUseCase } from './core/useCases/getAppDatasUseCase';
+import { importAppDatasUseCase } from './core/useCases/importAppDatasUseCase';
+import clearAllUseCase from './core/useCases/clearAllUseCase';
+import exportDataUseCase from './core/useCases/exportDataUseCase';
+
+/**
+ * Plugin Vite pour gérer toutes les routes API
+ * 
+ * Architecture:
+ * - Gestion des requêtes/réponses HTTP dans ce fichier
+ * - Logique métier dans les use cases (src/api/core/)
+ * - Providers pour les services externes (database, auth)
+ * 
+ * Routes:
+ * - /api/app-datas -> Récupérer les données de l'application
+ * - /api/dashboards -> CRUD dashboards 
+ * - /api/charts -> CRUD charts
+ * - /api/connections -> CRUD connections
+ * - /api/query-proxy -> Proxy pour requêtes SQL externes
+ * - /api/import-app-datas -> Importer les données de l'application
+ */
+export function apiPlugin(): Plugin {
+  return {
+    name: 'api-plugin',
+    configureServer(server) {
+      server.middlewares.use('/api/app-datas', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res,
+          {
+            'GET':
+              async () => {
+                return await getAppDatasUseCase.execute();
+              },
+          });
+      });
+
+      server.middlewares.use('/api/dashboards', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res,
+          {
+            'GET':
+              async () => {
+                return await dashboardRepository.getAllDashboards();
+              },
+            'POST':
+              async () => {
+                const body = await readBody(req);
+                const dashboard = JSON.parse(body);
+                return await dashboardRepository.putDashboard(dashboard);
+              },
+            'DELETE':
+              async () => {
+                const dashboardId = getUrlParam(req, res, 1);
+                return await dashboardRepository.deleteDashboard(dashboardId);
+              },
+          });
+      });
+
+      // Charts
+      server.middlewares.use('/api/charts', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res, {
+          'GET':
+            async () => {
+              return await chartRepository.getAllCharts();
+            },
+          'POST':
+            async () => {
+              const body = await readBody(req);
+              const chart = JSON.parse(body);
+              return await chartRepository.putChart(chart);
+            },
+          'DELETE':
+            async () => {
+              const chartId = getUrlParam(req, res, 1);
+              return await chartRepository.deleteChart(chartId);
+            },
+        });
+      });
+
+      // Connections
+      server.middlewares.use('/api/connections', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res, {
+          'GET':
+            async () => {
+              return await connectionRepository.getAllConnections();
+            },
+          'POST':
+            async () => {
+              const body = await readBody(req);
+              const connection = JSON.parse(body);
+              return await connectionRepository.putConnection(connection);
+            },
+          'DELETE':
+            async () => {
+              const connectionId = getUrlParam(req, res, 1);
+              return await connectionRepository.deleteConnection(connectionId);
+            },
+        });
+      });
+
+      // POST /api/query-proxy - Proxy pour requêtes SQL externes
+      server.middlewares.use('/api/query-proxy', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res, {
+          'POST':
+            async () => {
+              const body = await readBody(req);
+              const { connectionId, query } = JSON.parse(body);
+              return await queryProxyUseCase.execute({ connectionId, query });
+            },
+        });
+      });
+
+      // POST /api/import-app-datas - Importer les données de l'application
+      server.middlewares.use('/api/import-app-datas', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res, {
+          'POST':
+            async () => {
+              const body = await readBody(req);
+              const appDatas = JSON.parse(body);
+              return await importAppDatasUseCase.execute(appDatas);
+            },
+        },
+        );
+      });
+
+      // POST /api/export-app-datas - Exporter les données de l'application
+      server.middlewares.use('/api/export-app-datas', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res, {
+          'GET':
+            async () => {
+              return await exportDataUseCase.execute();
+            },
+        });
+      });
+
+      // POST /api/clear-all - Supprimer toutes les données de l'application
+      server.middlewares.use('/api/clear-all', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res, {
+          'POST':
+            async () => {
+              return await clearAllUseCase.execute();
+            },
+        });
+      });
+    },
+  };
+}
