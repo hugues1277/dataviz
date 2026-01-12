@@ -1,6 +1,7 @@
 import { databaseProvider } from '../../providers/databaseProvider';
 import { runDbMigration } from '../../providers/dbMigration';
 import logger from '../../../shared/utils/logger';
+import UserRepository from '../../repositories/userRepository';
 
 /**
  * Use case: Récupérer le nombre d'utilisateurs
@@ -9,25 +10,13 @@ import logger from '../../../shared/utils/logger';
 export const getUserCountUseCase = {
     execute: async (): Promise<{ hasUsers: boolean; userCount: number }> => {
         try {
-            const pool = databaseProvider.createPool();
+            const userRepository = new UserRepository();
 
             try {
-                const result = await pool.query(`
-                    SELECT COUNT(*) as count 
-                    FROM "user"
-                `);
-
-                const userCount = parseInt(result.rows[0]?.count || "0", 10);
-                const hasUsers = userCount > 0;
-
-                await pool.end();
-                return { hasUsers, userCount };
+                const userCount = await userRepository.getCount();
+                return { hasUsers: userCount > 0, userCount };
             } catch (error: any) {
-                logger.error('getUserCountUseCase', error);
-
                 if (error.code === "42P01" || error.message?.includes("does not exist")) {
-                    // Les tables n'existent pas encore
-                    await pool.end();
                     // Créer les tables nécessaires
                     await runDbMigration();
 

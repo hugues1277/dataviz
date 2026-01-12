@@ -1,4 +1,4 @@
-import { connectionRepository } from '../../repositories/connectionRepository';
+import ConnectionRepository from '../../repositories/connectionRepository';
 import { CONNECTION_TYPES, QueryResult } from '../../../shared/types/types';
 import { queryProxyService } from '../../core/services/queryProxyService';
 import { apiQueryProvider } from '../../providers/queryDbConnectors/apiQueryProvider';
@@ -24,7 +24,8 @@ export const queryProxyUseCase = {
       throw new Error('Paramètres de connexion ou requête manquants');
     }
 
-    const connection = await connectionRepository.getConnection(input.connectionId);
+    const connectionRepository = new ConnectionRepository();
+    const connection = await connectionRepository.get(input.connectionId, { decrypt: true });
 
     if (!connection) {
       throw new Error('Connexion non trouvée');

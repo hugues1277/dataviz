@@ -1,24 +1,28 @@
 import { databaseProvider } from '../providers/databaseProvider';
 import { encryptionService } from '../core/services/encryptionService';
-import type { DBConnection } from '../../shared/types/types';
+import type { DBConnection, DBConnectionConfig } from '../../shared/types/types';
+import ConnectionRepositoryInterface from '../interfaces/connectionRepositoryInterface';
 
-const SENSITIVE_FIELDS = ['user', 'password', 'apiToken'];
+const SENSITIVE_FIELDS: (keyof DBConnectionConfig)[] = ['user', 'password', 'apiToken'];
 
 /**
  * Repositories pour les connections
  */
-export const connectionRepository = {
-    /**
-     * Récupérer toutes les connections de l'utilisateur authentifié
-     */
-    async getAllConnections({ fullConfig = false, decrypt = false }: { fullConfig?: boolean, decrypt?: boolean } = {}): Promise<DBConnection[]> {
+class ConnectionRepository extends ConnectionRepositoryInterface {
+    private createRequest = `INSERT INTO connections (id, name, type, config)
+        SELECT *
+        FROM UNNEST($1::uuid[], $2::text[], $3::text[], $4::jsonb[])
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          type = EXCLUDED.type,
+          config = EXCLUDED.config
+    `;
+
+    async getAll({ fullConfig = false, decrypt = false }: { fullConfig?: boolean, decrypt?: boolean } = {}): Promise<DBConnection[]> {
 
         const pool = databaseProvider.createPool();
         try {
-            const result = await pool.query(`
-        SELECT id, name, type, config
-        FROM connections
-      `, []);
+            const result = await pool.query(`SELECT id, name, type, config FROM connections`, []);
 
             const connections = result.rows.map(row => ({
                 id: row.id,
@@ -32,43 +36,46 @@ export const connectionRepository = {
             }));
 
             if (!decrypt) {
-                return connections;
+                return connections as DBConnection[];
             }
 
-            return await Promise.all(connections.map(async conn => {
-                return await this.decryptConnection(conn);
-            }));
+            return await Promise.all(connections.map(async conn => ({
+                id: conn.id,
+                name: conn.name,
+                type: conn.type,
+                ...await this.decryptConnection(conn.config as DBConnectionConfig)
+            } as DBConnection)));
         } finally {
             await pool.end();
         }
-    },
+    }
 
-    async getConnection(connectionId: string, { decrypt = true }: { decrypt?: boolean } = {}): Promise<DBConnection> {
+    async get(id: string, { decrypt = true }: { decrypt?: boolean } = {}): Promise<DBConnection> {
         const pool = databaseProvider.createPool();
         try {
-            const result = await pool.query(`
-                SELECT id, name, type, config
-                FROM connections
-                WHERE id = $1
-            `, [connectionId]);
+            const result = await pool.query(`SELECT id, name, type, config FROM connections WHERE id = $1`, [id]);
 
-            const connection = {
+            return decrypt ? {
+                id: result.rows[0].id,
+                name: result.rows[0].name,
+                type: result.rows[0].type,
+                ...await this.decryptConnection(result.rows[0].config as DBConnectionConfig)
+            } : {
                 id: result.rows[0].id,
                 name: result.rows[0].name,
                 type: result.rows[0].type,
                 ...result.rows[0].config
             } as DBConnection;
 
-            return decrypt ? await this.decryptConnection(connection) : connection;
         } finally {
             await pool.end();
         }
-    },
+    }
 
     /**
      * Créer ou mettre à jour une connection
      */
-    async putConnection(connection: DBConnection, { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
+    async create(connection: DBConnection, { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
         const { id, name, type, ...config } = connection;
 
         // Chiffrer les champs sensibles avant stockage
@@ -76,112 +83,88 @@ export const connectionRepository = {
 
         const pool = databaseProvider.createPool();
         try {
-            await pool.query(`
-        INSERT INTO connections (id, name, type, config)
-        VALUES ($1, $2, $3, $4)
-        ON CONFLICT (id) DO UPDATE SET
-          name = EXCLUDED.name,
-          type = EXCLUDED.type,
-          config = EXCLUDED.config
-      `, [
+            await pool.query(this.createRequest, [
                 id,
                 name,
                 type,
-                JSON.stringify(encryptedConfig),
+                JSON.stringify(encryptedConfig)
             ]);
         } finally {
             await pool.end();
         }
-    },
+    }
 
-    async putConnections(connections: DBConnection[], { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
+    async createMany(connections: DBConnection[], { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
         const pool = databaseProvider.createPool();
 
-        const ids: string[] = [];
-        const names: string[] = [];
-        const types: string[] = [];
-        const configs: string[] = [];
-
-        for (const connection of connections) {
+        const values = await Promise.all(connections.map(async connection => {
             const { id, name, type, ...config } = connection;
             const encryptedConfig = encrypt ? await this.encryptConnection(config) : config;
-
-            ids.push(id);
-            names.push(name);
-            types.push(type);
-            configs.push(JSON.stringify(encryptedConfig));
-        }
+            return [id, name, type, JSON.stringify(encryptedConfig)];
+        }));
 
         try {
-            await pool.query(`
-        INSERT INTO connections (id, name, type, config)
-        SELECT *
-        FROM UNNEST(
-          $1::uuid[],
-          $2::text[],
-          $3::text[],
-          $4::jsonb[]
-        )
-        ON CONFLICT (id) DO UPDATE SET
-          name = EXCLUDED.name,
-          type = EXCLUDED.type,
-          config = EXCLUDED.config
-      `, [ids, names, types, configs]);
-
+            await pool.query(this.createRequest, values);
         } finally {
             await pool.end();
         }
-    },
+    }
 
-    /**
-     * Supprimer une connection
-     */
-    async deleteConnection(connectionId: string): Promise<void> {
+    async update(connection: DBConnection, { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
+        const { id, name, type, ...config } = connection;
+        const encryptedConfig = encrypt ? await this.encryptConnection(config) : config;
         const pool = databaseProvider.createPool();
         try {
-            await pool.query(`
-        DELETE FROM connections 
-        WHERE id = $1
-      `, [connectionId]);
+            await pool.query(`UPDATE connections SET name = $1, type = $2, config = $3 WHERE id = $4`, [name, type, JSON.stringify(encryptedConfig), id]);
         } finally {
             await pool.end();
         }
-    },
+    }
 
-    /**
-     * Supprimer toutes les connections
-     */
-    async clearAll(): Promise<void> {
+    async delete(id: string): Promise<void> {
         const pool = databaseProvider.createPool();
         try {
-            await pool.query(`
-        DELETE FROM connections 
-      `, []);
+            await pool.query(`DELETE FROM connections WHERE id = $1`, [id]);
         } finally {
             await pool.end();
         }
-    },
+    }
 
-    async encryptConnection(connection: DBConnection): Promise<DBConnection> {
-        const encrypted = { ...connection };
+    async clear(): Promise<void> {
+        const pool = databaseProvider.createPool();
+        try {
+            await pool.query(`DELETE FROM connections`, []);
+        } finally {
+            await pool.end();
+        }
+    }
+
+    private async encryptConnection(connection: DBConnectionConfig): Promise<DBConnectionConfig> {
+        let encrypted: DBConnectionConfig = { ...connection };
         for (const field of SENSITIVE_FIELDS) {
             if (encrypted[field]) {
-                encrypted[field] = await encryptionService.encrypt(encrypted[field] as string);
+                encrypted = {
+                    ...encrypted,
+                    [field]: await encryptionService.encrypt(encrypted[field] as string)
+                };
             }
         }
-        return encrypted as DBConnection;
-    },
+        return encrypted;
+    }
 
-    async decryptConnection(connection: DBConnection): Promise<DBConnection> {
-        const decrypted = { ...connection };
+    private async decryptConnection(connection: DBConnectionConfig): Promise<DBConnectionConfig> {
+        let decrypted: DBConnectionConfig = { ...connection };
         for (const field of SENSITIVE_FIELDS) {
             if (decrypted[field]) {
-                decrypted[field] = await encryptionService.decrypt(decrypted[field] as string);
+                decrypted = {
+                    ...decrypted,
+                    [field]: await encryptionService.decrypt(decrypted[field] as string)
+                };
             }
         }
-        return decrypted as DBConnection;
-    },
+        return decrypted;
+    }
 };
 
-
+export default ConnectionRepository;
 

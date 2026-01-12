@@ -4,14 +4,14 @@ import { readBody } from './utils/request';
 
 // Use cases
 import { queryProxyUseCase } from './core/useCases/queryProxyUseCase';
-import { dashboardRepository } from './repositories/dashboardRepository';
-import { chartRepository } from './repositories/chartRepository';
-import { connectionRepository } from './repositories/connectionRepository';
+import DashboardRepository from './repositories/dashboardRepository';
 import { getUrlParam, requestHandler } from './utils/requestHandler';
 import { getAppDatasUseCase } from './core/useCases/getAppDatasUseCase';
 import { importAppDatasUseCase } from './core/useCases/importAppDatasUseCase';
-import clearAllUseCase from './core/useCases/clearAllUseCase';
+import clearAllDatasUseCase from './core/useCases/clearAllDatasUseCase';
 import exportDataUseCase from './core/useCases/exportDataUseCase';
+import ChartRepository from './repositories/chartRepository';
+import ConnectionRepository from './repositories/connectionRepository';
 
 /**
  * Plugin Vite pour gérer toutes les routes API
@@ -44,64 +44,70 @@ export function apiPlugin(): Plugin {
       });
 
       server.middlewares.use('/api/dashboards', async (req: IncomingMessage, res: ServerResponse) => {
+        const dashboardRepository = new DashboardRepository();
+
         requestHandler(req, res,
           {
             'GET':
               async () => {
-                return await dashboardRepository.getAllDashboards();
+                return await dashboardRepository.getAll();
               },
             'POST':
               async () => {
                 const body = await readBody(req);
                 const dashboard = JSON.parse(body);
-                return await dashboardRepository.putDashboard(dashboard);
+                return await dashboardRepository.create(dashboard);
               },
             'DELETE':
               async () => {
                 const dashboardId = getUrlParam(req, res, 1);
-                return await dashboardRepository.deleteDashboard(dashboardId);
+                return await dashboardRepository.delete(dashboardId);
               },
           });
       });
 
       // Charts
       server.middlewares.use('/api/charts', async (req: IncomingMessage, res: ServerResponse) => {
+        const chartRepository = new ChartRepository();
+
         requestHandler(req, res, {
           'GET':
             async () => {
-              return await chartRepository.getAllCharts();
+              return await chartRepository.getAll();
             },
           'POST':
             async () => {
               const body = await readBody(req);
               const chart = JSON.parse(body);
-              return await chartRepository.putChart(chart);
+              return await chartRepository.create(chart);
             },
           'DELETE':
             async () => {
               const chartId = getUrlParam(req, res, 1);
-              return await chartRepository.deleteChart(chartId);
+              return await chartRepository.delete(chartId);
             },
         });
       });
 
       // Connections
       server.middlewares.use('/api/connections', async (req: IncomingMessage, res: ServerResponse) => {
+        const connectionRepository = new ConnectionRepository();
+
         requestHandler(req, res, {
           'GET':
             async () => {
-              return await connectionRepository.getAllConnections();
+              return await connectionRepository.getAll();
             },
           'POST':
             async () => {
               const body = await readBody(req);
               const connection = JSON.parse(body);
-              return await connectionRepository.putConnection(connection);
+              return await connectionRepository.create(connection);
             },
           'DELETE':
             async () => {
               const connectionId = getUrlParam(req, res, 1);
-              return await connectionRepository.deleteConnection(connectionId);
+              return await connectionRepository.delete(connectionId);
             },
         });
       });
@@ -146,7 +152,7 @@ export function apiPlugin(): Plugin {
         requestHandler(req, res, {
           'POST':
             async () => {
-              return await clearAllUseCase.execute();
+              return await clearAllDatasUseCase.execute();
             },
         });
       });

@@ -1,8 +1,12 @@
 import { DBConnection, QueryResult } from '../../../shared/types/types';
-import { QueryDbProvider } from '../../interfaces/queryDbProvider';
+import { DbQueryProviderInterface } from '../../interfaces/dbQueryProviderInterface';
 
-export const apiQueryProvider: QueryDbProvider = {
+export const apiQueryProvider: DbQueryProviderInterface = {
     execute: async (connection: DBConnection, query: string): Promise<QueryResult> => {
+        if (!connection.apiUrl) {
+            throw new Error('API URL non définie');
+        }
+
         const response = await fetch(connection.apiUrl, {
             method: 'POST',
             headers: {

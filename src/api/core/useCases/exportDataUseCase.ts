@@ -1,12 +1,16 @@
-import { chartRepository } from "../../repositories/chartRepository";
-import { connectionRepository } from "../../repositories/connectionRepository";
-import { dashboardRepository } from "../../repositories/dashboardRepository";
+import ChartRepository from "../../repositories/chartRepository";
+import ConnectionRepository from "../../repositories/connectionRepository";
+import DashboardRepository from "../../repositories/dashboardRepository";
 
 const exportDataUseCase = {
     execute: async () => {
-        const dashboards = await dashboardRepository.getAllDashboards();
-        const charts = await chartRepository.getAllCharts();
-        const connections = await connectionRepository.getAllConnections({ fullConfig: true });
+        const dashboardRepository = new DashboardRepository();
+        const chartRepository = new ChartRepository();
+        const connectionRepository = new ConnectionRepository();
+
+        const dashboards = await dashboardRepository.getAll();
+        const charts = await chartRepository.getAll();
+        const connections = await connectionRepository.getAll({ fullConfig: true });
 
         return {
             dashboards,

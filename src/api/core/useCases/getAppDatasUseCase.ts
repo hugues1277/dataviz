@@ -1,7 +1,7 @@
-import { connectionRepository } from '../../repositories/connectionRepository';
+import ConnectionRepository from '../../repositories/connectionRepository';
 import { AppDatas } from '../../../shared/types/types';
-import { dashboardRepository } from '../../repositories/dashboardRepository';
-import { chartRepository } from '../../repositories/chartRepository';
+import DashboardRepository from '../../repositories/dashboardRepository';
+import ChartRepository from '../../repositories/chartRepository';
 import logger from '../../../shared/utils/logger';
 
 /**
@@ -10,9 +10,13 @@ import logger from '../../../shared/utils/logger';
 export const getAppDatasUseCase = {
   execute: async (): Promise<AppDatas> => {
     try {
-      const connections = await connectionRepository.getAllConnections();
-      const dashboards = await dashboardRepository.getAllDashboards();
-      const charts = await chartRepository.getAllCharts();
+      const connectionRepository = new ConnectionRepository();
+      const dashboardRepository = new DashboardRepository();
+      const chartRepository = new ChartRepository();
+
+      const connections = await connectionRepository.getAll();
+      const dashboards = await dashboardRepository.getAll();
+      const charts = await chartRepository.getAll();
 
       return {
         connections,

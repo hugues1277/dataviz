@@ -1,16 +1,17 @@
-import { AppDatas } from "../../../shared/types/types";
 import ChartRepository from "../../repositories/chartRepository";
 import ConnectionRepository from "../../repositories/connectionRepository";
 import DashboardRepository from "../../repositories/dashboardRepository";
 
-export const importAppDatasUseCase = {
-    execute: async (appDatas: AppDatas) => {
+const clearAllDatasUseCase = {
+    execute: async () => {
         const connectionRepository = new ConnectionRepository();
         const dashboardRepository = new DashboardRepository();
         const chartRepository = new ChartRepository();
 
-        await connectionRepository.createMany(appDatas.connections);
-        await dashboardRepository.createMany(appDatas.dashboards);
-        await chartRepository.createMany(appDatas.charts);
+        await connectionRepository.clear();
+        await dashboardRepository.clear();
+        await chartRepository.clear();
     },
 };
+
+export default clearAllDatasUseCase;

@@ -72,6 +72,8 @@ export interface DBConnection {
   apiToken?: string;
 }
 
+export type DBConnectionConfig = Omit<DBConnection, 'id' | 'name' | 'type'>;
+
 export interface ChartLayout {
   x: number;
   y: number;
