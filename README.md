@@ -1,34 +1,92 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# DataViz App
 
-# Run and deploy your AI Studio app
+A modern, lightweight, and simple data visualization application. Alternative to Metabase and Grafana, designed to be fast, intuitive, and easy to deploy.
 
-This contains everything you need to run your app locally.
+## Key Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1T37zJ0YZEdvHtSLdtbVycEMN7vH0NCf-
+### Visualizations
+- Line Charts
+- Bar Charts
+- Pie Charts
+- Area Charts
+- Scatter Plots
+- Radial Charts
+- Statistics Cards
+- Data Tables
 
-## Run Locally
+### Dashboards
+- **Customizable dashboards** with drag-and-drop grid system
+- **Dynamic variables** to filter your data (text, number, date, select, boolean)
+- **Global date range** for all your charts
+- **Annotations** on X and Y axes to mark important events
+- **Auto-refresh** of charts with configurable intervals
 
-**Prerequisites:**  Node.js
+### Data Connections
+- **PostgreSQL** - Direct connection to your databases
+- **REST API** - Integration with your existing APIs
 
+### Security
+- **Authentication** integrated with Better Auth
+- **Encryption of sensitive data** (passwords, tokens)
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Other Features
+- **Import/Export** of configurations
 
-## Migration de la base de données auth
+## Technologies
 
-Better Auth créera automatiquement les tables nécessaires lors de la première utilisation. 
+React 19, TypeScript, Vite, Tailwind CSS, Recharts, React Grid Layout, Zustand, Better Auth, TanStack Query, PostgreSQL (NeonDB)
 
-Pour générer le schéma manuellement :
+## Installation
+
+### Prerequisites
+
+- **Node.js** (version 18 or higher)
+- **pnpm** (recommended) or npm
+- **PostgreSQL** (optional, for data persistence)
+
+### Install Dependencies
+
 ```bash
-pnpm auth:generate
+git clone ...
+cd dataviz-app
+
+pnpm install
+pnpm dev
 ```
 
-Pour exécuter la migration :
+### Configuration
+
+1. Copy the `.env.example` file to `.env`:
+
 ```bash
-pnpm auth:migrate
+cp .env.example .env
+```
+
+2. Configure the environment variables in `.env`:
+
+```env
+# Base URL for Better Auth (optional in development)
+VITE_BETTER_AUTH_URL=http://localhost:5173
+
+# Production URL (for deployment)
+PRODUCTION_URL=https://your-domain.com
+
+# PostgreSQL database connection URL
+DATABASE_URL=postgresql://user:password@localhost:5432/dataviz
+
+# Encryption key for sensitive data (generate a random key)
+ENCRYPT_KEY=your-secret-encryption-key-minimum-32-characters
+```
+
+## Project Structure
+
+```
+dataviz-app/
+├── src/
+│   ├── api/              # Backend (API servers, repositories, use cases)
+│   ├── shared/           # Shared code (types, utils, constants)
+│   └── web/              # Frontend (UI, stores, hooks, pages)
+├── assets/               # Static resources
+├── public/               # Public files
+└── package.json
 ```
