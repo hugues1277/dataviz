@@ -6,6 +6,10 @@ class ChartRepositoryInterface extends ObjectRepositoryInterface<ChartConfig> {
     async getByDashboard(id: string): Promise<ChartConfig[]> {
         throw new Error('Not implemented');
     }
+
+    async deleteByDashboard(id: string): Promise<void> {
+        throw new Error('Not implemented');
+    }
 }
 
 export default ChartRepositoryInterface;

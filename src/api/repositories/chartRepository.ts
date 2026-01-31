@@ -159,6 +159,15 @@ class ChartRepository extends ChartRepositoryInterface {
         }
     }
 
+    async deleteByDashboard(dashboardId: string): Promise<void> {
+        const pool = databaseProvider.createPool();
+        try {
+            await pool.query(`DELETE FROM charts WHERE dashboard_id = $1`, [dashboardId]);
+        } finally {
+            await pool.end();
+        }
+    }
+
     async clear(): Promise<void> {
         const pool = databaseProvider.createPool();
         try {

@@ -42,6 +42,6 @@ export default defineConfig(({ mode }) => {
     // Clear screen disabled to avoid conflicts with Tauri
     clearScreen: false,
     // Environment prefixes for Tauri
-    envPrefix: ['VITE_', 'TAURI_'],
+    envPrefix: ['VITE_'],
   };
 });
