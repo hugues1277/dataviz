@@ -1,6 +1,7 @@
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 import { apiPlugin } from './src/api/apiPlugin';
 import { authApiPlugin } from './src/api/authApiPlugin';
 import { fileURLToPath } from 'url'
@@ -16,7 +17,7 @@ export default defineConfig(({ mode }) => {
       port: 3001,
       host: '0.0.0.0',
     },
-    plugins: [react(), apiPlugin(), authApiPlugin()],
+    plugins: [react(), tailwindcss(), apiPlugin(), authApiPlugin()],
     define: {
     },
     resolve: {
