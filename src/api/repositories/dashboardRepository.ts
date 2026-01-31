@@ -4,6 +4,14 @@ import ObjectRepositoryInterface from '../interfaces/objectRepositoryInterface';
 
 class DashboardRepository extends ObjectRepositoryInterface<Dashboard> {
     private createRequest = `INSERT INTO dashboards (id, name, order_index, variables)
+        VALUES ($1::uuid, $2::text, $3::int, $4::jsonb)
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          order_index = EXCLUDED.order_index,
+          variables = EXCLUDED.variables
+    `;
+
+    private createManyRequest = `INSERT INTO dashboards (id, name, order_index, variables)
         SELECT *
         FROM UNNEST($1::uuid[], $2::text[], $3::int[], $4::jsonb[])
         ON CONFLICT (id) DO UPDATE SET
@@ -62,12 +70,19 @@ class DashboardRepository extends ObjectRepositoryInterface<Dashboard> {
         const pool = databaseProvider.createPool();
 
         try {
-            const values = dashboards.map(dashboard => {
-                const { id, name, order, variables } = dashboard;
-                return [id, name, order ?? 0, JSON.stringify(variables ?? [])];
+            const ids: string[] = [];
+            const names: string[] = [];
+            const orders: number[] = [];
+            const variables: string[] = [];
+
+            dashboards.forEach(dashboard => {
+                ids.push(dashboard.id);
+                names.push(dashboard.name);
+                orders.push(dashboard.order ?? 0);
+                variables.push(JSON.stringify(dashboard.variables ?? []));
             });
 
-            await pool.query(this.createRequest, values);
+            await pool.query(this.createManyRequest, [ids, names, orders, variables]);
 
         } finally {
             await pool.end();

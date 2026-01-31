@@ -26,3 +26,13 @@ dist-ssr
 .env
 .vscode
 supabase
+
+# Tauri
+src-tauri/target/
+*.app
+*.dmg
+*.deb
+*.rpm
+*.AppImage
+*.exe
+*.msi

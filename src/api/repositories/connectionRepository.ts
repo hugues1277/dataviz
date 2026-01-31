@@ -10,6 +10,14 @@ const SENSITIVE_FIELDS: (keyof DBConnectionConfig)[] = ['user', 'password', 'api
  */
 class ConnectionRepository extends ConnectionRepositoryInterface {
     private createRequest = `INSERT INTO connections (id, name, type, config)
+        VALUES ($1::uuid, $2::text, $3::text, $4::jsonb)
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          type = EXCLUDED.type,
+          config = EXCLUDED.config
+    `;
+
+    private createManyRequest = `INSERT INTO connections (id, name, type, config)
         SELECT *
         FROM UNNEST($1::uuid[], $2::text[], $3::text[], $4::jsonb[])
         ON CONFLICT (id) DO UPDATE SET
@@ -97,14 +105,22 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
     async createMany(connections: DBConnection[], { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
         const pool = databaseProvider.createPool();
 
-        const values = await Promise.all(connections.map(async connection => {
+        const ids: string[] = [];
+        const names: string[] = [];
+        const types: string[] = [];
+        const configs: string[] = [];
+
+        await Promise.all(connections.map(async connection => {
             const { id, name, type, ...config } = connection;
             const encryptedConfig = encrypt ? await this.encryptConnection(config) : config;
-            return [id, name, type, JSON.stringify(encryptedConfig)];
+            ids.push(id);
+            names.push(name);
+            types.push(type);
+            configs.push(JSON.stringify(encryptedConfig));
         }));
 
         try {
-            await pool.query(this.createRequest, values);
+            await pool.query(this.createManyRequest, [ids, names, types, configs]);
         } finally {
             await pool.end();
         }

@@ -1,0 +1,49 @@
+{
+  "productName": "DataViz Pro",
+  "version": "0.0.0",
+  "identifier": "com.dataviz.pro",
+  "build": {
+    "beforeDevCommand": "pnpm run dev",
+    "beforeBuildCommand": "pnpm run build",
+    "devUrl": "http://localhost:3001",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "DataViz Pro",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 800,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "security": {
+      "csp": null
+    },
+    "macOSPrivateApi": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "resources": [],
+    "copyright": "",
+    "category": "DeveloperTool",
+    "shortDescription": "Application de visualisation de données",
+    "longDescription": "DataViz Pro - Application de visualisation de données avec support pour bases de données PostgreSQL"
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    }
+  }
+}

@@ -57,11 +57,7 @@ const AppContent: React.FC = () => {
 };
 
 const DefaultRedirect: React.FC = () => {
-  const {
-    dashboards,
-    activeDashboardId: selectedDashboardId,
-    isLoading,
-  } = useDashboardsStore();
+  const { dashboards, activeDashboard, isLoading } = useDashboardsStore();
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -75,7 +71,7 @@ const DefaultRedirect: React.FC = () => {
     );
   }
 
-  const dashboardId = selectedDashboardId || dashboards[0]?.id || "";
+  const dashboardId = activeDashboard?.id || dashboards[0]?.id || "";
   return <Navigate to={`/dashboards/${dashboardId}`} replace />;
 };
 

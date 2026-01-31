@@ -5,6 +5,17 @@ import ChartRepositoryInterface from '../interfaces/chartRepositoryInterface';
 class ChartRepository extends ChartRepositoryInterface {
 
     private createRequest = `INSERT INTO charts (id, dashboard_id, title, query, connection_id, type, config)
+        VALUES ($1::uuid, $2::uuid, $3::text, $4::text, $5::uuid, $6::text, $7::jsonb)
+        ON CONFLICT (id) DO UPDATE SET
+            dashboard_id = EXCLUDED.dashboard_id,
+            title = EXCLUDED.title,
+            query = EXCLUDED.query,
+            connection_id = EXCLUDED.connection_id,
+            type = EXCLUDED.type,
+            config = EXCLUDED.config
+    `;
+
+    private createManyRequest = `INSERT INTO charts (id, dashboard_id, title, query, connection_id, type, config)
         SELECT *
         FROM UNNEST($1::uuid[], $2::uuid[], $3::text[], $4::text[], $5::uuid[], $6::text[], $7::jsonb[])
         ON CONFLICT (id) DO UPDATE SET
@@ -102,12 +113,26 @@ class ChartRepository extends ChartRepositoryInterface {
     async createMany(objects: ChartConfig[]): Promise<void> {
         const pool = databaseProvider.createPool();
         try {
-            const values = objects.map(object => {
+            const ids: string[] = [];
+            const dashboardIds: string[] = [];
+            const titles: string[] = [];
+            const queries: string[] = [];
+            const connectionIds: string[] = [];
+            const types: string[] = [];
+            const configs: string[] = [];
+
+            objects.forEach(object => {
                 const { id, dashboardId, title, query, connectionId, type, ...config } = object;
-                return [id, dashboardId, title, query, connectionId, type, JSON.stringify(config)];
+                ids.push(id);
+                dashboardIds.push(dashboardId);
+                titles.push(title);
+                queries.push(query);
+                connectionIds.push(connectionId);
+                types.push(type);
+                configs.push(JSON.stringify(config));
             });
 
-            await pool.query(this.createRequest, values);
+            await pool.query(this.createManyRequest, [ids, dashboardIds, titles, queries, connectionIds, types, configs]);
         } finally {
             await pool.end();
         }

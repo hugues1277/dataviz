@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useSidebar } from "../../../core/context/useSidebar";
 import { useNavigate, useLocation, NavLink } from "react-router";
 import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
-import logo from "../../../../../assets/logo.png";
+import logo from "../../../../assets/logo.png";
 import { moveDashboard } from "@/src/web/core/useCases/dashboards/moveDashboard";
 import { addDashboard } from "@/src/web/core/useCases/dashboards/addDashboard";
 
@@ -141,7 +141,7 @@ const Sidebar: React.FC = () => {
                 <div className="flex items-center gap-1">
                   <button
                     onClick={handleToggleReorder}
-                    className={`p-1 rounded transition-colors ${
+                    className={`p-1 rounded transition-colors cursor-pointer ${
                       reorderMode
                         ? "text-blue-400 bg-blue-400/10"
                         : "text-gray-600 hover:text-gray-400"
@@ -152,7 +152,7 @@ const Sidebar: React.FC = () => {
                   </button>
                   <button
                     onClick={handleAddDashboard}
-                    className="p-1 text-gray-600 hover:text-blue-400"
+                    className="p-1 text-gray-600 hover:text-blue-400 cursor-pointer"
                     title={t("sidebar.newDashboard")}
                   >
                     <Plus size={12} />
