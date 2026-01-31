@@ -3,6 +3,8 @@ import { getAuthenticationData } from "./auth";
 import { handleCORS, sendJson } from "./request";
 import logger from '../../shared/utils/logger';
 
+const DISABLE_AUTH = process.env.VITE_IS_TAURI_APP === 'true';
+
 type Handler<T = any> = (req: any) => Promise<T>;
 
 interface HandleRequestOptions {
@@ -21,7 +23,7 @@ export async function requestHandler(
 ): Promise<void> {
     handleCORS(res, req);
 
-    if (!config.allowAnonymous) {
+    if (!config.allowAnonymous && !DISABLE_AUTH) {
         const isAuthenticated = await verifyAuthentication(res, req);
         if (!isAuthenticated) {
             return;
