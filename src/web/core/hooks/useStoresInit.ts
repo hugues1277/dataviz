@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react';
-import { useSession } from '../../providers/betterAuthWebClient';
+import { useSession } from '../../providers/auth/authProvider';
 import { useConnectionsStore } from '../stores/connectionsStore';
 import { useDashboardsStore } from '../stores/dashboardsStore';
-import { storageProvider } from '../../providers/apiProvider';
+import { storageProvider } from '../../providers/storage/storageProvider';
 import { initDashboards } from '../useCases/dashboards/initDashboards';
 
 /**

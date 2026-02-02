@@ -1,5 +1,5 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
-import { storageProvider } from '../../../providers/apiProvider';
+import { storageProvider } from '../../../providers/storage/storageProvider';
 import { Dashboard } from '@/src/shared/types/types';
 
 export async function deleteDashboard(dashboardId: string): Promise<Dashboard[]> {

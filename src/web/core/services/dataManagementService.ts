@@ -1,5 +1,5 @@
 import { AppDatas } from '../../../shared/types/types';
-import { storageProvider } from '../../providers/apiProvider';
+import { storageProvider } from '../../providers/storage/storageProvider';
 import { format } from 'date-fns';
 import { DEFAULT_DASHBOARD } from '../../../shared/constants';
 import logger from '../../../shared/utils/logger';

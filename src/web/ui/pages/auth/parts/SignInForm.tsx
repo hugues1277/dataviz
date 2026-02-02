@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { signIn } from "../../../../providers/betterAuthWebClient";
+import { signIn } from "../../../../providers/auth/authProvider";
 import { Button } from "../../../components/shadcn/button";
 import logger from "../../../../../shared/utils/logger";
 

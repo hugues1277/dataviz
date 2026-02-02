@@ -1,5 +1,5 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
-import { storageProvider } from '../../../providers/apiProvider';
+import { storageProvider } from '../../../providers/storage/storageProvider';
 import { DEFAULT_DASHBOARD } from '../../../../shared/constants';
 
 export async function addDashboard(): Promise<string> {

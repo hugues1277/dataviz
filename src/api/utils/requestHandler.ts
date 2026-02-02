@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { getAuthenticationData } from "./auth";
+// import { getAuthenticationData } from "./auth";
 import { handleCORS, sendJson } from "./request";
 import logger from '../../shared/utils/logger';
 
@@ -71,7 +71,7 @@ export const getUrlParam = (req: IncomingMessage, res: ServerResponse, position:
 
 export async function verifyAuthentication(res: ServerResponse, req: IncomingMessage): Promise<boolean> {
     try {
-        await getAuthenticationData(req.headers);
+        // await getAuthenticationData(req.headers);
         return true;
     } catch (error: unknown) {
         logger.error('verifyAuthentication', error);

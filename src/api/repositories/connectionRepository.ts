@@ -1,5 +1,5 @@
-import { databaseProvider } from '../providers/databaseProvider';
-import { encryptionService } from '../core/services/encryptionService';
+import { databaseProvider } from '../providers/database/databaseProvider';
+import { encryptionProvider } from '../providers/encryption/encryptionProvider';
 import type { DBConnection, DBConnectionConfig } from '../../shared/types/types';
 import ConnectionRepositoryInterface from '../interfaces/connectionRepositoryInterface';
 
@@ -161,7 +161,7 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
             if (encrypted[field]) {
                 encrypted = {
                     ...encrypted,
-                    [field]: await encryptionService.encrypt(encrypted[field] as string)
+                    [field]: await encryptionProvider.encrypt(encrypted[field] as string)
                 };
             }
         }
@@ -174,7 +174,7 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
             if (decrypted[field]) {
                 decrypted = {
                     ...decrypted,
-                    [field]: await encryptionService.decrypt(decrypted[field] as string)
+                    [field]: await encryptionProvider.decrypt(decrypted[field] as string)
                 };
             }
         }

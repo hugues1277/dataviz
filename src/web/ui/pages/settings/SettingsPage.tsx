@@ -12,18 +12,16 @@ import Header from "../../components/layout/Header";
 import { useDialog } from "../../components/modal/DialogContext";
 import { useTranslation } from "react-i18next";
 import { dataManagementService } from "../../../core/services/dataManagementService";
-import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
 import { useConnectionsStore } from "../../../core/stores/connectionsStore";
 import { useNavigate } from "react-router";
-import { signOut, useSession } from "../../../providers/betterAuthWebClient";
+import { signOut, useSession } from "../../../providers/auth/authProvider";
 import logger from "../../../../shared/utils/logger";
+import { initDashboards } from "../../../core/useCases/dashboards/initDashboards";
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { confirm, showAlert } = useDialog();
-  const { initDashboards, setActiveDashboardId: setSelectedDashboardId } =
-    useDashboardsStore();
   const { initConnections } = useConnectionsStore();
   const { data: session } = useSession();
 
@@ -92,7 +90,6 @@ const SettingsPage: React.FC = () => {
     try {
       await dataManagementService.resetData();
       await Promise.all([initDashboards([], []), initConnections([])]);
-      setSelectedDashboardId("default");
       setStatus({ type: "success", message: t("settings.resetSuccess") });
       navigate("/");
     } catch (error: unknown) {
@@ -112,14 +109,7 @@ const SettingsPage: React.FC = () => {
         "danger"
       );
     }
-  }, [
-    initDashboards,
-    initConnections,
-    setSelectedDashboardId,
-    t,
-    showAlert,
-    navigate,
-  ]);
+  }, [initDashboards, initConnections, t, showAlert, navigate]);
 
   const processImport = useCallback(
     (jsonStr: string) => {
@@ -233,7 +223,7 @@ const SettingsPage: React.FC = () => {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#111217] border border-[#1f2127] rounded-[2rem] p-8 flex flex-col items-center text-center">
+            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-blue-600/10 rounded-3xl flex items-center justify-center text-blue-500 mb-6">
                 <Download size={32} />
               </div>
@@ -251,7 +241,7 @@ const SettingsPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="bg-[#111217] border border-[#1f2127] rounded-[2rem] p-8 flex flex-col items-center text-center">
+            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-green-600/10 rounded-3xl flex items-center justify-center text-green-500 mb-6">
                 <Upload size={32} />
               </div>
@@ -290,7 +280,7 @@ const SettingsPage: React.FC = () => {
           </div>
 
           {showPaste && (
-            <div className="bg-[#111217] border border-[#1f2127] rounded-[2rem] p-8 animate-in slide-in-from-bottom-4">
+            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 animate-in slide-in-from-bottom-4">
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-4">
                 {t("settings.jsonLabel")}
               </label>
@@ -311,7 +301,7 @@ const SettingsPage: React.FC = () => {
             </div>
           )}
 
-          <div className="bg-red-500/5 border border-red-500/10 rounded-[2rem] p-8 flex items-center justify-between">
+          <div className="bg-red-500/5 border border-red-500/10 rounded-4xl p-8 flex items-center justify-between">
             <div>
               <h3 className="font-bold text-red-400">
                 {t("settings.resetTitle")}

@@ -23,7 +23,9 @@ export const useDashboardsStore = create<DashboardsStore>((set, get) => ({
 
   setDashboards: (dashboards) => {
     set({ dashboards })
-    get().setActiveDashboard(get().activeDashboard?.id || dashboards[0].id);
+    if (dashboards.length > 0) {
+      get().setActiveDashboard(get().activeDashboard?.id || dashboards[0].id);
+    }
   },
   setAllCharts: (allCharts) => {
     set({ allCharts })

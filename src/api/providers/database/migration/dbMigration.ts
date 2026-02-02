@@ -1,6 +1,5 @@
-import "dotenv/config";
-import { databaseProvider } from './databaseProvider';
-import logger from '../../shared/utils/logger';
+import { databaseProvider } from '../databaseProvider';
+import logger from '../../../../shared/utils/logger';
 
 const requests = [
   `

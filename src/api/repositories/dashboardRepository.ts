@@ -1,4 +1,4 @@
-import { databaseProvider } from '../providers/databaseProvider';
+import { databaseProvider } from '../providers/database/databaseProvider';
 import type { Dashboard } from '../../shared/types/types';
 import ObjectRepositoryInterface from '../interfaces/objectRepositoryInterface';
 

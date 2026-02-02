@@ -1,5 +1,5 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
-import { storageProvider } from '../../../providers/apiProvider';
+import { storageProvider } from '../../../providers/storage/storageProvider';
 import { DashboardVariable } from '../../../../shared/types/types';
 
 export async function saveDashboardVariables(variables: DashboardVariable[]): Promise<void> {

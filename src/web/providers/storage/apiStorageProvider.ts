@@ -1,5 +1,5 @@
-import { AppDatas, Dashboard, ChartConfig, DBConnection } from '../../shared/types/types';
-import { IStorageProvider } from '../interfaces/IStorageProvider';
+import { AppDatas, Dashboard, ChartConfig, DBConnection } from '../../../shared/types/types';
+import { IStorageProvider } from '../../interfaces/IStorageProvider';
 
 const API_BASE = ''; // Utilise le même serveur
 
@@ -7,7 +7,7 @@ const API_BASE = ''; // Utilise le même serveur
  * Provider sécurisé qui passe par l'API avec authentification
  * Toutes les requêtes incluent automatiquement les cookies de session
  */
-export const storageProvider: IStorageProvider = {
+export const apiStorageProvider: IStorageProvider = {
     async init() {
         // L'initialisation des tables est gérée côté serveur
         // Cette méthode n'est plus nécessaire côté client

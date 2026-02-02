@@ -1,5 +1,5 @@
 import { logger, User } from "better-auth";
-import { databaseProvider } from "../providers/databaseProvider";
+import { databaseProvider } from "../providers/database/databaseProvider";
 import UserRepositoryInterface from "../interfaces/userRepositoryInterface";
 
 class UserRepository extends UserRepositoryInterface {

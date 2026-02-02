@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
-import { useSession } from "../../../providers/betterAuthWebClient";
+import { useSession } from "../../../providers/auth/authProvider";
 import { CreateFirstUserForm } from "./parts/CreateFirstUserForm";
 import { SignInForm } from "./parts/SignInForm";
 import logger from "../../../../shared/utils/logger";

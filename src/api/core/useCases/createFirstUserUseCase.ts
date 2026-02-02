@@ -1,4 +1,4 @@
-import { betterAuthProvider } from '../../providers/betterAuthProvider';
+import { betterAuthProvider } from '../../providers/auth/betterAuthProvider';
 import { getUserCountUseCase } from '../../core/useCases/getUserCountUseCase';
 
 export interface CreateFirstUserInput {

@@ -11,6 +11,9 @@ importers:
       '@codemirror/lang-sql':
         specifier: ^6.5.0
         version: 6.10.0
+      '@electric-sql/pglite':
+        specifier: ^0.3.15
+        version: 0.3.15
       '@radix-ui/react-dropdown-menu':
         specifier: ^2.1.2
         version: 2.1.16(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -302,6 +305,9 @@ packages:
 
   '@date-fns/tz@1.4.1':
     resolution: {integrity: sha512-P5LUNhtbj6YfI3iJjw5EL9eUAG6OitD0W3fWQcpQjDRc/QIsL0tRNuO1PcDvPccWL1fSTXXdE1ds+l95DV/OFA==}
+
+  '@electric-sql/pglite@0.3.15':
+    resolution: {integrity: sha512-Cj++n1Mekf9ETfdc16TlDi+cDDQF0W7EcbyRHYOAeZdsAe8M/FJg18itDTSwyHfar2WIezawM9o0EKaRGVKygQ==}
 
   '@esbuild/aix-ppc64@0.27.2':
     resolution: {integrity: sha512-GZMB+a0mOMZs4MpDbj8RJp4cw+w1WV5NYD6xzgvzUJ5Ek2jerwfO2eADyI6ExDSUED+1X8aMbegahsJi+8mgpw==}
@@ -3267,6 +3273,8 @@ snapshots:
       w3c-keyname: 2.2.8
 
   '@date-fns/tz@1.4.1': {}
+
+  '@electric-sql/pglite@0.3.15': {}
 
   '@esbuild/aix-ppc64@0.27.2':
     optional: true

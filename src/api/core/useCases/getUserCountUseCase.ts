@@ -1,5 +1,4 @@
-import { databaseProvider } from '../../providers/databaseProvider';
-import { runDbMigration } from '../../providers/dbMigration';
+import { runDbMigration } from '../../providers/database/migration/dbMigration';
 import logger from '../../../shared/utils/logger';
 import UserRepository from '../../repositories/userRepository';
 

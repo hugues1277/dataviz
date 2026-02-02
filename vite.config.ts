@@ -39,6 +39,10 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, '.'),
       }
     },
+    optimizeDeps: {
+      // Exclure PGlite de l'optimisation pour éviter les erreurs de bundle FS
+      exclude: ['@electric-sql/pglite'],
+    },
     // Clear screen disabled to avoid conflicts with Tauri
     clearScreen: false,
     // Environment prefixes for Tauri

@@ -1,11 +1,11 @@
-import { databaseProvider } from '../providers/databaseProvider';
+import { databaseProvider } from '../providers/database/databaseProvider';
 import type { ChartConfig } from '../../shared/types/types';
 import ChartRepositoryInterface from '../interfaces/chartRepositoryInterface';
 
 class ChartRepository extends ChartRepositoryInterface {
-
+    // todo text -> uuid
     private createRequest = `INSERT INTO charts (id, dashboard_id, title, query, connection_id, type, config)
-        VALUES ($1::uuid, $2::uuid, $3::text, $4::text, $5::uuid, $6::text, $7::jsonb)
+        VALUES ($1::uuid, $2::uuid, $3::text, $4::text, $5::text, $6::text, $7::jsonb)
         ON CONFLICT (id) DO UPDATE SET
             dashboard_id = EXCLUDED.dashboard_id,
             title = EXCLUDED.title,

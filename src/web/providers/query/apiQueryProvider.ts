@@ -1,5 +1,5 @@
-import { DBConnection, QueryResult } from '../../shared/types/types';
-import logger from '../../shared/utils/logger';
+import { DBConnection, QueryResult } from '../../../shared/types/types';
+import logger from '../../../shared/utils/logger';
 
 /**
  * Exécute une requête via le proxy API

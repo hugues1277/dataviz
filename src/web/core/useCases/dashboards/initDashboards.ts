@@ -1,4 +1,4 @@
-import { storageProvider } from '../../../providers/apiProvider';
+import { storageProvider } from '../../../providers/storage/storageProvider';
 import logger from '../../../../shared/utils/logger';
 import { Dashboard, ChartConfig } from '../../../../shared/types/types';
 import { useDashboardsStore } from '../../stores/dashboardsStore';
@@ -22,6 +22,5 @@ export async function initDashboards(
         logger.info('initDashboards ended');
     } catch (error: unknown) {
         logger.error('initDashboards', error);
-        store.setIsLoading(false);
     }
 }

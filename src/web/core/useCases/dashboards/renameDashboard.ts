@@ -1,5 +1,5 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
-import { storageProvider } from '../../../providers/apiProvider';
+import { storageProvider } from '../../../providers/storage/storageProvider';
 
 export async function renameDashboard(id: string, name: string): Promise<void> {
     const store = useDashboardsStore.getState();

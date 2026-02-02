@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import {
   isDisabledAuth,
   useSession,
-} from "../../../providers/betterAuthWebClient";
+} from "../../../providers/auth/authProvider";
 import { isTauri } from "../../../../shared/utils/platform";
 
 interface ProtectedRouteProps {

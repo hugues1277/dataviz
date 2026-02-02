@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { DBConnection } from '../../../shared/types/types';
-import { storageProvider } from '../../providers/apiProvider';
+import { storageProvider } from '../../providers/storage/storageProvider';
 import { createConnectionsMap } from '../utils/storeUtils';
 import logger from '../../../shared/utils/logger';
 

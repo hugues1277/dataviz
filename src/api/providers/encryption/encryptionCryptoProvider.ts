@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { createHash, randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
 
 const ENCRYPT_KEY = process.env.ENCRYPT_KEY;
@@ -6,7 +5,7 @@ const ENCRYPT_KEY = process.env.ENCRYPT_KEY;
 /**
  * Service gérant le chiffrement/déchiffrement des données sensibles via Web Crypto API (AES-GCM).
  */
-export const encryptionService = {
+export const encryptionCryptoProvider = {
 
   KEY: createHash('sha256')
     .update(ENCRYPT_KEY!)
@@ -35,6 +34,8 @@ export const encryptionService = {
 
     const decipher = createDecipheriv('aes-256-gcm', this.KEY, iv);
     decipher.setAuthTag(tag);
+
+    console.log("decipher", decipher.update(data, undefined, 'utf8') + decipher.final('utf8'));
 
     return decipher.update(data, undefined, 'utf8') + decipher.final('utf8');
   }

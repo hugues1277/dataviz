@@ -29,7 +29,7 @@ import {
   Circle,
   AlertCircle,
 } from "lucide-react";
-import { executeQuery } from "../../../../providers/queryRequestProvider";
+import { executeQuery } from "../../../../providers/query/queryProvider";
 import { useTranslation } from "react-i18next";
 import CodeMirror from "@uiw/react-codemirror";
 import { sql } from "@codemirror/lang-sql";

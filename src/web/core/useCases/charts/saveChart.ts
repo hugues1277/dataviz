@@ -1,5 +1,5 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
-import { storageProvider } from '../../../providers/apiProvider';
+import { storageProvider } from '../../../providers/storage/storageProvider';
 import { upsertChartInList } from '../../utils/storeUtils';
 import { ChartConfig } from '../../../../shared/types/types';
 
