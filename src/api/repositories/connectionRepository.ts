@@ -9,7 +9,14 @@ const SENSITIVE_FIELDS: (keyof DBConnectionConfig)[] = ['user', 'password', 'api
  * Repositories pour les connections
  */
 class ConnectionRepository extends ConnectionRepositoryInterface {
-    private createRequest = `INSERT INTO connections (id, name, type, config)
+
+    private createRequest = `INSERT INTO connections (id, name, type, config) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET
+        name = EXCLUDED.name,
+        type = EXCLUDED.type,
+        config = EXCLUDED.config
+    `;
+
+    private createManyRequest = `INSERT INTO connections (id, name, type, config)
         SELECT *
         FROM UNNEST($1::uuid[], $2::text[], $3::text[], $4::jsonb[])
         ON CONFLICT (id) DO UPDATE SET
@@ -103,8 +110,14 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
             return [id, name, type, JSON.stringify(encryptedConfig)];
         }));
 
+        // Transformer le tableau de tableaux en 4 tableaux séparés pour UNNEST
+        const ids = values.map(v => v[0]);
+        const names = values.map(v => v[1]);
+        const types = values.map(v => v[2]);
+        const configs = values.map(v => v[3]);
+
         try {
-            await pool.query(this.createRequest, values);
+            await pool.query(this.createManyRequest, [ids, names, types, configs]);
         } finally {
             await pool.end();
         }

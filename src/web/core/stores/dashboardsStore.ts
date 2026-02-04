@@ -27,7 +27,10 @@ export const useDashboardsStore = create<DashboardsStore>((set, get) => ({
   },
   setAllCharts: (allCharts) => {
     set({ allCharts })
-    get().setActiveDashboard(get().activeDashboard?.id || allCharts[0].dashboardId);
+
+    if (allCharts.length > 0) {
+      get().setActiveDashboard(get().activeDashboard?.id || allCharts[0].dashboardId);
+    }
   },
 
   setActiveDashboard: async (dashboardId: string): Promise<Dashboard | null> => {

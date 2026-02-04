@@ -38,6 +38,8 @@ const requests = [
   `create index if not exists "session_userId_idx" on "session" ("userId");`,
   `create index if not exists "account_userId_idx" on "account" ("userId");`,
   `create index if not exists "verification_identifier_idx" on "verification" ("identifier");`,
+
+  `INSERT INTO dashboards (id, name, order_index, variables) VALUES ('019c03d0-bdae-7154-9ff0-5b7d00d62db2', 'Nouveau Dashboard', 0, '[]')`,
 ];
 
 export const runDbMigration = async () => {

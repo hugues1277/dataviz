@@ -91,7 +91,7 @@ export function authApiPlugin(): Plugin {
           'GET':
             async () => {
               const { hasUsers } = await getUserCountUseCase.execute();
-              return hasUsers;
+              return { hasUsers };
             },
         },
           { allowAnonymous: true }

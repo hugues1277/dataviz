@@ -22,8 +22,11 @@ const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { confirm, showAlert } = useDialog();
-  const { initDashboards, setActiveDashboardId: setSelectedDashboardId } =
-    useDashboardsStore();
+  const {
+    setDashboards,
+    setAllCharts,
+    setActiveDashboard: setSelectedDashboardId,
+  } = useDashboardsStore();
   const { initConnections } = useConnectionsStore();
   const { data: session } = useSession();
 
@@ -59,7 +62,8 @@ const SettingsPage: React.FC = () => {
           connections: data.connections,
         });
         await Promise.all([
-          initDashboards(appDatas.dashboards, appDatas.charts),
+          setDashboards(appDatas.dashboards),
+          setAllCharts(appDatas.charts),
           initConnections(appDatas.connections),
         ]);
         setStatus({ type: "success", message: t("settings.importSuccess") });
@@ -85,13 +89,17 @@ const SettingsPage: React.FC = () => {
         );
       }
     },
-    [initDashboards, initConnections, t, showAlert, navigate]
+    [setDashboards, setAllCharts, initConnections, t, showAlert, navigate]
   );
 
   const handleReset = useCallback(async () => {
     try {
       await dataManagementService.resetData();
-      await Promise.all([initDashboards([], []), initConnections([])]);
+      await Promise.all([
+        setDashboards([]),
+        setAllCharts([]),
+        initConnections([]),
+      ]);
       setSelectedDashboardId("default");
       setStatus({ type: "success", message: t("settings.resetSuccess") });
       navigate("/");
@@ -113,7 +121,8 @@ const SettingsPage: React.FC = () => {
       );
     }
   }, [
-    initDashboards,
+    setDashboards,
+    setAllCharts,
     initConnections,
     setSelectedDashboardId,
     t,
@@ -233,7 +242,7 @@ const SettingsPage: React.FC = () => {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#111217] border border-[#1f2127] rounded-[2rem] p-8 flex flex-col items-center text-center">
+            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-blue-600/10 rounded-3xl flex items-center justify-center text-blue-500 mb-6">
                 <Download size={32} />
               </div>
@@ -251,7 +260,7 @@ const SettingsPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="bg-[#111217] border border-[#1f2127] rounded-[2rem] p-8 flex flex-col items-center text-center">
+            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex flex-col items-center text-center">
               <div className="w-16 h-16 bg-green-600/10 rounded-3xl flex items-center justify-center text-green-500 mb-6">
                 <Upload size={32} />
               </div>
@@ -290,7 +299,7 @@ const SettingsPage: React.FC = () => {
           </div>
 
           {showPaste && (
-            <div className="bg-[#111217] border border-[#1f2127] rounded-[2rem] p-8 animate-in slide-in-from-bottom-4">
+            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 animate-in slide-in-from-bottom-4">
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-4">
                 {t("settings.jsonLabel")}
               </label>
@@ -311,7 +320,7 @@ const SettingsPage: React.FC = () => {
             </div>
           )}
 
-          <div className="bg-red-500/5 border border-red-500/10 rounded-[2rem] p-8 flex items-center justify-between">
+          <div className="bg-red-500/5 border border-red-500/10 rounded-4xl p-8 flex items-center justify-between">
             <div>
               <h3 className="font-bold text-red-400">
                 {t("settings.resetTitle")}

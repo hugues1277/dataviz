@@ -22,6 +22,5 @@ export async function initDashboards(
         logger.info('initDashboards ended');
     } catch (error: unknown) {
         logger.error('initDashboards', error);
-        store.setIsLoading(false);
     }
 }
