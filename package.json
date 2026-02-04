@@ -9,12 +9,11 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "auth:generate": "pnpm dlx @better-auth/cli@latest generate",
-    "migrate:security": "tsx scripts/run-migration.ts",
-    "tauri": "tauri",
-    "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build",
-    "tauri:build:app": "tauri build --bundles app",
-    "tauri:build:dmg": "tauri build --bundles dmg"
+    "tauri": "VITE_IS_TAURI_APP=true tauri",
+    "tauri:dev": "VITE_IS_TAURI_APP=true tauri dev",
+    "tauri:build": "VITE_IS_TAURI_APP=true tauri build",
+    "tauri:build:app": "VITE_IS_TAURI_APP=true tauri build --bundles app",
+    "tauri:build:dmg": "VITE_IS_TAURI_APP=true tauri build --bundles dmg"
   },
   "dependencies": {
     "@codemirror/lang-sql": "^6.5.0",

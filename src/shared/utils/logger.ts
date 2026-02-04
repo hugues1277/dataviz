@@ -3,6 +3,10 @@ const logger = {
         console.log(`[INFO] ${message}`);
     },
 
+    warn: (message: string) => {
+        console.warn(`[WARN] ${message}`);
+    },
+
     error: (context: string, error: any) => {
         if (error instanceof Error) {
             console.error(`[ERROR] ${context} ${error.message} ${error.stack}`);

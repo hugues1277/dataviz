@@ -1,4 +1,4 @@
-import { runDbMigration } from '../../providers/database/migration/dbMigration';
+// import { runDbMigration } from '../../providers/database/migration/dbMigration';
 import logger from '../../../shared/utils/logger';
 import UserRepository from '../../repositories/userRepository';
 
@@ -17,7 +17,7 @@ export const getUserCountUseCase = {
             } catch (error: any) {
                 if (error.code === "42P01" || error.message?.includes("does not exist")) {
                     // Créer les tables nécessaires
-                    await runDbMigration();
+                    // await runDbMigration();
 
                     return { hasUsers: false, userCount: 0 };
                 } else {

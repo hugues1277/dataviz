@@ -4,7 +4,6 @@ import {
   isDisabledAuth,
   useSession,
 } from "../../../providers/auth/authProvider";
-import { isTauri } from "../../../../shared/utils/platform";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

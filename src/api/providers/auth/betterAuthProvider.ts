@@ -1,5 +1,5 @@
-// import { betterAuth } from "better-auth";
-// import { databaseProvider } from "./databaseProvider";
+// import { Auth, betterAuth, BetterAuthOptions } from "better-auth";
+// import { databaseProvider } from "../database/databaseProvider";
 
 // const baseURL = process.env.BETTER_AUTH_URL || "http://localhost:3001";
 
@@ -12,7 +12,7 @@
 //  * Instance Better Auth serveur
 //  * Utilisée pour les appels API côté serveur (pas de requête HTTP)
 //  */
-// export const betterAuthProvider = betterAuth({
+// export const betterAuthProvider: Auth<BetterAuthOptions> = betterAuth({
 //     secret,
 //     baseURL,
 //     database: databaseProvider.createPool(),

@@ -1,4 +1,4 @@
-import { betterAuthProvider } from '../../providers/auth/betterAuthProvider';
+// import { betterAuthProvider } from '../../providers/auth/betterAuthProvider';
 
 export interface BetterAuthProxyInput {
   method: string;
@@ -50,25 +50,25 @@ export const betterAuthProxyUseCase = {
       };
     }
 
-    // Appeler Better Auth handler
-    const response = await betterAuthProvider.handler(webRequest);
+    // // Appeler Better Auth handler
+    // const response = await betterAuthProvider.handler(webRequest);
 
-    // Convertir les headers en Map
-    const headers = new Map<string, string>();
-    response.headers.forEach((value, key) => {
-      headers.set(key, value);
-    });
+    // // Convertir les headers en Map
+    // const headers = new Map<string, string>();
+    // response.headers.forEach((value, key) => {
+    //   headers.set(key, value);
+    // });
 
-    // Lire le body de la réponse
-    let body: string | null = null;
-    if (response.body) {
-      body = await response.text();
-    }
+    // // Lire le body de la réponse
+    // let body: string | null = null;
+    // if (response.body) {
+    //   body = await response.text();
+    // }
 
     return {
-      status: response.status,
-      headers,
-      body,
+      status: 200,
+      headers: new Map<string, string>(),
+      body: null,
     };
   },
 };

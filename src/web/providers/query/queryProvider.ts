@@ -1,6 +1,11 @@
-import { executeQuery as executeQueryTauri, getQueryKey as getQueryKeyTauri } from "./tauriQueryProvider";
-import { executeQuery as executeQueryApi, getQueryKey as getQueryKeyApi } from "./apiQueryProvider";
-import { isTauri } from '../../../shared/utils/platform';
+import { isTauri } from '@/src/shared/utils/platform';
+import { IQueryProvider } from './IQueryProvider';
 
-export const executeQuery = isTauri() ? executeQueryTauri : executeQueryApi;
-export const getQueryKey = isTauri() ? getQueryKeyTauri : getQueryKeyApi;
+async function getQueryProvider(): Promise<IQueryProvider> {
+    if (isTauri) {
+        return (await import('./tauriQueryProvider')).tauriQueryProvider;
+    }
+    return (await import('./apiQueryProvider')).apiQueryProvider;
+}
+
+export const queryProvider = await getQueryProvider();

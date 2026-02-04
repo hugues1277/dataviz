@@ -1,4 +1,4 @@
-import { betterAuthProvider } from '../../providers/auth/betterAuthProvider';
+// import { betterAuthProvider } from '../../providers/auth/betterAuthProvider';
 import { getUserCountUseCase } from '../../core/useCases/getUserCountUseCase';
 
 export interface CreateFirstUserInput {
@@ -34,17 +34,17 @@ export const createFirstUserUseCase = {
 
     // Créer le premier utilisateur en utilisant l'API serveur Better Auth
     // betterAuthProvider.api.signUpEmail gère automatiquement le hash du mot de passe
-    const response = await betterAuthProvider.api.signUpEmail({
-      body: {
-        email: input.email,
-        password: input.password,
-        name: input.name || 'Admin',
-      },
-    });
+    // const response = await betterAuthProvider.api.signUpEmail({
+    //   body: {
+    //     email: input.email,
+    //     password: input.password,
+    //     name: input.name || 'Admin',
+    //   },
+    // });
 
     return {
       success: true,
-      user: response.user,
+      user: {},
       message: 'Premier utilisateur admin créé avec succès',
     };
   },

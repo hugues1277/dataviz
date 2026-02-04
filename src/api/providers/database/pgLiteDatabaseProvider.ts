@@ -1,362 +1,255 @@
 import { PGlite } from '@electric-sql/pglite';
-import type { QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult } from 'pg';
+import { runPgLiteMigrationsAsync } from './pgMigrationService';
 import logger from '../../../shared/utils/logger';
+import { isTauri } from '../../../shared/utils/platform';
 
-// Détection de l'environnement
-const isBrowser = typeof window !== 'undefined';
-const isNode = typeof process !== 'undefined' && process.versions?.node;
-
-// Instance singleton de PGLite
+// Instance globale PGlite
 let pgliteInstance: PGlite | null = null;
-let isInitialized = false;
-let migrationPromise: Promise<void> | null = null;
 
 /**
- * Détermine le chemin de stockage de la base de données selon l'environnement
+ * Wrapper pour simuler l'interface PoolClient avec PGlite
+ * Implémente uniquement les méthodes nécessaires pour les migrations
  */
-async function getDataDir(): Promise<string> {
-    if (isBrowser) {
-        // Dans le navigateur, utilise IndexedDB
-        return 'idb://dataviz-pglite';
-    } else if (isNode) {
-        // En Node.js, utilise le système de fichiers
-        // Import dynamique pour éviter les erreurs dans le navigateur
-        const path = await import('path');
-        const { fileURLToPath } = await import('url');
-        const { existsSync, mkdirSync } = await import('fs');
+class PGlitePoolClient {
+    private db: PGlite;
+    private released = false;
 
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        const dataDir = path.join(__dirname, '../../../.pglite');
+    constructor(db: PGlite) {
+        this.db = db;
+    }
 
-        // Créer le répertoire s'il n'existe pas
-        if (!existsSync(dataDir)) {
-            mkdirSync(dataDir, { recursive: true });
+    async query(textOrConfig: string | any, params?: any[]): Promise<QueryResult> {
+        if (this.released) {
+            throw new Error('Client has been released');
         }
 
-        return `file://${dataDir}`;
-    } else {
-        // Fallback : mémoire (non persistant)
-        return 'memory://dataviz-pglite';
+        // Gérer les deux formats : string simple ou objet QueryConfig
+        let text: string;
+        let values: any[] | undefined;
+
+        if (typeof textOrConfig === 'string') {
+            text = textOrConfig;
+            values = params;
+        } else {
+            text = textOrConfig.text || textOrConfig.query;
+            values = textOrConfig.values || params;
+        }
+
+        const result = await this.db.query(text, values || []);
+
+        // Convertir le format de résultat de PGlite vers le format pg
+        // PGlite retourne un tableau d'objets directement
+        const rows = Array.isArray(result) ? result : [];
+
+        return {
+            rows,
+            rowCount: rows.length,
+            command: text.split(' ')[0].toUpperCase(),
+            oid: 0,
+            fields: [],
+        } as QueryResult;
+    }
+
+    release(): void {
+        this.released = true;
+        // PGlite n'a pas besoin de libération de connexion
+    }
+
+    // Implémenter les autres méthodes requises par PoolClient (stubs)
+    async connect(): Promise<void> {
+        // PGlite est déjà connecté
+    }
+
+    get connection(): any {
+        return this.db;
+    }
+
+    [Symbol.asyncDispose](): Promise<void> {
+        this.release();
+        return Promise.resolve();
     }
 }
 
 /**
- * Nettoie le répertoire de données PGlite en cas de corruption
+ * Wrapper pour simuler l'interface Pool avec PGlite
+ * Implémente uniquement les méthodes nécessaires pour les migrations
  */
-async function cleanupDataDir(): Promise<void> {
-    if (isBrowser) {
-        // Dans le navigateur, nettoyer IndexedDB
-        try {
-            const dbName = 'dataviz-pglite';
-            const deleteReq = indexedDB.deleteDatabase(dbName);
-            await new Promise<void>((resolve, reject) => {
-                deleteReq.onsuccess = () => resolve();
-                deleteReq.onerror = () => reject(deleteReq.error);
-            });
-            logger.info('pgLiteDatabaseProvider: IndexedDB nettoyé');
-        } catch (error) {
-            logger.error('pgLiteDatabaseProvider', `Erreur lors du nettoyage IndexedDB: ${error}`);
-        }
-    } else if (isNode) {
-        // En Node.js, supprimer le répertoire
-        try {
-            const path = await import('path');
-            const { fileURLToPath } = await import('url');
-            const { existsSync, rmSync } = await import('fs');
+class PGlitePool {
+    private db: PGlite;
+    private clients: PGlitePoolClient[] = [];
 
-            const __filename = fileURLToPath(import.meta.url);
-            const __dirname = path.dirname(__filename);
-            const dataDir = path.join(__dirname, '../../../.pglite');
+    constructor(db: PGlite) {
+        this.db = db;
+    }
 
-            if (existsSync(dataDir)) {
-                rmSync(dataDir, { recursive: true, force: true });
-                logger.info('pgLiteDatabaseProvider: Répertoire de données nettoyé');
-            }
-        } catch (error) {
-            logger.error('pgLiteDatabaseProvider', `Erreur lors du nettoyage du répertoire: ${error}`);
+    async connect(): Promise<PoolClient> {
+        const client = new PGlitePoolClient(this.db) as unknown as PoolClient;
+        this.clients.push(client as unknown as PGlitePoolClient);
+        return client;
+    }
+
+    async query(textOrConfig: string | any, params?: any[]): Promise<QueryResult> {
+        // Gérer les deux formats : string simple ou objet QueryConfig
+        let text: string;
+        let values: any[] | undefined;
+
+        if (typeof textOrConfig === 'string') {
+            text = textOrConfig;
+            values = params;
+        } else {
+            text = textOrConfig.text || textOrConfig.query;
+            values = textOrConfig.values || params;
         }
+
+        const result = await this.db.query(text, values || []);
+
+        // Convertir le format de résultat de PGlite vers le format pg
+        const rows = Array.isArray(result) ? result : [];
+
+        return {
+            rows,
+            rowCount: rows.length,
+            command: text.split(' ')[0].toUpperCase(),
+            oid: 0,
+            fields: [],
+        } as QueryResult;
+    }
+
+    async end(): Promise<void> {
+        // PGlite n'a pas besoin de fermeture explicite, mais on peut nettoyer
+        this.clients = [];
+    }
+
+    // Propriétés minimales pour l'interface Pool
+    get totalCount(): number {
+        return 1;
+    }
+
+    get idleCount(): number {
+        return 1;
+    }
+
+    get waitingCount(): number {
+        return 0;
     }
 }
 
 /**
- * Requêtes de migration SQL pour créer les tables nécessaires
+ * Obtient ou crée l'instance PGlite
  */
-const migrationRequests = [
-    `
-    CREATE TABLE IF NOT EXISTS dashboards (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      order_index INT DEFAULT 0,
-      variables JSONB DEFAULT '[]',
-      default_preset TEXT
-    );
-    `,
-    `
-    CREATE TABLE IF NOT EXISTS charts (
-      id TEXT PRIMARY KEY,
-      dashboard_id TEXT NOT NULL REFERENCES dashboards(id) ON DELETE CASCADE,
-      title TEXT,
-      query TEXT,
-      connection_id TEXT,
-      type TEXT,
-      config JSONB DEFAULT '{}'
-    );
-    `,
-    `
-    CREATE TABLE IF NOT EXISTS connections (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      type TEXT NOT NULL,
-      config JSONB DEFAULT '{}'
-    );
-    `,
-    `create table if not exists "user" ("id" text not null primary key, "name" text not null, "email" text not null unique, "emailVerified" boolean not null, "image" text, "createdAt" timestamptz default CURRENT_TIMESTAMP not null, "updatedAt" timestamptz default CURRENT_TIMESTAMP not null);`,
-    `create table if not exists "session" ("id" text not null primary key, "expiresAt" timestamptz not null, "token" text not null unique, "createdAt" timestamptz default CURRENT_TIMESTAMP not null, "updatedAt" timestamptz not null, "ipAddress" text, "userAgent" text, "userId" text not null references "user" ("id") on delete cascade);`,
-    `create table if not exists "account" ("id" text not null primary key, "accountId" text not null, "providerId" text not null, "userId" text not null references "user" ("id") on delete cascade, "accessToken" text, "refreshToken" text, "idToken" text, "accessTokenExpiresAt" timestamptz, "refreshTokenExpiresAt" timestamptz, "scope" text, "password" text, "createdAt" timestamptz default CURRENT_TIMESTAMP not null, "updatedAt" timestamptz not null);`,
-    `create table if not exists "verification" ("id" text not null primary key, "identifier" text not null, "value" text not null, "expiresAt" timestamptz not null, "createdAt" timestamptz default CURRENT_TIMESTAMP not null, "updatedAt" timestamptz default CURRENT_TIMESTAMP not null);`,
-    `create index if not exists "session_userId_idx" on "session" ("userId");`,
-    `create index if not exists "account_userId_idx" on "account" ("userId");`,
-    `create index if not exists "verification_identifier_idx" on "verification" ("identifier");`,
-];
-
-/**
- * Initialise l'instance PGLite et exécute les migrations
- */
-async function initializePGlite(): Promise<PGlite> {
+async function getPGliteInstance(): Promise<PGlite> {
     if (pgliteInstance) {
         return pgliteInstance;
     }
 
-    // Si une migration est en cours, attendre qu'elle se termine
-    if (migrationPromise) {
-        await migrationPromise;
-        if (pgliteInstance) {
-            return pgliteInstance;
-        }
-    }
+    // Déterminer le chemin de stockage selon l'environnement
+    let dataDir: string;
 
-    // Créer une nouvelle instance
-    migrationPromise = (async () => {
-        let retryCount = 0;
-        const maxRetries = 1; // Une seule tentative de récupération
-
-        while (retryCount <= maxRetries) {
-            try {
-                const dataDir = await getDataDir();
-
-                logger.info(`pgLiteDatabaseProvider: Initialisation de PGLite avec dataDir: ${dataDir}`);
-
-                // Créer l'instance PGLite
-                pgliteInstance = new PGlite(dataDir, {
-                    debug: process.env.NODE_ENV === 'development' ? 1 : 0,
-                });
-
-                // Attendre que la base soit prête
-                await pgliteInstance.waitReady;
-
-                logger.info('pgLiteDatabaseProvider: PGLite initialisé avec succès');
-
-                // Exécuter les migrations
-                logger.info('pgLiteDatabaseProvider: Exécution des migrations...');
-
-                for (const request of migrationRequests) {
-                    try {
-                        await pgliteInstance.query(request);
-                    } catch (error: unknown) {
-                        // Ignorer les erreurs de table déjà existante
-                        const errorMessage = error instanceof Error ? error.message : String(error);
-                        if (!errorMessage.includes('already exists') && !errorMessage.includes('duplicate')) {
-                            logger.error('pgLiteDatabaseProvider', `Erreur lors de la migration: ${errorMessage}`);
-                            throw error;
-                        }
-                    }
-                }
-
-                logger.info('pgLiteDatabaseProvider: Migrations terminées avec succès');
-                isInitialized = true;
-                break; // Succès, sortir de la boucle
-            } catch (error: unknown) {
-                const errorMessage = error instanceof Error ? error.message : String(error);
-
-                // Détecter l'erreur de bundle FS corrompu
-                const isBundleError = errorMessage.includes('Invalid FS bundle size') ||
-                    errorMessage.includes('bundle size');
-
-                if (isBundleError && retryCount < maxRetries) {
-                    logger.info(`pgLiteDatabaseProvider: Bundle FS corrompu détecté, nettoyage et nouvelle tentative...`);
-
-                    // Fermer l'instance si elle existe
-                    if (pgliteInstance) {
-                        try {
-                            await pgliteInstance.close();
-                        } catch {
-                            // Ignorer les erreurs de fermeture
-                        }
-                        pgliteInstance = null;
-                    }
-
-                    // Nettoyer le répertoire de données corrompu
-                    await cleanupDataDir();
-
-                    retryCount++;
-                    continue; // Réessayer
-                } else {
-                    logger.error('pgLiteDatabaseProvider', `Erreur lors de l'initialisation: ${error}`);
-                    pgliteInstance = null;
-                    throw error;
-                }
-            } finally {
-                if (retryCount > maxRetries) {
-                    migrationPromise = null;
-                }
-            }
+    try {
+        if (isTauri) {
+            // En Tauri, utiliser le système de fichiers local avec BaseDirectory
+            const pathModule = await import('@tauri-apps/api/path');
+            const { BaseDirectory } = pathModule;
+            // Utiliser appDataDir() qui nécessite core:path:allow-resolve-directory
+            // Les permissions sont configurées dans src-tauri/capabilities/default.json
+            const dataDirPath = await pathModule.appDataDir();
+            dataDir = `file://${dataDirPath}/.pglite`;
+        } else if (typeof window !== 'undefined') {
+            // Dans le navigateur, utiliser IndexedDB
+            dataDir = 'idb://pglite';
+        } else {
+            // En Node.js, utiliser le système de fichiers
+            const path = await import('path');
+            const os = await import('os');
+            const homeDir = os.homedir();
+            dataDir = `file://${path.join(homeDir, '.pglite')}`;
         }
 
-        migrationPromise = null;
-    })();
+        logger.info(`pgLiteDatabaseProvider: Initialisation de PGlite avec dataDir: ${dataDir}`);
 
-    await migrationPromise;
+        // Créer l'instance PGlite
+        pgliteInstance = await PGlite.create(dataDir, {
+            // Options de configuration PGlite
+        });
 
-    if (!pgliteInstance) {
-        throw new Error('Échec de l\'initialisation de PGLite');
+        logger.info('pgLiteDatabaseProvider: Instance PGlite créée avec succès');
+    } catch (error) {
+        logger.error('pgLiteDatabaseProvider', `Erreur lors de la création de l'instance PGlite: ${error}`);
+        throw error;
     }
 
     return pgliteInstance;
 }
 
 /**
- * Wrapper qui simule l'interface Pool de pg pour compatibilité
- */
-class PGLitePool {
-    private pglitePromise: Promise<PGlite> | null = null;
-
-    constructor() {
-        // L'initialisation sera faite de manière lazy lors du premier query()
-    }
-
-    /**
-     * Obtient l'instance PGLite (initialise si nécessaire)
-     */
-    private async getPGlite(): Promise<PGlite> {
-        if (!this.pglitePromise) {
-            this.pglitePromise = initializePGlite();
-        }
-        return await this.pglitePromise;
-    }
-
-    /**
-     * Exécute une requête SQL
-     * Compatible avec l'interface pg.Pool.query()
-     */
-    async query(text: string, params?: unknown[]): Promise<QueryResult> {
-        try {
-            const pglite = await this.getPGlite();
-            const result = await pglite.query(text, params || []);
-
-            // Convertir le résultat PGLite au format pg.QueryResult
-            const rows = result.rows || [];
-            return {
-                rows,
-                rowCount: rows.length || 0,
-                command: this.extractCommand(text),
-                oid: 0,
-                fields: rows.length > 0 && typeof rows[0] === 'object' && rows[0] !== null
-                    ? Object.keys(rows[0] as Record<string, unknown>).map((name, index) => ({
-                        name,
-                        tableID: 0,
-                        columnID: index,
-                        dataTypeID: 0,
-                        dataTypeSize: 0,
-                        dataTypeModifier: 0,
-                        format: 'text',
-                    }))
-                    : [],
-            } as QueryResult;
-        } catch (error: unknown) {
-            logger.error('pgLiteDatabaseProvider', `Erreur lors de l'exécution de la requête: ${error}`);
-            throw error;
-        }
-    }
-
-    /**
-     * Ferme la connexion (no-op pour PGLite car c'est une instance singleton)
-     * Compatible avec l'interface pg.Pool.end()
-     */
-    async end(): Promise<void> {
-        // Ne pas fermer l'instance singleton, juste logger
-        // Note: Pool.end() est appelé mais l'instance reste ouverte pour réutilisation
-    }
-
-    /**
-     * Extrait la commande SQL (SELECT, INSERT, UPDATE, DELETE, etc.)
-     */
-    private extractCommand(text: string): string {
-        const trimmed = text.trim().toUpperCase();
-        if (trimmed.startsWith('SELECT')) return 'SELECT';
-        if (trimmed.startsWith('INSERT')) return 'INSERT';
-        if (trimmed.startsWith('UPDATE')) return 'UPDATE';
-        if (trimmed.startsWith('DELETE')) return 'DELETE';
-        if (trimmed.startsWith('CREATE')) return 'CREATE';
-        if (trimmed.startsWith('DROP')) return 'DROP';
-        if (trimmed.startsWith('ALTER')) return 'ALTER';
-        return 'UNKNOWN';
-    }
-}
-
-/**
- * Provider pour la connexion à la base de données PGLite locale
- * Centralise la configuration de la connexion et gère l'initialisation
+ * Provider pour la connexion à la base de données PGlite (SQLite avec interface PostgreSQL)
+ * Centralise la configuration de la connexion et gère les migrations
  */
 export const pgLiteDatabaseProvider = {
-    /**
-     * Crée un pool de connexion (wrapper autour de l'instance PGLite singleton)
-     * Compatible avec l'interface de pgDatabaseProvider
-     * L'initialisation de PGLite se fait de manière lazy lors du premier query()
-     */
-    createPool: (): PGLitePool => {
-        return new PGLitePool();
-    },
+    createPool: (): Pool => {
+        // Initialiser PGlite de manière asynchrone en arrière-plan
+        // Le pool retourné attendra que l'initialisation soit terminée lors du premier usage
+        const initPromise = getPGliteInstance();
 
-    /**
-     * Ferme l'instance PGLite et libère les ressources
-     * Utile pour les tests ou le nettoyage
-     */
-    close: async (): Promise<void> => {
-        if (pgliteInstance) {
-            await pgliteInstance.close();
-            pgliteInstance = null;
-            isInitialized = false;
-            logger.info('pgLiteDatabaseProvider: Instance PGLite fermée');
-        }
-    },
+        // Créer un pool wrapper qui attend l'initialisation
+        const pool = new PGlitePoolLazy(initPromise) as unknown as Pool;
 
-    /**
-     * Réinitialise la base de données (supprime toutes les données)
-     * ATTENTION: Cette opération est destructive
-     */
-    reset: async (): Promise<void> => {
-        await pgLiteDatabaseProvider.close();
-        pgliteInstance = null;
-        isInitialized = false;
-        migrationPromise = null;
+        // Exécuter les migrations de manière non bloquante une fois l'instance créée
+        initPromise.then(db => {
+            runPgLiteMigrationsAsync(db);
+        }).catch(error => {
+            logger.error('pgLiteDatabaseProvider', `Erreur lors de l'initialisation: ${error}`);
+        });
 
-        // Recréer l'instance qui va recréer les tables
-        await initializePGlite();
-        logger.info('pgLiteDatabaseProvider: Base de données réinitialisée');
-    },
-
-    /**
-     * Vérifie si la base de données est initialisée
-     */
-    isInitialized: (): boolean => {
-        return isInitialized && pgliteInstance !== null;
-    },
-
-    /**
-     * Obtient l'instance PGLite directement (pour usage avancé)
-     */
-    getInstance: async (): Promise<PGlite> => {
-        return await initializePGlite();
+        return pool;
     },
 };
+
+/**
+ * Pool wrapper qui attend l'initialisation de PGlite de manière lazy
+ */
+class PGlitePoolLazy {
+    private initPromise: Promise<PGlite>;
+    private pool: PGlitePool | null = null;
+
+    constructor(initPromise: Promise<PGlite>) {
+        this.initPromise = initPromise;
+    }
+
+    private async ensureInitialized(): Promise<PGlitePool> {
+        if (!this.pool) {
+            const db = await this.initPromise;
+            this.pool = new PGlitePool(db);
+        }
+        return this.pool;
+    }
+
+    async connect(): Promise<PoolClient> {
+        const pool = await this.ensureInitialized();
+        return pool.connect();
+    }
+
+    async query(textOrConfig: string | any, params?: any[]): Promise<QueryResult> {
+        const pool = await this.ensureInitialized();
+        return pool.query(textOrConfig, params);
+    }
+
+    async end(): Promise<void> {
+        if (this.pool) {
+            await this.pool.end();
+        }
+    }
+
+    get totalCount(): number {
+        return 1;
+    }
+
+    get idleCount(): number {
+        return 1;
+    }
+
+    get waitingCount(): number {
+        return 0;
+    }
+}

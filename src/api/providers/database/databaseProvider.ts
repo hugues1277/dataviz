@@ -1,6 +1,10 @@
-import { pgLiteDatabaseProvider } from "./pgLiteDatabaseProvider";
-// import { databaseProvider as pgDatabaseProvider } from "./pgDatabaseProvider";
+import { isTauri } from '../../../shared/utils/platform';
 
-const isTauri = true;// import.meta.env.VITE_IS_TAURI_APP === 'true';
+async function getProvider() {
+    if (isTauri) {
+        return (await import('./pgLiteDatabaseProvider')).pgLiteDatabaseProvider;
+    }
+    return (await import('./pgDatabaseProvider')).databaseProvider;
+}
 
-export const databaseProvider = isTauri ? pgLiteDatabaseProvider : pgLiteDatabaseProvider;
+export const databaseProvider = await getProvider();

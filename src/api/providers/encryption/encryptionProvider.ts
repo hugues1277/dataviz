@@ -1,6 +1,11 @@
-// import { encryptionCryptoProvider } from "./encryptionCryptoProvider";
-import { encryptionMockProvider } from "./encryptionMockProvider";
+import { isTauri } from '../../../shared/utils/platform';
 
-const isTauri = false;// import.meta.env.VITE_IS_TAURI_APP === 'true';
+async function getEncryptionProvider(): Promise<any> {
+    if (isTauri) {
+        return (await import('./encryptionMockProvider')).encryptionMockProvider;
+    }
+    return (await import('./encryptionMockProvider')).encryptionMockProvider;
+    // return (await import('./encryptionCryptoProvider')).encryptionCryptoProvider;
+}
 
-export const encryptionProvider = isTauri ? encryptionMockProvider : encryptionMockProvider;
+export const encryptionProvider = await getEncryptionProvider();

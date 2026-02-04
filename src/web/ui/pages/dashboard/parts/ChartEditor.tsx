@@ -29,7 +29,7 @@ import {
   Circle,
   AlertCircle,
 } from "lucide-react";
-import { executeQuery } from "../../../../providers/query/queryProvider";
+import { queryProvider } from "../../../../providers/query/queryProvider";
 import { useTranslation } from "react-i18next";
 import CodeMirror from "@uiw/react-codemirror";
 import { sql } from "@codemirror/lang-sql";
@@ -236,7 +236,7 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
         dateRange
       );
 
-      const data = await executeQuery(
+      const data = await queryProvider.executeQuery(
         connection,
         chartConfig.query,
         queryVariablesValues

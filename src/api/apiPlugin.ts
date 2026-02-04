@@ -38,8 +38,6 @@ export function apiPlugin(): Plugin {
           {
             'GET':
               async () => {
-                console.log("eeeeee");
-
                 return await getAppDatasUseCase.execute();
               },
           });

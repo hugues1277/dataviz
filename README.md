@@ -2,6 +2,10 @@
 
 A modern, lightweight, and simple data visualization application. Alternative to Metabase and Grafana, designed to be fast, intuitive, and easy to deploy.
 
+<span style="border:1px solid #5775a1;color:#5775a1;padding:2px 8px;border-radius:999px;">
+built without vibe coding
+</span>
+
 ## Key Features
 
 ### Visualizations
