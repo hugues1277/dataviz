@@ -1,7 +1,7 @@
 import { DashboardVariable } from '../../../../shared/types/types';
 import { getDefaultVariableValues, resolveVariableValue } from '../../utils/variableUtils';
 import { useState, useCallback } from 'react';
-import { saveDashboardVariables } from '../../useCases/dashboards/saveDashboardVariables';
+import { saveDashboardVariablesUseCase } from '../../useCases/dashboards/saveDashboardVariablesUseCase';
 
 interface VariablesResult {
     // Variables du dashboard actif uniquement
@@ -35,7 +35,7 @@ export const useVariables = (initialVariables?: DashboardVariable[], initialVari
         setVariables(newVariables);
         setVariableValues({ ...variableValues, [variable.name]: resolveVariableValue(variable) });
 
-        saveDashboardVariables(newVariables);
+        saveDashboardVariablesUseCase(newVariables);
     }, [variables, variableValues]);
 
     const updateVariable = useCallback(async (variable: DashboardVariable) => {
@@ -43,7 +43,7 @@ export const useVariables = (initialVariables?: DashboardVariable[], initialVari
         setVariables(newVariables);
         setVariableValues({ ...variableValues, [variable.name]: variable.defaultValue });
 
-        saveDashboardVariables(newVariables);
+        saveDashboardVariablesUseCase(newVariables);
     }, [variables, variableValues]);
 
     const deleteVariable = useCallback(async (variableId: string) => {
@@ -51,7 +51,7 @@ export const useVariables = (initialVariables?: DashboardVariable[], initialVari
         setVariables(newVariables);
         setVariableValues({ ...variableValues, [variableId]: "" });
 
-        saveDashboardVariables(newVariables);
+        saveDashboardVariablesUseCase(newVariables);
     }, [variables, variableValues]);
 
     const setVariableValue = useCallback((name: string, value: string) => {

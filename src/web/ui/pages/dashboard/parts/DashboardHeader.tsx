@@ -8,9 +8,9 @@ import { useDateRangeStore } from "../../../../core/stores/useDateRangeStore";
 import { useDashboardsStore } from "../../../../core/stores/dashboardsStore";
 import { useRefetchDashboardCharts } from "../../../../core/hooks/dashboard/useChartQuery";
 import Header from "../../../components/layout/Header";
-import { deleteDashboard } from "@/src/web/core/useCases/dashboards/deleteDashboard";
+import { deleteDashboardUseCase } from "@/src/web/core/useCases/dashboards/deleteDashboardUseCase";
 import { useNavigate } from "react-router";
-import { renameDashboard } from "@/src/web/core/useCases/dashboards/renameDashboard";
+import { renameDashboardUseCase } from "@/src/web/core/useCases/dashboards/renameDashboardUseCase";
 
 interface DashboardHeaderProps {
   name: string;
@@ -53,20 +53,20 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   const handleFinishRename = useCallback(async () => {
     if (tempTitle.trim() && activeDashboard?.id) {
-      await renameDashboard(activeDashboard?.id, tempTitle);
+      await renameDashboardUseCase(activeDashboard?.id, tempTitle);
       setIsEditingTitle(false);
     }
-  }, [tempTitle, activeDashboard?.id, renameDashboard]);
+  }, [tempTitle, activeDashboard?.id]);
 
   const handleDeleteDashboard = useCallback(async () => {
     const id = activeDashboard?.id;
     if (!id || !canDeleteDashboard) return;
 
-    const remainingDashboards = await deleteDashboard(id);
+    const remainingDashboards = await deleteDashboardUseCase(id);
     setTimeout(() => {
       navigate(`/dashboards/${remainingDashboards[0].id}`);
     }, 100);
-  }, [navigate, activeDashboard, deleteDashboard, canDeleteDashboard]);
+  }, [navigate, activeDashboard, canDeleteDashboard]);
 
   if (!activeDashboard) return null;
 

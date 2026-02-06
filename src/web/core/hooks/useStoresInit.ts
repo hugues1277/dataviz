@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import { useSession } from '../../providers/betterAuthWebClient';
-import { useConnectionsStore } from '../stores/connectionsStore';
 import { useDashboardsStore } from '../stores/dashboardsStore';
 import { storageProvider } from '../../providers/apiProvider';
-import { initDashboards } from '../useCases/dashboards/initDashboards';
+import { initDashboardsUseCase } from '../useCases/dashboards/initDashboardsUseCase';
+import { initConnectionsUseCase } from '../useCases/connections/initConnectionsUseCase';
 
 /**
  * Hook pour initialiser les stores au démarrage de l'application
@@ -12,15 +12,14 @@ import { initDashboards } from '../useCases/dashboards/initDashboards';
 export const useStoresInit = () => {
   const { data: session, isPending } = useSession();
 
-  const { initConnections } = useConnectionsStore();
   const { dashboards } = useDashboardsStore();
 
 
   const initAppDatas = useCallback(async () => {
     const { connections, dashboards, charts } = await storageProvider.getAppDatas();
-    initConnections(connections);
-    initDashboards(dashboards, charts);
-  }, [initConnections, initDashboards]);
+    initDashboardsUseCase(dashboards, charts);
+    initConnectionsUseCase(connections);
+  }, []);
 
   useEffect(() => {
     // Attendre que la vérification de session soit terminée

@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/shadcn/dropdown-menu";
-import { deleteDashboard } from "@/src/web/core/useCases/dashboards/deleteDashboard";
+import { deleteDashboardUseCase } from "@/src/web/core/useCases/dashboards/deleteDashboardUseCase";
 import { useDialog } from "../../../components/modal/DialogContext";
 
 interface DashboardActionsProps {
@@ -65,7 +65,7 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({
       confirmLabel: t("common.delete"),
       onConfirm: async () => onDeleteDashboard(),
     });
-  }, [activeDashboard, canDeleteDashboard, deleteDashboard]);
+  }, [activeDashboard, canDeleteDashboard, onDeleteDashboard, confirm, showAlert, t]);
 
   return (
     <div className="hidden lg:flex items-center gap-2 shrink-0">

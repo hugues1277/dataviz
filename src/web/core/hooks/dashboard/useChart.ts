@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useState, SetStateAction, Dispatch } from "react";
 import { ChartConfig, AnnotationConfig } from "../../../../shared/types/types";
 import { getQueryVariablesNames, usesDateInQuery } from "../../utils/variableUtils";
-import { saveChart } from "../../useCases/charts/saveChart";
+import { saveChartUseCase } from "../../useCases/charts/saveChartUseCase";
 import { DEFAULT_ANNOTATION } from "@/src/shared/constants";
 
 interface UseChartResult {
@@ -48,9 +48,9 @@ export const useChart = (
       };
 
       setChartConfig(updated);
-      await saveChart(updated);
+      await saveChartUseCase(updated);
     },
-    [chartConfig, saveChart, setChartConfig]
+    [chartConfig]
   );
 
   /**

@@ -3,7 +3,7 @@ import logger from '../../../../shared/utils/logger';
 import { Dashboard, ChartConfig } from '../../../../shared/types/types';
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 
-export async function initDashboards(
+export async function initDashboardsUseCase(
     dashboardsData?: Dashboard[],
     chartsData?: ChartConfig[]
 ): Promise<void> {

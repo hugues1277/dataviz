@@ -3,7 +3,7 @@ import { storageProvider } from '../../../providers/apiProvider';
 import { upsertChartInList } from '../../utils/storeUtils';
 import { ChartConfig } from '../../../../shared/types/types';
 
-export async function saveChart(chart: ChartConfig | ChartConfig[]): Promise<void> {
+export async function saveChartUseCase(chart: ChartConfig | ChartConfig[]): Promise<void> {
     const store = useDashboardsStore.getState();
 
     const charts = Array.isArray(chart) ? chart : [chart];

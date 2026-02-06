@@ -1,7 +1,7 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 import { storageProvider } from '../../../providers/apiProvider';
 
-export async function deleteChart(id: string): Promise<void> {
+export async function deleteChartUseCase(id: string): Promise<void> {
     const store = useDashboardsStore.getState();
 
     await storageProvider.deleteChart(id);

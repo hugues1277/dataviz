@@ -2,7 +2,7 @@ import { useDashboardsStore } from '../../stores/dashboardsStore';
 import { storageProvider } from '../../../providers/apiProvider';
 import { Dashboard } from '@/src/shared/types/types';
 
-export async function deleteDashboard(dashboardId: string): Promise<Dashboard[]> {
+export async function deleteDashboardUseCase(dashboardId: string): Promise<Dashboard[]> {
     const store = useDashboardsStore.getState();
 
     // delete the dashboard from the API

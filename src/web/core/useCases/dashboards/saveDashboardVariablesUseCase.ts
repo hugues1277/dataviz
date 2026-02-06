@@ -1,14 +1,15 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 import { storageProvider } from '../../../providers/apiProvider';
+import { DashboardVariable } from '../../../../shared/types/types';
 
-export async function renameDashboard(id: string, name: string): Promise<void> {
+export async function saveDashboardVariablesUseCase(variables: DashboardVariable[]): Promise<void> {
     const store = useDashboardsStore.getState();
     const dashboard = store.activeDashboard;
 
     if (!dashboard) return;
 
     // update the dashboard in the store
-    const updatedDashboard = { ...dashboard, name };
+    const updatedDashboard = { ...dashboard, variables };
     await storageProvider.putDashboard(updatedDashboard);
 
     // update the dashboard in the list

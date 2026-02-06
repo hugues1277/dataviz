@@ -1,7 +1,7 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 import { storageProvider } from '../../../providers/apiProvider';
 
-export async function moveDashboard(id: string, direction: 'up' | 'down'): Promise<void> {
+export async function moveDashboardUseCase(id: string, direction: 'up' | 'down'): Promise<void> {
     const store = useDashboardsStore.getState();
     const dashboards = [...store.dashboards];
 

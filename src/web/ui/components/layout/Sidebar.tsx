@@ -15,8 +15,8 @@ import { useSidebar } from "../../../core/context/useSidebar";
 import { useNavigate, useLocation, NavLink } from "react-router";
 import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
 import logo from "../../../../../assets/logo.png";
-import { moveDashboard } from "@/src/web/core/useCases/dashboards/moveDashboard";
-import { addDashboard } from "@/src/web/core/useCases/dashboards/addDashboard";
+import { moveDashboardUseCase } from "@/src/web/core/useCases/dashboards/moveDashboardUseCase";
+import { addDashboardUseCase } from "@/src/web/core/useCases/dashboards/addDashboardUseCase";
 
 const Sidebar: React.FC = () => {
   const { isSidebarOpen, closeSidebar } = useSidebar();
@@ -51,26 +51,26 @@ const Sidebar: React.FC = () => {
 
   const handleMoveUp = useCallback(
     (id: string) => {
-      moveDashboard(id, "up");
+      moveDashboardUseCase(id, "up");
     },
-    [moveDashboard]
+    []
   );
 
   const handleMoveDown = useCallback(
     (id: string) => {
-      moveDashboard(id, "down");
+      moveDashboardUseCase(id, "down");
     },
-    [moveDashboard]
+    []
   );
 
   const handleAddDashboard = useCallback(async () => {
-    const newId = await addDashboard();
+    const newId = await addDashboardUseCase();
     // Attendre que le store se mette à jour avec le nouveau dashboard
     setTimeout(() => {
       navigate(`/dashboards/${newId}`);
     }, 50);
     closeSidebar();
-  }, [addDashboard, navigate, closeSidebar]);
+  }, [addDashboardUseCase, navigate, closeSidebar]);
 
   return (
     <>

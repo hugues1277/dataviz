@@ -2,7 +2,7 @@ import { useDashboardsStore } from '../../stores/dashboardsStore';
 import { storageProvider } from '../../../providers/apiProvider';
 import { DEFAULT_DASHBOARD } from '../../../../shared/constants';
 
-export async function addDashboard(): Promise<string> {
+export async function addDashboardUseCase(): Promise<string> {
     const store = useDashboardsStore.getState();
 
     const id = crypto.randomUUID();

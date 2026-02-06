@@ -10,8 +10,8 @@ import ChartPreview from "./parts/ChartPreview";
 import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
 import { useParams } from "react-router";
 import DashboardHeader from "./parts/DashboardHeader";
-import { saveChart } from "@/src/web/core/useCases/charts/saveChart";
-import { deleteChart } from "@/src/web/core/useCases/charts/deleteChart";
+import { saveChartUseCase } from "@/src/web/core/useCases/charts/saveChartUseCase";
+import { deleteChartUseCase } from "@/src/web/core/useCases/charts/deleteChartUseCase";
 import { DEFAULT_CHART } from "@/src/shared/constants";
 import { useVariables } from "@/src/web/core/hooks/dashboard/useVariables";
 import { Button } from "../../components/Button";
@@ -113,9 +113,9 @@ const DashboardPage: React.FC = () => {
             isLocked={isLocked}
             dateRange={dateRange}
             variableValues={variableValues}
-            saveChart={(chart: ChartConfig[]) => saveChart(chart)}
+            saveChart={(chart: ChartConfig[]) => saveChartUseCase(chart)}
             onEdit={(chart: ChartConfig) => setEditingChart(chart)}
-            onDelete={(chart: ChartConfig) => deleteChart(chart.id)}
+            onDelete={(chart: ChartConfig) => deleteChartUseCase(chart.id)}
             onView={(chart: ChartConfig) => setViewingChart(chart)}
           />
         )}
@@ -136,7 +136,7 @@ const DashboardPage: React.FC = () => {
             dashboard={activeDashboard}
             chartConfig={editingChart}
             onSave={(chart) => {
-              saveChart(chart);
+              saveChartUseCase(chart);
               setEditingChart(null);
             }}
             onClose={() => setEditingChart(null)}

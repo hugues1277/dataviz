@@ -11,15 +11,15 @@ import ConnectionEditor from "./parts/ConnectionEditor";
 import ConnectionCard from "./parts/ConnectionCard";
 import EmptyConnectionsState from "./parts/EmptyConnectionsState";
 import PageLoading from "../../components/layout/PageLoading";
+import { addConnectionUseCase } from "../../../core/useCases/connections/addConnectionUseCase";
+import { updateConnectionUseCase } from "../../../core/useCases/connections/updateConnectionUseCase";
+import { deleteConnectionUseCase } from "../../../core/useCases/connections/deleteConnectionUseCase";
 
 const ConnectionPage: React.FC = () => {
   const { t } = useTranslation();
   const {
     isLoading,
     connections,
-    addConnection,
-    updateConnection,
-    deleteConnection,
   } = useConnectionsStore();
 
   const [isAdding, setIsAdding] = useState(false);
@@ -48,14 +48,18 @@ const ConnectionPage: React.FC = () => {
     });
   };
 
-  const handleSave = (connection: DBConnection) => {
+  const handleSave = async (connection: DBConnection) => {
     if (isAdding) {
-      addConnection(connection);
+      await addConnectionUseCase(connection);
     } else {
-      updateConnection(connection);
+      await updateConnectionUseCase(connection);
     }
 
     resetForm();
+  };
+
+  const handleDelete = async (id: string) => {
+    await deleteConnectionUseCase(id);
   };
 
   return isLoading ? (
@@ -84,7 +88,7 @@ const ConnectionPage: React.FC = () => {
                 key={conn.id}
                 connection={conn}
                 onEdit={handleEdit}
-                onDelete={deleteConnection}
+                onDelete={handleDelete}
               />
             ))}
 

@@ -8,12 +8,12 @@ import { useDialog } from "../../components/modal/DialogContext";
 import { useTranslation } from "react-i18next";
 import { dataManagementService } from "../../../core/services/dataManagementService";
 import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
-import { useConnectionsStore } from "../../../core/stores/connectionsStore";
 import { useNavigate } from "react-router";
 import { signOut, useSession } from "../../../providers/betterAuthWebClient";
 import logger from "../../../../shared/utils/logger";
 import { Button } from "../../components/Button";
 import { SettingsActionCard } from "./parts/SettingsActionCard";
+import { initConnectionsUseCase } from "@/src/web/core/useCases/connections/initConnectionsUseCase";
 
 export enum LoadingOperation {
   Export = "export",
@@ -24,7 +24,6 @@ export enum LoadingOperation {
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { initConnections } = useConnectionsStore();
   const { data: session } = useSession();
   const {
     setDashboards,
@@ -61,8 +60,9 @@ const SettingsPage: React.FC = () => {
         await Promise.all([
           setDashboards(appDatas.dashboards),
           setAllCharts(appDatas.charts),
-          initConnections(appDatas.connections),
+          initConnectionsUseCase(appDatas.connections),
         ]);
+
         toast.success(t("settings.importSuccess"));
         const firstDashboard = appDatas.dashboards[0];
         if (firstDashboard) {
@@ -79,7 +79,7 @@ const SettingsPage: React.FC = () => {
         setLoadingOperation(null);
       }
     },
-    [setDashboards, setAllCharts, initConnections, t, navigate]
+    [setDashboards, setAllCharts, t, navigate]
   );
 
   const processImport = useCallback(
@@ -127,7 +127,7 @@ const SettingsPage: React.FC = () => {
       await Promise.all([
         setDashboards([]),
         setAllCharts([]),
-        initConnections([]),
+        initConnectionsUseCase([]),
       ]);
       setSelectedDashboardId("default");
       toast.success(t("settings.resetSuccess"));
@@ -141,7 +141,6 @@ const SettingsPage: React.FC = () => {
   }, [
     setDashboards,
     setAllCharts,
-    initConnections,
     setSelectedDashboardId,
     setLoadingOperation,
     t,
