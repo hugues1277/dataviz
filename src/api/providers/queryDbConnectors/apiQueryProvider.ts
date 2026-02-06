@@ -7,11 +7,13 @@ export const apiQueryProvider: DbQueryProviderInterface = {
             throw new Error('API URL non définie');
         }
 
+        const apiToken = connection.apiToken?.replace(/^Bearer /, '');
+
         const response = await fetch(connection.apiUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                ...(connection.apiToken ? { 'Authorization': `Bearer ${connection.apiToken}` } : {})
+                ...(apiToken ? { 'Authorization': `Bearer ${apiToken}` } : {})
             },
             body: JSON.stringify({ query: query })
         });

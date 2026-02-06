@@ -1,14 +1,15 @@
 import React from "react";
 
 interface LoadingSpinnerProps {
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
 const sizeClasses = {
-  sm: "w-4 h-4 border-2",
-  md: "w-8 h-8 border-2",
-  lg: "w-12 h-12 border-4",
+  sm: "w-4 h-4 border-b-2",
+  md: "w-6 h-6 border-b-2",
+  lg: "w-8 h-8 border-b-4",
+  xl: "w-10 h-10 border-b-4",
 };
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
@@ -16,10 +17,8 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`flex items-center justify-center ${className}`}>
-      <div
-        className={`${sizeClasses[size]} border-blue-500/10 border-t-blue-500 rounded-full animate-spin`}
-      />
-    </div>
+    <div
+      className={`${className} ${sizeClasses[size]} animate-spin rounded-full border-blue-500 border-t-transparent`}
+    />
   );
 };

@@ -14,6 +14,8 @@ import { saveChart } from "@/src/web/core/useCases/charts/saveChart";
 import { deleteChart } from "@/src/web/core/useCases/charts/deleteChart";
 import { DEFAULT_CHART } from "@/src/shared/constants";
 import { useVariables } from "@/src/web/core/hooks/dashboard/useVariables";
+import { Button } from "../../components/Button";
+import PageLoading from "../../components/layout/PageLoading";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
@@ -69,14 +71,7 @@ const DashboardPage: React.FC = () => {
   }, [activeDashboard?.id, allCharts]);
 
   if (!activeDashboard || isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center h-full gap-4 text-gray-500">
-        <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs font-bold uppercase tracking-widest animate-pulse">
-          {t("dashboard.loading")}
-        </p>
-      </div>
-    );
+    return <PageLoading />;
   }
 
   return (
@@ -108,12 +103,9 @@ const DashboardPage: React.FC = () => {
             <h2 className="text-lg font-bold text-white mb-2">
               {t("dashboard.noCharts")}
             </h2>
-            <button
-              onClick={handleAddChart}
-              className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg"
-            >
+            <Button onClick={handleAddChart} variant="primary">
               {t("dashboard.addchart")}
-            </button>
+            </Button>
           </div>
         ) : (
           <ChartGrid

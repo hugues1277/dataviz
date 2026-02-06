@@ -1,11 +1,6 @@
 import React, { useRef, useState, useCallback } from "react";
-import {
-  Download,
-  Upload,
-  CheckCircle2,
-  AlertTriangle,
-  LogOut,
-} from "lucide-react";
+import { LogOut } from "lucide-react";
+import { toast } from "react-toastify";
 import { AppDatas } from "../../../../shared/types/types";
 import Header from "../../components/layout/Header";
 import PageHeader from "../../components/layout/PageHeader";
@@ -18,8 +13,9 @@ import { useNavigate } from "react-router";
 import { signOut, useSession } from "../../../providers/betterAuthWebClient";
 import logger from "../../../../shared/utils/logger";
 import { Button } from "../../components/Button";
+import { SettingsActionCard } from "./parts/SettingsActionCard";
 
-enum LoadingOperation {
+export enum LoadingOperation {
   Export = "export",
   ImportFile = "importFile",
   Reset = "reset",
@@ -28,40 +24,30 @@ enum LoadingOperation {
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { confirm, showAlert } = useDialog();
+  const { initConnections } = useConnectionsStore();
+  const { data: session } = useSession();
   const {
     setDashboards,
     setAllCharts,
     setActiveDashboard: setSelectedDashboardId,
   } = useDashboardsStore();
-  const { initConnections } = useConnectionsStore();
-  const { data: session } = useSession();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [status, setStatus] = useState<{
-    type: "success" | "error";
-    message: string;
-  } | null>(null);
   const [loadingOperation, setLoadingOperation] =
     useState<LoadingOperation | null>(null);
+  const { confirm } = useDialog();
 
   const handleExport = useCallback(async () => {
     setLoadingOperation(LoadingOperation.Export);
     try {
       await dataManagementService.exportData();
-      setStatus({ type: "success", message: t("settings.exportSuccess") });
     } catch (error: unknown) {
       logger.error("handleExport", error);
-      setStatus({ type: "error", message: t("settings.exportFailed") });
-      showAlert(
-        t("settings.exportError"),
-        error instanceof Error ? error.message : "Erreur d'exportation",
-        "danger"
-      );
+      toast.error(t("settings.exportFailed"));
     } finally {
       setLoadingOperation(null);
     }
-  }, [t, showAlert]);
+  }, [t]);
 
   const handleImport = useCallback(
     async (data: AppDatas) => {
@@ -77,7 +63,7 @@ const SettingsPage: React.FC = () => {
           setAllCharts(appDatas.charts),
           initConnections(appDatas.connections),
         ]);
-        setStatus({ type: "success", message: t("settings.importSuccess") });
+        toast.success(t("settings.importSuccess"));
         const firstDashboard = appDatas.dashboards[0];
         if (firstDashboard) {
           navigate(`/dashboards/${firstDashboard.id}`);
@@ -86,62 +72,15 @@ const SettingsPage: React.FC = () => {
         }
       } catch (error: unknown) {
         logger.error("handleImport", error);
-        setStatus({
-          type: "error",
-          message: t("settings.importError", {
-            error:
-              error instanceof Error ? error.message : "Erreur d'importation",
-          }),
-        });
-        showAlert(
-          t("settings.importErrorTitle"),
-          error instanceof Error ? error.message : "Erreur d'importation",
-          "danger"
-        );
+        const errorMessage =
+          error instanceof Error ? error.message : "Erreur d'importation";
+        toast.error(t("settings.importError"));
       } finally {
         setLoadingOperation(null);
       }
     },
-    [setDashboards, setAllCharts, initConnections, t, showAlert, navigate]
+    [setDashboards, setAllCharts, initConnections, t, navigate]
   );
-
-  const handleReset = useCallback(async () => {
-    try {
-      await dataManagementService.resetData();
-      await Promise.all([
-        setDashboards([]),
-        setAllCharts([]),
-        initConnections([]),
-      ]);
-      setSelectedDashboardId("default");
-      setStatus({ type: "success", message: t("settings.resetSuccess") });
-      navigate("/");
-    } catch (error: unknown) {
-      logger.error("handleReset", error);
-      setStatus({
-        type: "error",
-        message: t("settings.resetError", {
-          error:
-            error instanceof Error
-              ? error.message
-              : "Erreur de réinitialisation",
-        }),
-      });
-      showAlert(
-        t("settings.resetErrorTitle"),
-        error instanceof Error ? error.message : "Erreur de réinitialisation",
-        "danger"
-      );
-    }
-  }, [
-    setDashboards,
-    setAllCharts,
-    initConnections,
-    setSelectedDashboardId,
-    t,
-    showAlert,
-    navigate,
-  ]);
 
   const processImport = useCallback(
     (jsonStr: string) => {
@@ -154,13 +93,13 @@ const SettingsPage: React.FC = () => {
         });
       } catch (error: unknown) {
         logger.error("processImport", error);
-        setStatus({
-          type: "error",
-          message: t("settings.importError", {
-            error:
-              error instanceof Error ? error.message : "Erreur d'importation",
-          }),
-        });
+        const errorMessage =
+          error instanceof Error ? error.message : "Erreur d'importation";
+        toast.error(
+          t("settings.importError", {
+            error: errorMessage,
+          })
+        );
         setLoadingOperation(null);
       }
     },
@@ -180,6 +119,35 @@ const SettingsPage: React.FC = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const handleReset = useCallback(async () => {
+    try {
+      setLoadingOperation(LoadingOperation.Reset);
+
+      await dataManagementService.resetData();
+      await Promise.all([
+        setDashboards([]),
+        setAllCharts([]),
+        initConnections([]),
+      ]);
+      setSelectedDashboardId("default");
+      toast.success(t("settings.resetSuccess"));
+      navigate("/");
+    } catch (error: unknown) {
+      logger.error("handleReset", error);
+      toast.error(t("settings.resetError"));
+    } finally {
+      setLoadingOperation(null);
+    }
+  }, [
+    setDashboards,
+    setAllCharts,
+    initConnections,
+    setSelectedDashboardId,
+    setLoadingOperation,
+    t,
+    navigate,
+  ]);
+
   const handleFullResetRequest = useCallback(() => {
     confirm({
       title: t("settings.resetConfirmTitle"),
@@ -187,12 +155,10 @@ const SettingsPage: React.FC = () => {
       type: "danger",
       confirmLabel: t("settings.resetBtn"),
       onConfirm: async () => {
-        setLoadingOperation(LoadingOperation.Reset);
         await handleReset();
-        setLoadingOperation(null);
       },
     });
-  }, [confirm, t, handleReset, setLoadingOperation]);
+  }, [confirm, t, handleReset]);
 
   const handleSignOut = useCallback(async () => {
     confirm({
@@ -225,108 +191,26 @@ const SettingsPage: React.FC = () => {
             }
           />
 
-          {status && (
-            <div
-              className={`p-4 rounded-xl flex items-center justify-between border ${
-                status.type === "success"
-                  ? "bg-green-500/10 border-green-500/20 text-green-400"
-                  : "bg-red-500/10 border-red-500/20 text-red-400"
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                {status.type === "success" ? (
-                  <CheckCircle2 size={18} />
-                ) : (
-                  <AlertTriangle size={18} />
-                )}
-                <span className="text-sm font-medium">{status.message}</span>
-              </div>
-              <button
-                onClick={() => setStatus(null)}
-                className="text-xs font-bold uppercase opacity-50"
-              >
-                {t("common.ok")}
-              </button>
-            </div>
-          )}
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-blue-600/10 rounded-3xl flex items-center justify-center text-blue-500 mb-6">
-                <Download size={32} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">
-                {t("settings.export")}
-              </h3>
-              <p className="text-xs text-gray-500 mb-8">
-                {t("settings.exportDesc")}
-              </p>
-              <Button
-                onClick={handleExport}
-                disabled={loadingOperation === LoadingOperation.Export}
-                className="w-full bg-[#181b1f]"
-              >
-                {loadingOperation === LoadingOperation.Export ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                    {t("common.loading")}
-                  </>
-                ) : (
-                  t("settings.downloadJson")
-                )}
-              </Button>
-            </div>
-
-            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex flex-col items-center text-center">
-              <div className="w-16 h-16 bg-green-600/10 rounded-3xl flex items-center justify-center text-green-500 mb-6">
-                <Upload size={32} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">
-                {t("settings.import")}
-              </h3>
-              <p className="text-xs text-gray-500 mb-8">
-                {t("settings.importDesc")}
-              </p>
-
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={loadingOperation === LoadingOperation.ImportFile}
-                className="w-full bg-green-600/10 hover:bg-green-600"
-              >
-                {loadingOperation === LoadingOperation.ImportFile ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-                    {t("common.loading")}
-                  </>
-                ) : (
-                  t("settings.fileJson")
-                )}
-              </Button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept=".json"
-                className="hidden"
-              />
-            </div>
+            <SettingsActionCard
+              type="export"
+              onAction={handleExport}
+              isLoading={loadingOperation === LoadingOperation.Export}
+            />
+            <SettingsActionCard
+              type="import"
+              onAction={() => {}}
+              onFileChange={handleFileChange}
+              fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>}
+              isLoading={loadingOperation === LoadingOperation.ImportFile}
+            />
           </div>
 
-          <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-white mb-2">
-                {t("settings.resetTitle")}
-              </h3>
-              <p className="text-xs text-gray-500">{t("settings.resetDesc")}</p>
-            </div>
-            <Button
-              onClick={handleFullResetRequest}
-              disabled={loadingOperation === LoadingOperation.Reset}
-              className="hover:bg-red-600"
-            >
-              {t("settings.resetBtn")}
-            </Button>
-          </div>
+          <SettingsActionCard
+            type="reset"
+            onAction={handleFullResetRequest}
+            isLoading={loadingOperation === LoadingOperation.Reset}
+          />
         </div>
       </div>
     </div>

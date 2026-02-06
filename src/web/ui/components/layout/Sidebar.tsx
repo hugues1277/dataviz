@@ -172,7 +172,7 @@ const Sidebar: React.FC = () => {
                       } ${
                         activeDashboard?.id === dash.id &&
                         activeView === "dashboards"
-                          ? "bg-[#1a1c26] text-blue-100 border-l-2 border-blue-500"
+                          ? "bg-[#1a1c26] text-blue-100"
                           : "text-gray-500 hover:text-gray-300"
                       }`}
                     >

@@ -50,7 +50,6 @@ const resources = {
         deleteConfirmTitle: "Supprimer le tableau de bord",
         deleteConfirmDesc: "Supprimer définitivement \"{{name}}\"\u00A0?",
         cannotDeleteLast: "Conservez au moins un tableau de bord.",
-        loading: "Chargement du dashboard...",
         title: "Dashboard",
         actionImpossible: "Action impossible",
         newChart: "Nouveau graphique"
@@ -141,7 +140,7 @@ const resources = {
         apiUrlLabel: "URL de l'Endpoint API",
         apiUrlPlaceholder: "https://api.monservice.com/query",
         apiTokenLabel: "Token d'accès (Bearer)",
-        apiTokenPlaceholder: "VOTRE_TOKEN_SECRET",
+        apiTokenPlaceholder: "Token",
         apiNote: "Note: La requête sera envoyée via POST avec un corps JSON contenant { \"query\": \"...\" }."
       },
       settings: {
@@ -162,15 +161,12 @@ const resources = {
         resetBtn: "Reset complet",
         resetConfirmTitle: "Tout supprimer ?",
         resetConfirmDesc: "Cette action effacera définitivement tous vos tableaux de bord, configurations de graphiques et connexions de base de données. Vous repartirez de zéro.",
-        importSuccess: "Importation réussie.",
-        importError: "Échec de l'importation : {{error}}",
-        exportSuccess: "Exportation terminée.",
-        pageTitle: "Paramètres",
+        resetSuccess: "Réinitialisation réussie.",
+        resetError: "Erreur de réinitialisation.",
         exportFailed: "Échec de l'exportation.",
-        exportError: "Erreur d'exportation",
-        importErrorTitle: "Erreur d'importation",
-        resetError: "Erreur de réinitialisation",
-        resetErrorTitle: "Erreur de réinitialisation",
+        importSuccess: "Importation réussie.",
+        importError: "Échec de l'importation.",
+        pageTitle: "Paramètres",
         jsonPlaceholder: "{ \"dashboards\": [...], \"charts\": [...], \"connections\": [...] }"
       },
       annotations: {

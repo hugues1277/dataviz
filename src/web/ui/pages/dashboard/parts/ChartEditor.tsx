@@ -407,22 +407,20 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
         <>
           <Button
             onClick={() => fetchChartData(dateRange)}
-            disabled={isLoading}
             className="group"
-          >
-            {isLoading ? (
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin group-hover:border-white" />
-            ) : (
+            isLoading={isLoading}
+            icon={
               <Play
                 size={16}
                 className="text-blue-500 group-hover:text-white"
               />
-            )}
+            }
+          >
             {t("editor.execute")}
           </Button>
           <Button
             onClick={() => onSave(chartConfig as ChartConfig)}
-            className="bg-blue-600 hover:bg-blue-500"
+            variant="primary"
           >
             {t("common.save")}
           </Button>
