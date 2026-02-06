@@ -186,6 +186,22 @@ export const storageProvider: IStorageProvider = {
         }
     },
 
+    async updateConnection(connection: DBConnection): Promise<void> {
+        const response = await fetch(`${API_BASE}/api/connections`, {
+            method: 'PUT',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(connection),
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Session expirée, veuillez vous reconnecter');
+            }
+            throw new Error('Erreur lors de la sauvegarde de la connection');
+        }
+    },
+
     async deleteConnection(id: string): Promise<void> {
         const response = await fetch(`${API_BASE}/api/connections/${id}`, {
             method: 'DELETE',

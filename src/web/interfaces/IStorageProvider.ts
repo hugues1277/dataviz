@@ -24,6 +24,7 @@ export interface IStorageProvider {
   // Connections
   getAllConnections: () => Promise<DBConnection[]>;
   putConnection: (connection: DBConnection) => Promise<void>;
+  updateConnection: (connections: DBConnection) => Promise<void>;
   deleteConnection: (id: string) => Promise<void>;
 
   // Global

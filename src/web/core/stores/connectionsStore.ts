@@ -10,7 +10,7 @@ interface ConnectionsStore {
   connectionsMap: Record<string, DBConnection>;
   initConnections: (connectionsData: DBConnection[]) => Promise<void>;
   addConnection: (conn: DBConnection) => Promise<void>;
-  updateConnections: (connections: DBConnection[]) => Promise<void>;
+  updateConnection: (conn: DBConnection) => Promise<void>;
   deleteConnection: (id: string) => Promise<void>;
   getConnectionById: (id: string) => DBConnection | undefined;
 }
@@ -42,9 +42,11 @@ export const useConnectionsStore = create<ConnectionsStore>((set, get) => ({
     set({ connections, connectionsMap });
   },
 
-  updateConnections: async (newConnections: DBConnection[]) => {
-    const connectionsMap = createConnectionsMap(newConnections);
-    set({ connections: newConnections, connectionsMap });
+  updateConnection: async (conn: DBConnection) => {
+    await storageProvider.updateConnection(conn);
+    const connections = get().connections.map(c => c.id === conn.id ? conn : c);
+    const connectionsMap = { ...get().connectionsMap, [conn.id]: conn };
+    set({ connections, connectionsMap });
   },
 
   deleteConnection: async (id: string) => {

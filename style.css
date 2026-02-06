@@ -2,7 +2,7 @@
 
 @theme {
   --radius: 0.5rem;
-  
+
   --color-background: hsl(0 0% 100%);
   --color-foreground: hsl(0 0% 3.9%);
   --color-card: hsl(0 0% 100%);
@@ -140,4 +140,8 @@ body {
 .scrollbar-none {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+button {
+  cursor: pointer;
 }

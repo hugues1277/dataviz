@@ -1,4 +1,4 @@
-import { AnnotationConfig, ChartConfig, Dashboard } from "./types/types";
+import { AnnotationConfig, ChartConfig, Dashboard, DBConnection } from "./types/types";
 
 export const ALL_TIME_FROM = new Date("2000-01-01T00:00:00");
 export const ALL_TIME_TO = new Date("2100-12-31T23:59:00");
@@ -66,4 +66,17 @@ export const DEFAULT_ANNOTATION: AnnotationConfig = {
   value: "",
   label: "",
   color: "#ef4444",
+};
+
+export const DEFAULT_CONNECTION: DBConnection = {
+  id: crypto.randomUUID(),
+  name: "",
+  type: "postgres",
+  host: "localhost",
+  port: 5432,
+  database: "",
+  user: "postgres",
+  ssl: false,
+  apiUrl: "",
+  apiToken: "",
 };

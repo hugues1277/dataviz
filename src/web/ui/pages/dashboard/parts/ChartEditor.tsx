@@ -51,6 +51,7 @@ import {
   DEFAULT_CHART_QUERY,
 } from "../../../../../shared/constants";
 import { TableChartView } from "../charts/views/TableChartView";
+import { Button } from "../../../components/Button";
 
 const getFormatOptions = (t: any) =>
   [
@@ -402,36 +403,29 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
       title={t("editor.subtitle")}
       icon={<Code2 size={20} />}
       onClose={onClose}
-      header={
-        <button
-          onClick={() => fetchChartData(dateRange)}
-          disabled={isLoading}
-          className="px-4 py-2 bg-[#181b1f] border border-[#2c3235] hover:border-blue-500 text-gray-300 rounded-xl transition-all group flex items-center gap-2"
-        >
-          {isLoading ? (
-            <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <Play size={16} className="text-blue-500 group-hover:scale-110" />
-          )}
-          <span className="hidden sm:inline text-[10px] font-black uppercase tracking-widest">
-            {t("editor.execute")}
-          </span>
-        </button>
-      }
       actions={
         <>
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 lg:px-6 lg:py-2 text-gray-500 hover:text-white text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] transition-colors"
+          <Button
+            onClick={() => fetchChartData(dateRange)}
+            disabled={isLoading}
+            className="group"
           >
-            {t("common.cancel")}
-          </button>
-          <button
+            {isLoading ? (
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin group-hover:border-white" />
+            ) : (
+              <Play
+                size={16}
+                className="text-blue-500 group-hover:text-white"
+              />
+            )}
+            {t("editor.execute")}
+          </Button>
+          <Button
             onClick={() => onSave(chartConfig as ChartConfig)}
-            className="px-4 py-2 lg:px-6 lg:py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl lg:rounded-2xl text-[9px] lg:text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20 active:scale-95 transition-all"
+            className="bg-blue-600 hover:bg-blue-500"
           >
             {t("common.save")}
-          </button>
+          </Button>
         </>
       }
     >

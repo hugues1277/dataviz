@@ -26,12 +26,35 @@ export const encryptionService = {
     return Buffer.concat([iv, tag, encrypted]).toString('base64');
   },
 
+  /**
+   * Vérifie si une chaîne est chiffrée (format base64 avec IV + tag + données)
+   */
+  isEncrypted(payload: string): boolean {
+    try {
+      const buf = Buffer.from(payload, 'base64');
+      // Format: IV (12 bytes) + tag (16 bytes) + données (au moins 1 byte) = minimum 29 bytes
+      return buf.length >= 29;
+    } catch {
+      return false;
+    }
+  },
+
   decrypt(payload: string): string {
     const buf = Buffer.from(payload, 'base64');
+
+    // Vérifier que le buffer a la taille minimale requise
+    if (buf.length < 29) {
+      throw new Error('Invalid encrypted payload: payload too short');
+    }
 
     const iv = buf.subarray(0, 12);
     const tag = buf.subarray(12, 28);
     const data = buf.subarray(28);
+
+    // Vérifier que le tag n'est pas vide
+    if (tag.length === 0) {
+      throw new Error('Invalid encrypted payload: authentication tag is empty');
+    }
 
     const decipher = createDecipheriv('aes-256-gcm', this.KEY, iv);
     decipher.setAuthTag(tag);

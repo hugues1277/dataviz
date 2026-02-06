@@ -104,6 +104,12 @@ export function apiPlugin(): Plugin {
               const connection = JSON.parse(body);
               return await connectionRepository.create(connection);
             },
+          'PUT':
+            async () => {
+              const body = await readBody(req);
+              const connection = JSON.parse(body);
+              return await connectionRepository.update(connection);
+            },
           'DELETE':
             async () => {
               const connectionId = getUrlParam(req, res, 1);

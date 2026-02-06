@@ -2,13 +2,13 @@ import React, { useRef, useState, useCallback } from "react";
 import {
   Download,
   Upload,
-  ClipboardPaste,
-  Send,
   CheckCircle2,
   AlertTriangle,
+  LogOut,
 } from "lucide-react";
 import { AppDatas } from "../../../../shared/types/types";
 import Header from "../../components/layout/Header";
+import PageHeader from "../../components/layout/PageHeader";
 import { useDialog } from "../../components/modal/DialogContext";
 import { useTranslation } from "react-i18next";
 import { dataManagementService } from "../../../core/services/dataManagementService";
@@ -17,6 +17,13 @@ import { useConnectionsStore } from "../../../core/stores/connectionsStore";
 import { useNavigate } from "react-router";
 import { signOut, useSession } from "../../../providers/betterAuthWebClient";
 import logger from "../../../../shared/utils/logger";
+import { Button } from "../../components/Button";
+
+enum LoadingOperation {
+  Export = "export",
+  ImportFile = "importFile",
+  Reset = "reset",
+}
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,10 +42,11 @@ const SettingsPage: React.FC = () => {
     type: "success" | "error";
     message: string;
   } | null>(null);
-  const [showPaste, setShowPaste] = useState(false);
-  const [pastedJson, setPastedJson] = useState("");
+  const [loadingOperation, setLoadingOperation] =
+    useState<LoadingOperation | null>(null);
 
   const handleExport = useCallback(async () => {
+    setLoadingOperation(LoadingOperation.Export);
     try {
       await dataManagementService.exportData();
       setStatus({ type: "success", message: t("settings.exportSuccess") });
@@ -50,11 +58,14 @@ const SettingsPage: React.FC = () => {
         error instanceof Error ? error.message : "Erreur d'exportation",
         "danger"
       );
+    } finally {
+      setLoadingOperation(null);
     }
   }, [t, showAlert]);
 
   const handleImport = useCallback(
     async (data: AppDatas) => {
+      setLoadingOperation(LoadingOperation.ImportFile);
       try {
         const appDatas = await dataManagementService.importData({
           dashboards: data.dashboards,
@@ -87,6 +98,8 @@ const SettingsPage: React.FC = () => {
           error instanceof Error ? error.message : "Erreur d'importation",
           "danger"
         );
+      } finally {
+        setLoadingOperation(null);
       }
     },
     [setDashboards, setAllCharts, initConnections, t, showAlert, navigate]
@@ -148,6 +161,7 @@ const SettingsPage: React.FC = () => {
               error instanceof Error ? error.message : "Erreur d'importation",
           }),
         });
+        setLoadingOperation(null);
       }
     },
     [handleImport, t]
@@ -172,11 +186,13 @@ const SettingsPage: React.FC = () => {
       description: t("settings.resetConfirmDesc"),
       type: "danger",
       confirmLabel: t("settings.resetBtn"),
-      onConfirm: () => {
-        handleReset();
+      onConfirm: async () => {
+        setLoadingOperation(LoadingOperation.Reset);
+        await handleReset();
+        setLoadingOperation(null);
       },
     });
-  }, [confirm, t, handleReset]);
+  }, [confirm, t, handleReset, setLoadingOperation]);
 
   const handleSignOut = useCallback(async () => {
     confirm({
@@ -193,28 +209,21 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <Header
-        name={t("settings.pageTitle")}
-        rightContent={
-          session?.user && (
-            <button
-              onClick={handleSignOut}
-              className="px-6 py-2 hover:bg-blue-600 text-white hover:text-white border border-white-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
-            >
-              {t("common.logout")}
-            </button>
-          )
-        }
-      />
+      <Header name={t("settings.pageTitle")} />
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin">
         <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold text-white tracking-tight">
-              {t("settings.title")}
-            </h2>
-            <p className="text-gray-500 text-sm">{t("settings.desc")}</p>
-          </div>
+          <PageHeader
+            title={t("settings.title")}
+            description={t("settings.desc")}
+            actions={
+              session?.user && (
+                <Button onClick={handleSignOut}>
+                  <LogOut size={16} /> {t("common.logout")}
+                </Button>
+              )
+            }
+          />
 
           {status && (
             <div
@@ -252,12 +261,20 @@ const SettingsPage: React.FC = () => {
               <p className="text-xs text-gray-500 mb-8">
                 {t("settings.exportDesc")}
               </p>
-              <button
+              <Button
                 onClick={handleExport}
-                className="w-full py-3 bg-[#181b1f] border border-[#2c3235] hover:border-blue-500 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                disabled={loadingOperation === LoadingOperation.Export}
+                className="w-full bg-[#181b1f]"
               >
-                {t("settings.downloadJson")}
-              </button>
+                {loadingOperation === LoadingOperation.Export ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                    {t("common.loading")}
+                  </>
+                ) : (
+                  t("settings.downloadJson")
+                )}
+              </Button>
             </div>
 
             <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex flex-col items-center text-center">
@@ -271,23 +288,20 @@ const SettingsPage: React.FC = () => {
                 {t("settings.importDesc")}
               </p>
 
-              <div className="w-full flex flex-col gap-2">
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-3 bg-green-600/10 border border-green-500/20 hover:bg-green-600 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
-                >
-                  {t("settings.fileJson")}
-                </button>
-                <button
-                  onClick={() => setShowPaste(!showPaste)}
-                  className="w-full py-3 bg-[#181b1f] border border-[#2c3235] hover:bg-gray-800 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
-                >
-                  <ClipboardPaste size={12} />{" "}
-                  {showPaste
-                    ? t("settings.closeEditor")
-                    : t("settings.pasteJson")}
-                </button>
-              </div>
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loadingOperation === LoadingOperation.ImportFile}
+                className="w-full bg-green-600/10 hover:bg-green-600"
+              >
+                {loadingOperation === LoadingOperation.ImportFile ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+                    {t("common.loading")}
+                  </>
+                ) : (
+                  t("settings.fileJson")
+                )}
+              </Button>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -298,43 +312,20 @@ const SettingsPage: React.FC = () => {
             </div>
           </div>
 
-          {showPaste && (
-            <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 animate-in slide-in-from-bottom-4">
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-500 mb-4">
-                {t("settings.jsonLabel")}
-              </label>
-              <textarea
-                className="w-full h-48 bg-[#0b0e14] border border-[#1f2127] rounded-xl p-4 font-mono text-xs text-blue-300 outline-none focus:ring-1 focus:ring-blue-500 mb-4"
-                placeholder={t("settings.jsonPlaceholder")}
-                value={pastedJson}
-                onChange={(e) => setPastedJson(e.target.value)}
-              />
-              <button
-                onClick={() => {
-                  if (pastedJson.trim()) processImport(pastedJson);
-                }}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-3 transition-all"
-              >
-                <Send size={16} /> {t("settings.applyImport")}
-              </button>
-            </div>
-          )}
-
-          <div className="bg-red-500/5 border border-red-500/10 rounded-4xl p-8 flex items-center justify-between">
+          <div className="bg-[#111217] border border-[#1f2127] rounded-4xl p-8 flex items-center justify-between">
             <div>
-              <h3 className="font-bold text-red-400">
+              <h3 className="text-lg font-bold text-white mb-2">
                 {t("settings.resetTitle")}
               </h3>
-              <p className="text-xs text-red-500/60 font-medium">
-                {t("settings.resetDesc")}
-              </p>
+              <p className="text-xs text-gray-500">{t("settings.resetDesc")}</p>
             </div>
-            <button
+            <Button
               onClick={handleFullResetRequest}
-              className="px-6 py-3 bg-red-600/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all"
+              disabled={loadingOperation === LoadingOperation.Reset}
+              className="hover:bg-red-600"
             >
               {t("settings.resetBtn")}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

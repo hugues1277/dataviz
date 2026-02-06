@@ -3,7 +3,7 @@ import { encryptionService } from '../core/services/encryptionService';
 import type { DBConnection, DBConnectionConfig } from '../../shared/types/types';
 import ConnectionRepositoryInterface from '../interfaces/connectionRepositoryInterface';
 
-const SENSITIVE_FIELDS: (keyof DBConnectionConfig)[] = ['user', 'password', 'apiToken'];
+const SENSITIVE_FIELDS: (keyof DBConnectionConfig)[] = ['password', 'apiToken'];
 
 /**
  * Repositories pour les connections
@@ -39,6 +39,8 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
                 port: row.config.port,
                 database: row.config.database,
                 apiUrl: row.config.apiUrl,
+                user: row.config.user,
+                ssl: row.config.ssl,
                 ...(fullConfig || decrypt ? row.config : {})
             }));
 
@@ -125,7 +127,24 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
 
     async update(connection: DBConnection, { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
         const { id, name, type, ...config } = connection;
+
+        // get the existing connection (sans déchiffrement pour éviter les problèmes)
+        const existingConnection = await this.get(id, { decrypt: false });
+
+        // if password or apiToken is not set, use the existing connection (déjà chiffrée)
+        if (existingConnection !== null) {
+            const existingConfig = existingConnection as DBConnectionConfig;
+            if ((config.password ?? "") === "") {
+                config.password = existingConfig.password as string;
+            }
+            if ((config.apiToken ?? "") === "") {
+                config.apiToken = existingConfig.apiToken as string;
+            }
+        }
+
+        // Toujours chiffrer les champs sensibles avant stockage si encrypt est true
         const encryptedConfig = encrypt ? await this.encryptConnection(config) : config;
+
         const pool = databaseProvider.createPool();
         try {
             await pool.query(`UPDATE connections SET name = $1, type = $2, config = $3 WHERE id = $4`, [name, type, JSON.stringify(encryptedConfig), id]);
@@ -156,10 +175,15 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
         let encrypted: DBConnectionConfig = { ...connection };
         for (const field of SENSITIVE_FIELDS) {
             if (encrypted[field]) {
-                encrypted = {
-                    ...encrypted,
-                    [field]: await encryptionService.encrypt(encrypted[field] as string)
-                };
+                const value = encrypted[field] as string;
+                // Ne chiffrer que si la valeur n'est pas déjà chiffrée
+                if (!encryptionService.isEncrypted(value)) {
+                    encrypted = {
+                        ...encrypted,
+                        [field]: await encryptionService.encrypt(value)
+                    };
+                }
+                // Sinon, garder la valeur telle quelle (déjà chiffrée)
             }
         }
         return encrypted;
@@ -169,10 +193,15 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
         let decrypted: DBConnectionConfig = { ...connection };
         for (const field of SENSITIVE_FIELDS) {
             if (decrypted[field]) {
-                decrypted = {
-                    ...decrypted,
-                    [field]: await encryptionService.decrypt(decrypted[field] as string)
-                };
+                const value = decrypted[field] as string;
+                // Ne déchiffrer que si la valeur est réellement chiffrée
+                if (encryptionService.isEncrypted(value)) {
+                    decrypted = {
+                        ...decrypted,
+                        [field]: await encryptionService.decrypt(value)
+                    };
+                }
+                // Sinon, garder la valeur telle quelle (déjà déchiffrée ou non chiffrée)
             }
         }
         return decrypted;
