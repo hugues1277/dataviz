@@ -163,6 +163,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
             <Chart
               chartId={chart.id}
               type={chart.type}
+              version={chart.version}
               rows={data.rows}
               columns={data.columns}
               xAxisKey={chart.xAxisKey}

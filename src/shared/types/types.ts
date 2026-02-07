@@ -28,9 +28,15 @@ export const VARIABLE_TYPES = {
   BOOLEAN: 'boolean',
 } as const;
 
+export const CHART_VERSION = {
+  BAR_CLASSIC: 'barClassic',
+  BAR_STACKED: 'barStacked',
+} as const;
+
 
 export type ChartType = (typeof CHART_TYPES)[keyof typeof CHART_TYPES];
 export type VariableType = (typeof VARIABLE_TYPES)[keyof typeof VARIABLE_TYPES];
+export type ChartVersionType = (typeof CHART_VERSION)[keyof typeof CHART_VERSION];
 export type XAxisFormat = 'string' | 'date' | 'datetime' | 'time' | 'int';
 export type ConnectionType = 'postgres' | 'api';
 
@@ -88,6 +94,7 @@ export interface ChartConfig {
   query: string;
   connectionId: string;
   type: ChartType;
+  version?: ChartVersionType;
   xAxisKey?: string;
   yAxisKeys?: string[];
   xAxisFormat?: XAxisFormat;

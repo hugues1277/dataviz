@@ -68,6 +68,7 @@ export const ChartPreviewContent: React.FC<ChartPreviewContentProps> = ({
           <div className="flex-1 min-h-0 min-w-0">
             <Chart
               type={chartConfig.type}
+              version={chartConfig.version}
               rows={data.rows}
               columns={data.columns}
               xAxisKey={chartConfig.xAxisKey}

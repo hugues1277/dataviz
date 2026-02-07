@@ -1,5 +1,6 @@
 
 import i18n from 'i18next';
+import { version } from 'os';
 import { initReactI18next } from 'react-i18next';
 
 const resources = {
@@ -45,14 +46,15 @@ const resources = {
       },
       dashboard: {
         noCharts: "Ajouter mon premier graphique",
+        noConnections: "Ajouter ma première connexion pour commencer à créer des graphiques",
         noChartsDesc: "Commencez à visualiser vos données SQL en ajoutant votre premier graphique.",
-        addchart: "Ajouter un graphique",
+        newChart: "Nouveau graphique",
+        addConnection: "Nouvelle connexion",
         deleteConfirmTitle: "Supprimer le tableau de bord",
         deleteConfirmDesc: "Supprimer définitivement \"{{name}}\"\u00A0?",
         cannotDeleteLast: "Conservez au moins un tableau de bord.",
         title: "Dashboard",
         actionImpossible: "Action impossible",
-        newChart: "Nouveau graphique"
       },
       chart: {
         noData: "Aucune donnée",
@@ -73,6 +75,11 @@ const resources = {
         chartTitle: "Titre du chart",
         dataSource: "Source de données",
         chartType: "Type d'affichage",
+        version: "Version",
+        versions: {
+          barClassic: "Classic",
+          barStacked: "Commulés",
+        },
         mapping: "Mapping",
         xAxisLabel: "Axe X (Colonne)",
         xAxisTitle: "Titre Axe X",

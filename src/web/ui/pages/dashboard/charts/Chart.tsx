@@ -4,6 +4,7 @@ import {
   XAxisFormat,
   AnnotationConfig,
   CHART_TYPES,
+  ChartVersionType,
 } from "../../../../../shared/types/types";
 import { EmptyState } from "../../../components/widget/EmptyState";
 import { useTranslation } from "react-i18next";
@@ -26,6 +27,7 @@ import { BaseChartViewProps } from "./components/ChartBaseElements";
 interface ChartProps {
   chartId?: string;
   type: ChartType;
+  version?: ChartVersionType;
   rows: any[];
   columns: string[];
   xAxisKey?: string;
@@ -43,6 +45,7 @@ interface ChartProps {
 const Chart: React.FC<ChartProps> = ({
   chartId,
   type,
+  version,
   rows,
   columns,
   xAxisKey,
@@ -81,6 +84,7 @@ const Chart: React.FC<ChartProps> = ({
     yAxisKeys,
     xAxisFormat,
     yAxisFormats,
+    version,
     rotateXLabels,
     xAxisTitle,
     yAxisTitle,

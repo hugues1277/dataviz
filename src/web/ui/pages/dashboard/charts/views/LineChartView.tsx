@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import { CHART_COLORS } from "../../../../../../shared/constants";
 import {
   BaseChartViewProps,
   ChartBaseElements,
 } from "../components/ChartBaseElements";
+import { getHeightForRotatedXAxis } from "../utils/chartUtils";
 
 export const LineChartView: React.FC<BaseChartViewProps> = ({
   rows,
@@ -38,6 +39,7 @@ export const LineChartView: React.FC<BaseChartViewProps> = ({
             xAxisKey={xAxisKey}
             xAxisFormat={xAxisFormat}
             rotateXLabels={rotateXLabels}
+            firstFiveXLabels={rows.slice(0, 5).map((row) => row[xAxisKey])}
             xAxisTitle={xAxisTitle}
             yAxisFormat={yAxisFormats[yAxisKeys[0]]}
             yAxisTitle={yAxisTitle}

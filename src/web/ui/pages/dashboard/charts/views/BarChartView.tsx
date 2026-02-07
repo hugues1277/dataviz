@@ -5,6 +5,9 @@ import {
   BaseChartViewProps,
   ChartBaseElements,
 } from "../components/ChartBaseElements";
+import { CHART_VERSION } from "../../../../../../shared/types/types";
+
+const VERSIONS = [CHART_VERSION.BAR_CLASSIC, CHART_VERSION.BAR_STACKED];
 
 export const BarChartView: React.FC<BaseChartViewProps> = ({
   rows,
@@ -16,6 +19,7 @@ export const BarChartView: React.FC<BaseChartViewProps> = ({
   xAxisTitle,
   yAxisTitle,
   showLegend,
+  version,
   annotations = [],
   hiddenKeys = {},
   onLegendToggle,
@@ -38,6 +42,7 @@ export const BarChartView: React.FC<BaseChartViewProps> = ({
             xAxisKey={xAxisKey}
             xAxisFormat={xAxisFormat}
             rotateXLabels={rotateXLabels}
+            firstFiveXLabels={rows.slice(0, 5).map((row) => row[xAxisKey])}
             xAxisTitle={xAxisTitle}
             yAxisFormat={yAxisFormats[yAxisKeys[0]]}
             yAxisTitle={yAxisTitle}
@@ -52,9 +57,14 @@ export const BarChartView: React.FC<BaseChartViewProps> = ({
           {yAxisKeys.map((key: string, i: number) => (
             <Bar
               key={key}
+              stackId={
+                version === CHART_VERSION.BAR_STACKED ? "group" : undefined
+              }
               dataKey={key}
               fill={CHART_COLORS[i % CHART_COLORS.length]}
-              radius={[4, 4, 0, 0]}
+              radius={
+                version === CHART_VERSION.BAR_STACKED ? undefined : [4, 4, 0, 0]
+              }
               animationDuration={1000}
               hide={hiddenKeys[key]}
             />

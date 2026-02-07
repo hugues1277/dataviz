@@ -5,7 +5,10 @@ import { ChartYAxis } from "./ChartYAxis";
 import { ChartAnnotations } from "./ChartAnnotations";
 import { formatValue, customTooltipStyle } from "../utils/chartUtils";
 import { ChartLegend } from "./ChartLegend";
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import {
+  ChartVersionType,
+  XAxisFormat,
+} from "../../../../../../shared/types/types";
 import { AnnotationConfig } from "../../../../../../shared/types/types";
 
 export interface BaseChartViewProps {
@@ -18,6 +21,7 @@ export interface BaseChartViewProps {
   xAxisTitle: string;
   yAxisTitle: string;
   showLegend: boolean;
+  version?: ChartVersionType;
   annotations?: AnnotationConfig[];
   hiddenKeys?: Record<string, boolean>;
   onLegendToggle?: (key: string) => void;
@@ -30,6 +34,7 @@ type ChartBaseElementsProps = {
   xAxisFormat: XAxisFormat;
   yAxisFormat: XAxisFormat;
   rotateXLabels?: boolean;
+  firstFiveXLabels?: string[];
   xAxisTitle: string;
   yAxisTitle: string;
   showLegend?: boolean;
@@ -44,6 +49,7 @@ export const ChartBaseElements: React.FC<ChartBaseElementsProps> = ({
   xAxisKey,
   xAxisFormat,
   rotateXLabels,
+  firstFiveXLabels,
   xAxisTitle,
   yAxisFormat,
   yAxisTitle,
@@ -62,6 +68,7 @@ export const ChartBaseElements: React.FC<ChartBaseElementsProps> = ({
         dataKey={xAxisKey}
         xAxisFormat={xAxisFormat}
         rotateXLabels={rotateXLabels}
+        firstFiveXLabels={firstFiveXLabels}
         xAxisTitle={xAxisTitle}
         fontSize={10}
         onAxisClick={onXAxisClick}

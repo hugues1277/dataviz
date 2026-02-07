@@ -64,7 +64,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className="w-auto p-0 border-[#2c3235] bg-[#181b1f] z-[250]"
+        className="w-auto p-0 border-[#2c3235] bg-[#181b1f] z-250"
         align="start"
       >
         <Calendar
@@ -211,7 +211,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         </PopoverTrigger>
         <PopoverContent
           align="end"
-          className="p-3 sm:p-3 w-[calc(100vw-2rem)] sm:w-auto border-[#2c3235] bg-[#181b1f] rounded-xl shadow-2xl z-[250]"
+          className="p-3 sm:p-3 w-[calc(100vw-2rem)] sm:w-auto border-[#2c3235] bg-[#181b1f] rounded-xl shadow-2xl z-250"
         >
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-3">
             {/* Raccourcis - Mobile: 4+4 en wrap, Desktop: vertical compact */}

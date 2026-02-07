@@ -6,6 +6,7 @@ import {
   Dashboard,
   DateRange,
   CHART_TYPES,
+  CHART_VERSION,
 } from "../../../../../shared/types/types";
 import {
   Play,
@@ -112,7 +113,7 @@ const ColumnSelector: React.FC<ColumnSelectorProps> = ({
   const { t } = useTranslation();
   return (
     <div className="space-y-1.5">
-      <label className="text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
+      <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
         {label}
       </label>
       <div
@@ -362,6 +363,7 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
         value: CHART_TYPES.BAR,
         label: t("editor.types.bar"),
         icon: <BarChart size={14} />,
+        version: [CHART_VERSION.BAR_CLASSIC, CHART_VERSION.BAR_STACKED],
       },
       {
         value: CHART_TYPES.AREA,
@@ -395,6 +397,11 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
       },
     ],
     [t]
+  );
+
+  const selectedType = useMemo(
+    () => types.find((t) => t.value === chartConfig.type),
+    [chartConfig.type, types]
   );
 
   return (
@@ -475,7 +482,7 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
             </h3>
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
+                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
                   {t("editor.chartTitle")}
                 </label>
                 <input
@@ -491,7 +498,7 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
+                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
                   {t("editor.dataSource")}
                 </label>
                 <div className="relative">
@@ -518,7 +525,7 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
+                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
                   {t("editor.chartType")}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -540,6 +547,36 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
                 </div>
               </div>
             </div>
+
+            {selectedType?.version && (
+              <div className="space-y-1.5">
+                <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
+                  {t("editor.version")}
+                </label>
+                <div className="flex gap-2">
+                  {selectedType.version.map((version, index) => (
+                    <button
+                      key={version}
+                      onClick={() =>
+                        setChartConfig((prev) => ({
+                          ...prev,
+                          type: selectedType.value,
+                          version: version,
+                        }))
+                      }
+                      className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-[10px] font-bold transition-all border ${
+                        chartConfig.version === version ||
+                        (index === 0 && !chartConfig.version)
+                          ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/20"
+                          : "bg-[#181b1f] border-[#2c3235] text-gray-500 hover:text-gray-300"
+                      }`}
+                    >
+                      {t(`editor.versions.${version}`)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </section>
 
           <section className="space-y-4">
@@ -551,7 +588,7 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
               <div className="space-y-3">
                 {isLineOrBar && (
                   <div className="space-y-1.5">
-                    <label className="text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
+                    <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
                       {t("editor.xAxisTitle")}
                     </label>
                     <input
@@ -599,14 +636,14 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
                         isPie ? t("editor.pieLabels") : t("editor.xAxisLabel")
                       }
                       formatOptions={getFormatOptions(t)}
-                      height={200}
+                      height={300}
                     />
                   </>
                 )}
 
                 {isLineOrBar && (
                   <div className="space-y-1.5">
-                    <label className="text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
+                    <label className="block text-[9px] text-gray-500 font-bold uppercase tracking-widest ml-1">
                       {t("editor.yAxisTitle")}
                     </label>
                     <input

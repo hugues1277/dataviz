@@ -3,7 +3,6 @@ import { ChartConfig } from "../../../../shared/types/types";
 import ChartEditor from "./parts/ChartEditor";
 import VariablesPicker from "./widgets/VariablesPicker";
 import ChartGrid from "./parts/ChartGrid";
-import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useDateRangeStore } from "../../../core/stores/useDateRangeStore";
 import ChartPreview from "./parts/ChartPreview";
@@ -14,8 +13,8 @@ import { saveChartUseCase } from "@/src/web/core/useCases/charts/saveChartUseCas
 import { deleteChartUseCase } from "@/src/web/core/useCases/charts/deleteChartUseCase";
 import { DEFAULT_CHART } from "@/src/shared/constants";
 import { useVariables } from "@/src/web/core/hooks/dashboard/useVariables";
-import { Button } from "../../components/Button";
 import PageLoading from "../../components/layout/PageLoading";
+import EmptyDashboardState from "./parts/EmptyDashboardState";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
@@ -96,17 +95,7 @@ const DashboardPage: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto p-0 md:p-2 md:pt-0 scrollbar-thin relative bg-[#0b0e14]">
         {charts.length === 0 && !editingChart ? (
-          <div className="flex flex-col gap-5 items-center justify-center h-[60vh] text-center p-8">
-            <div className="w-16 h-16 bg-[#181b1f] rounded-full flex items-center justify-center border border-[#2c3235]">
-              <Plus size={24} className="text-gray-600" />
-            </div>
-            <h2 className="text-lg font-bold text-white mb-2">
-              {t("dashboard.noCharts")}
-            </h2>
-            <Button onClick={handleAddChart} variant="primary">
-              {t("dashboard.addchart")}
-            </Button>
-          </div>
+          <EmptyDashboardState onAddChart={handleAddChart} />
         ) : (
           <ChartGrid
             charts={charts}

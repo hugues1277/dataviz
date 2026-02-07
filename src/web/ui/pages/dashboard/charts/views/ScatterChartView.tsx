@@ -39,6 +39,7 @@ export const ScatterChartView: React.FC<BaseChartViewProps> = ({
             xAxisKey={xAxisKey}
             xAxisFormat={xAxisFormat}
             rotateXLabels={rotateXLabels}
+            firstFiveXLabels={rows.slice(0, 5).map((row) => row[xAxisKey])}
             xAxisTitle={xAxisTitle}
             yAxisFormat={yAxisFormats[yAxisKeys[0]]}
             yAxisTitle={yAxisTitle}

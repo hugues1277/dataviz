@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { XAxis } from "recharts";
 import { XAxisFormat } from "../../../../../../shared/types/types";
-import { formatValue } from "../utils/chartUtils";
+import { formatValue, getHeightForRotatedXAxis } from "../utils/chartUtils";
 
 interface ChartXAxisProps {
   dataKey: string;
   xAxisFormat?: XAxisFormat;
   rotateXLabels?: boolean;
   xAxisTitle?: string;
+  firstFiveXLabels?: string[];
   fontSize?: number;
   onAxisClick?: (value: string) => void;
 }
@@ -17,9 +18,18 @@ export const ChartXAxis: React.FC<ChartXAxisProps> = ({
   xAxisFormat,
   rotateXLabels,
   xAxisTitle,
+  firstFiveXLabels,
   fontSize = 8,
   onAxisClick,
 }) => {
+  const xLableHeight = useMemo(
+    () =>
+      getHeightForRotatedXAxis(
+        firstFiveXLabels?.map((label) => formatValue(label, xAxisFormat))
+      ),
+    [firstFiveXLabels, xAxisFormat]
+  );
+
   return (
     <XAxis
       dataKey={dataKey}
@@ -29,7 +39,11 @@ export const ChartXAxis: React.FC<ChartXAxisProps> = ({
       axisLine={false}
       tickFormatter={(val: any) => formatValue(val, xAxisFormat)}
       {...(rotateXLabels
-        ? { angle: -45, textAnchor: "end" as const, height: 45 }
+        ? {
+            angle: -45,
+            tick: { textAnchor: "end" } as const,
+            height: xLableHeight ?? 45,
+          }
         : {})}
       onClick={(x: any) => onAxisClick?.(x.value)}
       label={
