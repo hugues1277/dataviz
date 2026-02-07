@@ -83,7 +83,7 @@ export const SettingsActionCard: React.FC<SettingsActionCardProps> = ({
 
   if (config.layout === "horizontal") {
     return (
-      <div className="bg-[#111217] border border-[#1f2127] rounded-3xl p-6 flex items-center justify-between hover:border-blue-500/50 transition-all shadow-lg relative overflow-hidden">
+      <div className="bg-[#111217] border border-[#1f2127] rounded-3xl p-6 flex items-center justify-between hover:border-blue-500/50 transition-all shadow-lg relative overflow-hidden select-none">
         <div>
           <h3 className="text-lg font-bold text-white mb-2">
             {t(config.titleKey)}
@@ -102,7 +102,7 @@ export const SettingsActionCard: React.FC<SettingsActionCardProps> = ({
   }
 
   return (
-    <div className="bg-[#111217] border border-[#1f2127] rounded-3xl p-6 flex flex-col items-center text-center hover:border-blue-500/50 transition-all shadow-lg relative overflow-hidden">
+    <div className="bg-[#111217] border border-[#1f2127] rounded-3xl p-6 flex flex-col items-center text-center hover:border-blue-500/50 transition-all shadow-lg relative overflow-hidden select-none">
       {config.showIcon && (
         <div
           className={`w-16 h-16 ${config.iconBgColor} rounded-3xl flex items-center justify-center ${config.iconColor} mb-6`}

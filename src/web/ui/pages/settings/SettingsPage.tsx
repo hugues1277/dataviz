@@ -1,19 +1,16 @@
 import React, { useRef, useState, useCallback } from "react";
 import { LogOut } from "lucide-react";
-import { toast } from "react-toastify";
-import { AppDatas } from "../../../../shared/types/types";
 import Header from "../../components/layout/Header";
 import PageHeader from "../../components/layout/PageHeader";
 import { useDialog } from "../../components/modal/DialogContext";
 import { useTranslation } from "react-i18next";
-import { dataManagementService } from "../../../core/services/dataManagementService";
-import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
 import { useNavigate } from "react-router";
 import { signOut, useSession } from "../../../providers/betterAuthWebClient";
-import logger from "../../../../shared/utils/logger";
 import { Button } from "../../components/Button";
 import { SettingsActionCard } from "./parts/SettingsActionCard";
-import { initConnectionsUseCase } from "@/src/web/core/useCases/connections/initConnectionsUseCase";
+import { exportDataUseCase } from "../../../core/useCases/dataManagement/exportDataUseCase";
+import { importDataUseCase } from "../../../core/useCases/dataManagement/importDataUseCase";
+import { resetDataUseCase } from "../../../core/useCases/dataManagement/resetDataUseCase";
 
 export enum LoadingOperation {
   Export = "export",
@@ -25,11 +22,6 @@ const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { data: session } = useSession();
-  const {
-    setDashboards,
-    setAllCharts,
-    setActiveDashboard: setSelectedDashboardId,
-  } = useDashboardsStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loadingOperation, setLoadingOperation] =
@@ -38,72 +30,26 @@ const SettingsPage: React.FC = () => {
 
   const handleExport = useCallback(async () => {
     setLoadingOperation(LoadingOperation.Export);
-    try {
-      await dataManagementService.exportData();
-    } catch (error: unknown) {
-      logger.error("handleExport", error);
-      toast.error(t("settings.exportFailed"));
-    } finally {
-      setLoadingOperation(null);
-    }
+    await exportDataUseCase();
+    setLoadingOperation(null);
   }, [t]);
 
   const handleImport = useCallback(
-    async (data: AppDatas) => {
+    async (jsonStr: string) => {
       setLoadingOperation(LoadingOperation.ImportFile);
-      try {
-        const appDatas = await dataManagementService.importData({
-          dashboards: data.dashboards,
-          charts: data.charts,
-          connections: data.connections,
-        });
-        await Promise.all([
-          setDashboards(appDatas.dashboards),
-          setAllCharts(appDatas.charts),
-          initConnectionsUseCase(appDatas.connections),
-        ]);
+      const data = JSON.parse(jsonStr);
+      const appDatas = await importDataUseCase({
+        dashboards: data.dashboards,
+        charts: data.charts,
+        connections: data.connections,
+      });
+      setLoadingOperation(null);
 
-        toast.success(t("settings.importSuccess"));
-        const firstDashboard = appDatas.dashboards[0];
-        if (firstDashboard) {
-          navigate(`/dashboards/${firstDashboard.id}`);
-        } else {
-          navigate("/");
-        }
-      } catch (error: unknown) {
-        logger.error("handleImport", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Erreur d'importation";
-        toast.error(t("settings.importError"));
-      } finally {
-        setLoadingOperation(null);
+      if (appDatas && appDatas.dashboards.length > 0) {
+        navigate(`/dashboards/${appDatas.dashboards[0].id}`);
       }
     },
-    [setDashboards, setAllCharts, t, navigate]
-  );
-
-  const processImport = useCallback(
-    (jsonStr: string) => {
-      try {
-        const data = JSON.parse(jsonStr);
-        handleImport({
-          dashboards: data.dashboards,
-          charts: data.charts,
-          connections: data.connections,
-        });
-      } catch (error: unknown) {
-        logger.error("processImport", error);
-        const errorMessage =
-          error instanceof Error ? error.message : "Erreur d'importation";
-        toast.error(
-          t("settings.importError", {
-            error: errorMessage,
-          })
-        );
-        setLoadingOperation(null);
-      }
-    },
-    [handleImport, t]
+    [navigate]
   );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,39 +59,21 @@ const SettingsPage: React.FC = () => {
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
-      processImport(content);
+      handleImport(content);
     };
     reader.readAsText(file);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleReset = useCallback(async () => {
-    try {
-      setLoadingOperation(LoadingOperation.Reset);
+    setLoadingOperation(LoadingOperation.Reset);
+    const success = await resetDataUseCase();
+    setLoadingOperation(null);
 
-      await dataManagementService.resetData();
-      await Promise.all([
-        setDashboards([]),
-        setAllCharts([]),
-        initConnectionsUseCase([]),
-      ]);
-      setSelectedDashboardId("default");
-      toast.success(t("settings.resetSuccess"));
+    if (success) {
       navigate("/");
-    } catch (error: unknown) {
-      logger.error("handleReset", error);
-      toast.error(t("settings.resetError"));
-    } finally {
-      setLoadingOperation(null);
     }
-  }, [
-    setDashboards,
-    setAllCharts,
-    setSelectedDashboardId,
-    setLoadingOperation,
-    t,
-    navigate,
-  ]);
+  }, [navigate]);
 
   const handleFullResetRequest = useCallback(() => {
     confirm({
@@ -176,8 +104,8 @@ const SettingsPage: React.FC = () => {
     <div className="flex flex-col h-full overflow-hidden">
       <Header name={t("settings.pageTitle")} />
 
-      <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin">
-        <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-700">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 scrollbar-thin">
+        <div className="max-w-5xl mx-auto space-y-6">
           <PageHeader
             title={t("settings.title")}
             description={t("settings.desc")}

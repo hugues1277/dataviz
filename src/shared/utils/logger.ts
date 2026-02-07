@@ -3,7 +3,7 @@ const logger = {
         console.log(`[INFO] ${message}`);
     },
 
-    error: (context: string, error: any) => {
+    error: (context: string, error: unknown) => {
         if (error instanceof Error) {
             console.error(`[ERROR] ${context} ${error.message} ${error.stack}`);
         } else {

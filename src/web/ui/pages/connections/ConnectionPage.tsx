@@ -18,7 +18,7 @@ import { useRefetchDashboardCharts } from "@/src/web/core/hooks/dashboard/useCha
 
 const ConnectionPage: React.FC = () => {
   const { t } = useTranslation();
-  const { isLoading, connections } = useConnectionsStore();
+  const { connections } = useConnectionsStore();
 
   const [isAdding, setIsAdding] = useState(false);
   const [newConn, setNewConn] = useState<DBConnection | null>(null);
@@ -62,14 +62,14 @@ const ConnectionPage: React.FC = () => {
     await deleteConnectionUseCase(id);
   };
 
-  return isLoading ? (
+  return connections === null ? (
     <PageLoading />
   ) : (
     <div className="flex flex-col h-full overflow-hidden">
       <Header name={t("connections.pageTitle")} />
 
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 scrollbar-thin">
-        <div className="max-w-5xl mx-auto space-y-10">
+        <div className="max-w-5xl mx-auto space-y-6">
           <PageHeader
             title={t("connections.title")}
             description={t("connections.manageDataSources")}

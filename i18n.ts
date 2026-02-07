@@ -27,7 +27,8 @@ const resources = {
         logout: "Déconnexion",
         logoutConfirmTitle: "Déconnexion",
         logoutConfirmDesc: "Voulez-vous vraiment vous déconnecter ?",
-        logoutConfirmBtn: "Déconnexion"
+        logoutConfirmBtn: "Déconnexion",
+        errorOccurred: "Une erreur est survenue"
       },
       sidebar: {
         dashboards: "Tableaux de bord",
@@ -176,6 +177,7 @@ const resources = {
         resetConfirmDesc: "Cette action effacera définitivement tous vos tableaux de bord, configurations de graphiques et connexions de base de données. Vous repartirez de zéro.",
         resetSuccess: "Réinitialisation réussie.",
         resetError: "Erreur de réinitialisation.",
+        exportSuccess: "Exportation réussie.",
         exportFailed: "Échec de l'exportation.",
         importSuccess: "Importation réussie.",
         importError: "Échec de l'importation.",

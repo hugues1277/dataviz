@@ -3,8 +3,8 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import Sidebar from "./src/web/ui/components/layout/Sidebar";
 import DashboardPage from "./src/web/ui/pages/dashboard/DashboardPage";
-import ConnectionManager from "./src/web/ui/pages/connections/ConnectionPage";
-import SettingsView from "./src/web/ui/pages/settings/SettingsPage";
+import ConnectionPage from "./src/web/ui/pages/connections/ConnectionPage";
+import SettingsPage from "./src/web/ui/pages/settings/SettingsPage";
 import { SignInPage } from "./src/web/ui/pages/auth/SignInPage";
 import { ProtectedRoute } from "./src/web/ui/components/auth/ProtectedRoute";
 import { useStoresInit } from "./src/web/core/hooks/useStoresInit";
@@ -39,11 +39,8 @@ const AppContent: React.FC = () => {
                       path="/dashboards/:dashboardId"
                       element={<DashboardPage />}
                     />
-                    <Route
-                      path="/connections"
-                      element={<ConnectionManager />}
-                    />
-                    <Route path="/settings" element={<SettingsView />} />
+                    <Route path="/connections" element={<ConnectionPage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
                     <Route path="*" element={<DefaultRedirect />} />
                   </Routes>
                 </div>
@@ -57,11 +54,7 @@ const AppContent: React.FC = () => {
 };
 
 const DefaultRedirect: React.FC = () => {
-  const {
-    dashboards,
-    activeDashboardId: selectedDashboardId,
-    isLoading,
-  } = useDashboardsStore();
+  const { dashboards, activeDashboard, isLoading } = useDashboardsStore();
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -75,7 +68,7 @@ const DefaultRedirect: React.FC = () => {
     );
   }
 
-  const dashboardId = selectedDashboardId || dashboards[0]?.id || "";
+  const dashboardId = activeDashboard?.id || dashboards[0]?.id || "";
   return <Navigate to={`/dashboards/${dashboardId}`} replace />;
 };
 

@@ -22,7 +22,7 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="bg-[#111217] border border-[#1f2127] rounded-3xl p-6 flex flex-col group hover:border-blue-500/50 transition-all shadow-lg relative overflow-hidden">
+    <div className="bg-[#111217] border border-[#1f2127] rounded-3xl p-6 flex flex-col group hover:border-blue-500/50 transition-all shadow-lg relative overflow-hidden select-none">
       <div className="flex items-start justify-between mb-4">
         <div
           className={`w-12 h-12 ${

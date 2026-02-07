@@ -12,7 +12,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
   actions,
 }) => {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 select-none">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-bold text-white tracking-tight">

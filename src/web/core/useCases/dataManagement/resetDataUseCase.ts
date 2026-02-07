@@ -1,0 +1,36 @@
+import { storageProvider } from '../../../providers/apiProvider';
+import { DEFAULT_DASHBOARD } from '../../../../shared/constants';
+import logger from '@/src/shared/utils/logger';
+import { toast } from 'react-toastify';
+import i18n from '../../../../../i18n';
+import { useDashboardsStore } from '../../stores/dashboardsStore';
+import { initConnectionsUseCase } from '../connections/initConnectionsUseCase';
+import { initDashboardsUseCase } from '../dashboards/initDashboardsUseCase';
+
+/**
+ * Réinitialise l'application à un état propre avec un dashboard par défaut.
+ */
+export async function resetDataUseCase(): Promise<boolean> {
+  try {
+    await storageProvider.clearAll();
+    await storageProvider.putDashboard(DEFAULT_DASHBOARD);
+
+    // Mise à jour des stores avec l'état initial
+    await Promise.all([
+      initDashboardsUseCase([DEFAULT_DASHBOARD], []),
+      initConnectionsUseCase([]),
+    ]);
+
+    // Définir le dashboard par défaut comme actif
+    const store = useDashboardsStore.getState();
+    await store.setActiveDashboard(DEFAULT_DASHBOARD.id);
+
+    toast.success(i18n.t('settings.resetSuccess'));
+    return true;
+  } catch (error: unknown) {
+    logger.error('resetData', error);
+    toast.error(i18n.t('settings.resetError'));
+  }
+
+  return false;
+}

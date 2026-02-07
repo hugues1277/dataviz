@@ -11,7 +11,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ name, children, rightContent }) => {
   const { toggleSidebar } = useSidebar();
   return (
-    <header className="h-14 border-b border-[#1f2127] flex items-center justify-between px-3 sm:px-4 bg-[#111217] z-50 shrink-0">
+    <header className="h-14 border-b border-[#1f2127] flex items-center justify-between px-3 sm:px-4 bg-[#111217] z-50 shrink-0 select-none">
       <div className="flex items-center gap-2 overflow-hidden mr-2">
         <button
           onClick={toggleSidebar}
