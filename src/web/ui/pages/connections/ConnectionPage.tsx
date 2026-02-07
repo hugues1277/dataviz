@@ -14,16 +14,15 @@ import PageLoading from "../../components/layout/PageLoading";
 import { addConnectionUseCase } from "../../../core/useCases/connections/addConnectionUseCase";
 import { updateConnectionUseCase } from "../../../core/useCases/connections/updateConnectionUseCase";
 import { deleteConnectionUseCase } from "../../../core/useCases/connections/deleteConnectionUseCase";
+import { useRefetchDashboardCharts } from "@/src/web/core/hooks/dashboard/useChartQuery";
 
 const ConnectionPage: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    isLoading,
-    connections,
-  } = useConnectionsStore();
+  const { isLoading, connections } = useConnectionsStore();
 
   const [isAdding, setIsAdding] = useState(false);
   const [newConn, setNewConn] = useState<DBConnection | null>(null);
+  const refetchDashboardCharts = useRefetchDashboardCharts();
 
   const resetForm = () => {
     setIsAdding(false);
@@ -53,6 +52,7 @@ const ConnectionPage: React.FC = () => {
       await addConnectionUseCase(connection);
     } else {
       await updateConnectionUseCase(connection);
+      await refetchDashboardCharts();
     }
 
     resetForm();

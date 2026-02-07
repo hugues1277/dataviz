@@ -10,6 +10,7 @@ import { getAppDatasUseCase } from './core/useCases/getAppDatasUseCase';
 import { importAppDatasUseCase } from './core/useCases/importAppDatasUseCase';
 import clearAllDatasUseCase from './core/useCases/clearAllDatasUseCase';
 import exportDataUseCase from './core/useCases/exportDataUseCase';
+import { testConnectionUseCase } from './core/useCases/testConnectionUseCase';
 import ChartRepository from './repositories/chartRepository';
 import ConnectionRepository from './repositories/connectionRepository';
 
@@ -85,6 +86,18 @@ export function apiPlugin(): Plugin {
             async () => {
               const chartId = getUrlParam(req, res, 1);
               return await chartRepository.delete(chartId);
+            },
+        });
+      });
+
+      // POST /api/connections/test - Tester une connexion
+      server.middlewares.use('/api/connections/test', async (req: IncomingMessage, res: ServerResponse) => {
+        requestHandler(req, res, {
+          'POST':
+            async () => {
+              const body = await readBody(req);
+              const connection = JSON.parse(body);
+              return await testConnectionUseCase.execute(connection);
             },
         });
       });

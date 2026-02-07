@@ -59,7 +59,7 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
         }
     }
 
-    async get(id: string, { decrypt = true }: { decrypt?: boolean } = {}): Promise<DBConnection> {
+    async get(id: string, { decrypt = true }: { decrypt?: boolean } = {}): Promise<DBConnection | null> {
         const pool = databaseProvider.createPool();
         try {
             const result = await pool.query(`SELECT id, name, type, config FROM connections WHERE id = $1`, [id]);
@@ -76,6 +76,8 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
                 ...result.rows[0].config
             } as DBConnection;
 
+        } catch (error) {
+            return null;
         } finally {
             await pool.end();
         }

@@ -7,7 +7,7 @@ class ConnectionRepositoryInterface extends ObjectRepositoryInterface<DBConnecti
         throw new Error('Not implemented');
     }
 
-    async get(id: string, { decrypt = true }: { decrypt?: boolean } = {}): Promise<DBConnection> {
+    async get(id: string, { decrypt = true }: { decrypt?: boolean } = {}): Promise<DBConnection | null> {
         throw new Error('Not implemented');
     }
 }

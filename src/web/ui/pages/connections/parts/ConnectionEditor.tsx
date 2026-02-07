@@ -4,6 +4,7 @@ import { Database, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Modal from "../../../components/modal/Modal";
 import { Button } from "../../../components/Button";
+import { testConnectionUseCase } from "../../../../core/useCases/connections/testConnectionUseCase";
 
 interface ConnectionEditorProps {
   connection: DBConnection | null;
@@ -20,6 +21,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
 }) => {
   const { t } = useTranslation();
   const [newConn, setNewConn] = useState<DBConnection | null>(connection);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setNewConn(connection);
@@ -33,29 +35,41 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
     onSave(newConn);
   };
 
+  const handleCheckConnection = async () => {
+    if (!newConn) return;
+    setIsLoading(true);
+    await testConnectionUseCase.execute(newConn);
+    setIsLoading(false);
+  };
+
   if (!newConn) return null;
 
   return (
     <Modal
       isOpen={newConn !== null}
-      title={
-        isAdding
-          ? t("connections.addTitle")
-          : t("connections.editTitle")
-      }
+      title={isAdding ? t("connections.addTitle") : t("connections.editTitle")}
       description={t("connections.configureParams")}
       icon={
-        newConn.type === "api" ? (
-          <Globe size={16} />
-        ) : (
-          <Database size={16} />
-        )
+        newConn.type === "api" ? <Globe size={16} /> : <Database size={16} />
       }
       onClose={onClose}
       actions={
-        <Button onClick={handleSave} variant="primary">
-          {t("common.save")}
-        </Button>
+        <>
+          <Button
+            onClick={handleCheckConnection}
+            isLoading={isLoading}
+            disabled={
+              !newConn?.name ||
+              (newConn.type === "postgres" && !newConn.host) ||
+              (newConn.type === "api" && !newConn.apiUrl)
+            }
+          >
+            {t("connections.checkConnection")}
+          </Button>
+          <Button onClick={handleSave} variant="primary">
+            {t("common.save")}
+          </Button>
+        </>
       }
     >
       <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto scrollbar-thin bg-[#0e1014]">
@@ -67,9 +81,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
             </label>
             <div className="grid grid-cols-1 gap-3">
               <button
-                onClick={() =>
-                  setNewConn({ ...newConn, type: "postgres" })
-                }
+                onClick={() => setNewConn({ ...newConn, type: "postgres" })}
                 className={`flex items-center gap-4 p-5 rounded-3xl border transition-all text-left ${
                   newConn.type === "postgres"
                     ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/20"
@@ -96,9 +108,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
               </button>
 
               <button
-                onClick={() =>
-                  setNewConn({ ...newConn, type: "api" })
-                }
+                onClick={() => setNewConn({ ...newConn, type: "api" })}
                 className={`flex items-center gap-4 p-5 rounded-3xl border transition-all text-left ${
                   newConn.type === "api"
                     ? "bg-purple-600 border-purple-600 text-white shadow-lg shadow-purple-600/20"
@@ -146,9 +156,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
                 onChange={(e) =>
                   setNewConn({ ...newConn, name: e.target.value })
                 }
-                placeholder={t(
-                  "connections.connectionNamePlaceholder"
-                )}
+                placeholder={t("connections.connectionNamePlaceholder")}
               />
             </div>
 
@@ -238,9 +246,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
                         })
                       }
                       placeholder={
-                        !isAdding
-                          ? t("connections.passwordPlaceholder")
-                          : ""
+                        !isAdding ? t("connections.passwordPlaceholder") : ""
                       }
                     />
                   </div>
@@ -255,9 +261,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
                     >
                       <div
                         className={`bg-white w-4 h-4 rounded-full transition-transform ${
-                          newConn.ssl
-                            ? "translate-x-4"
-                            : "translate-x-0"
+                          newConn.ssl ? "translate-x-4" : "translate-x-0"
                         }`}
                       />
                     </div>

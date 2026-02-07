@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { QueryResult, DateRange } from '../../../../shared/types/types';
-import { executeQuery, getQueryKey } from '../../../providers/queryRequestProvider';
+import { queryRequestProvider } from '../../../providers/queryRequestProvider';
 import { useConnectionsStore } from '../../stores/connectionsStore';
 import { getQueryVariablesValues } from '../../utils/variableUtils';
 import { useMemo, useCallback } from 'react';
@@ -20,7 +20,7 @@ export const useChartQuery = (
     return getQueryVariablesValues(variableValues || {}, query, dateRange);
   }, [variableValues, query, dateRange]);
 
-  const key = useMemo(() => getQueryKey(chartId, query, queryVariablesValues), [chartId, query, queryVariablesValues]);
+  const key = useMemo(() => queryRequestProvider.getQueryKey(chartId, query, queryVariablesValues), [chartId, query, queryVariablesValues]);
 
   return useQuery<QueryResult>({
     queryKey: key,
@@ -28,7 +28,7 @@ export const useChartQuery = (
       if (!connection) {
         return { columns: [], rows: [], error: 'Aucune connexion' };
       }
-      return await executeQuery(connection, query, queryVariablesValues);
+      return await queryRequestProvider.executeQuery(connection, query, queryVariablesValues);
     },
     staleTime: QUERY_CACHE_TTL * 1000, // Convertir secondes en millisecondes
     gcTime: QUERY_CACHE_TTL * 1000,

@@ -8,10 +8,6 @@ const API_BASE = ''; // Utilise le même serveur
  * Toutes les requêtes incluent automatiquement les cookies de session
  */
 export const storageProvider: IStorageProvider = {
-    async init() {
-        // L'initialisation des tables est gérée côté serveur
-        // Cette méthode n'est plus nécessaire côté client
-    },
 
     async getAppDatas(): Promise<AppDatas> {
         const response = await fetch(`${API_BASE}/api/app-datas`, {

@@ -71,8 +71,6 @@ export const customTooltipStyle = {
 export const getHeightForRotatedXAxis = (labels?: string[]): number | null => {
     if (!labels?.length) return null;
 
-    console.log(labels);
     const moyenne = labels.reduce((acc, label) => acc + label.length, 0) / labels.length;
-    console.log(moyenne);
     return Math.round(moyenne * 4.5);
 };

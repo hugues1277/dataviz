@@ -1,9 +1,6 @@
 import { AppDatas, Dashboard, ChartConfig, DBConnection } from '../../shared/types/types';
 
 export interface IStorageProvider {
-  // Optional initialization method for setting up database schemas or connections
-  init?: () => Promise<void>;
-
   // App Datas
   getAppDatas: () => Promise<AppDatas>;
   importAppDatas: (appDatas: AppDatas) => Promise<void>;

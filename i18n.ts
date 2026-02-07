@@ -148,7 +148,13 @@ const resources = {
         apiUrlPlaceholder: "https://api.monservice.com/query",
         apiTokenLabel: "Token d'accès (Bearer)",
         apiTokenPlaceholder: "Token",
-        apiNote: "Note: La requête sera envoyée via POST avec un corps JSON contenant { \"query\": \"...\" }."
+        apiNote: "Note: La requête sera envoyée via POST avec un corps JSON contenant { \"query\": \"...\" }.",
+        missingPostgresFields: "Veuillez remplir tous les champs requis (Hôte, Base de données, Utilisateur)",
+        missingApiUrl: "Veuillez renseigner l'URL de l'API",
+        checkConnection: "Tester la connexion",
+        connectionTestSuccess: "Connexion fonctionnelle",
+        connectionTestFailed: "Échec du test de connexion",
+        connectionTestError: "Erreur lors du test de connexion"
       },
       settings: {
         title: "Paramètres & Import/Export",
