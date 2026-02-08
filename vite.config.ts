@@ -14,8 +14,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     server: {
-      port: 3001,
-      host: '0.0.0.0',
+      port: process.env.PORT as unknown as number,
     },
     plugins: [react(), tailwindcss(), apiPlugin(), authApiPlugin()],
     define: {
