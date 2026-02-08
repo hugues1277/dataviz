@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { databaseProvider } from "./databaseProvider";
 
-const baseURL = process.env.BETTER_AUTH_URL || "http://localhost:3001";
+const baseURL = process.env.PRODUCTION_URL || "http://localhost:3001";
 
 /**
  * Instance Better Auth serveur

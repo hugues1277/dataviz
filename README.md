@@ -65,17 +65,17 @@ cp .env.example .env
 2. Configure the environment variables in `.env`:
 
 ```env
-# Base URL for Better Auth (optional in development)
-VITE_BETTER_AUTH_URL=http://localhost:5173
-
-# Production URL (for deployment)
-PRODUCTION_URL=https://your-domain.com
-
 # PostgreSQL database connection URL
 DATABASE_URL=postgresql://user:password@localhost:5432/dataviz
 
 # Encryption key for sensitive data (generate a random key)
 ENCRYPT_KEY=your-secret-encryption-key-minimum-32-characters
+
+# Better Auth secret key
+BETTER_AUTH_SECRET=
+
+# prod api url for cros origin
+PRODUCTION_URL=
 ```
 
 ## Project Structure
