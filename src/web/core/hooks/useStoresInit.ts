@@ -17,8 +17,8 @@ export const useStoresInit = () => {
 
   const initAppDatas = useCallback(async () => {
     const { connections, dashboards, charts } = await storageProvider.getAppDatas();
-    initDashboardsUseCase(dashboards, charts);
-    initConnectionsUseCase(connections);
+    initDashboardsUseCase.execute(dashboards, charts);
+    initConnectionsUseCase.execute(connections);
   }, []);
 
   useEffect(() => {

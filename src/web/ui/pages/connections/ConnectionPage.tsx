@@ -49,9 +49,9 @@ const ConnectionPage: React.FC = () => {
 
   const handleSave = async (connection: DBConnection) => {
     if (isAdding) {
-      await addConnectionUseCase(connection);
+      await addConnectionUseCase.execute(connection);
     } else {
-      await updateConnectionUseCase(connection);
+      await updateConnectionUseCase.execute(connection);
       await refetchDashboardCharts();
     }
 
@@ -59,7 +59,7 @@ const ConnectionPage: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    await deleteConnectionUseCase(id);
+    await deleteConnectionUseCase.execute(id);
   };
 
   return connections === null ? (

@@ -3,10 +3,11 @@ import logger from '../../../../shared/utils/logger';
 import { Dashboard, ChartConfig } from '../../../../shared/types/types';
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 
-export async function initDashboardsUseCase(
+export const initDashboardsUseCase = {
+  execute: async (
     dashboardsData?: Dashboard[],
     chartsData?: ChartConfig[]
-): Promise<void> {
+  ): Promise<void> => {
     const store = useDashboardsStore.getState();
 
     if (store.isLoading) return;
@@ -23,4 +24,5 @@ export async function initDashboardsUseCase(
     } catch (error: unknown) {
         logger.error('initDashboards', error);
     }
-}
+  }
+};

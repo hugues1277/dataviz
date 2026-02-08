@@ -5,7 +5,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function saveDashboardVariablesUseCase(variables: DashboardVariable[]): Promise<void> {
+export const saveDashboardVariablesUseCase = {
+  execute: async (variables: DashboardVariable[]): Promise<void> => {
     const store = useDashboardsStore.getState();
     const dashboard = store.activeDashboard;
 
@@ -23,4 +24,5 @@ export async function saveDashboardVariablesUseCase(variables: DashboardVariable
         logger.error('saveDashboardVariables', error);
         toast.error(i18n.t('common.errorOccurred'));
     }
-}
+  }
+};

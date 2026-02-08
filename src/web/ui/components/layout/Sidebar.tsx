@@ -51,26 +51,26 @@ const Sidebar: React.FC = () => {
 
   const handleMoveUp = useCallback(
     (id: string) => {
-      moveDashboardUseCase(id, "up");
+      moveDashboardUseCase.execute(id, "up");
     },
     []
   );
 
   const handleMoveDown = useCallback(
     (id: string) => {
-      moveDashboardUseCase(id, "down");
+      moveDashboardUseCase.execute(id, "down");
     },
     []
   );
 
   const handleAddDashboard = useCallback(async () => {
-    const newId = await addDashboardUseCase();
+    const newId = await addDashboardUseCase.execute();
     // Attendre que le store se mette à jour avec le nouveau dashboard
     setTimeout(() => {
       navigate(`/dashboards/${newId}`);
     }, 50);
     closeSidebar();
-  }, [addDashboardUseCase, navigate, closeSidebar]);
+  }, [navigate, closeSidebar]);
 
   return (
     <>

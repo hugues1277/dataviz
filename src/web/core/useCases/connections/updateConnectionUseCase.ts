@@ -5,7 +5,8 @@ import i18n from '../../../../../i18n';
 import { toast } from 'react-toastify';
 import logger from '@/src/shared/utils/logger';
 
-export async function updateConnectionUseCase(connection: DBConnection): Promise<void> {
+export const updateConnectionUseCase = {
+  execute: async (connection: DBConnection): Promise<void> => {
     const store = useConnectionsStore.getState();
 
     try {
@@ -17,4 +18,5 @@ export async function updateConnectionUseCase(connection: DBConnection): Promise
         logger.error('updateConnection', error);
         toast.error(i18n.t('common.errorOccurred'));
     }
-}
+  }
+};

@@ -5,7 +5,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function addDashboardUseCase(): Promise<string> {
+export const addDashboardUseCase = {
+  execute: async (): Promise<string> => {
     const store = useDashboardsStore.getState();
 
     try {
@@ -27,4 +28,5 @@ export async function addDashboardUseCase(): Promise<string> {
     }
 
     return "";
-}
+  }
+};

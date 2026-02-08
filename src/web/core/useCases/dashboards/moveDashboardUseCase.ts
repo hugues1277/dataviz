@@ -4,7 +4,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function moveDashboardUseCase(id: string, direction: 'up' | 'down'): Promise<void> {
+export const moveDashboardUseCase = {
+  execute: async (id: string, direction: 'up' | 'down'): Promise<void> => {
     const store = useDashboardsStore.getState();
 
     try {
@@ -32,4 +33,5 @@ export async function moveDashboardUseCase(id: string, direction: 'up' | 'down')
         logger.error('moveDashboard', error);
         toast.error(i18n.t('common.errorOccurred'));
     }
-}
+  }
+};

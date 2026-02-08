@@ -53,7 +53,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
   const handleFinishRename = useCallback(async () => {
     if (tempTitle.trim() && activeDashboard?.id) {
-      await renameDashboardUseCase(activeDashboard?.id, tempTitle);
+      await renameDashboardUseCase.execute(activeDashboard?.id, tempTitle);
       setIsEditingTitle(false);
     }
   }, [tempTitle, activeDashboard?.id]);
@@ -62,7 +62,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
     const id = activeDashboard?.id;
     if (!id || !canDeleteDashboard) return;
 
-    const remainingDashboards = await deleteDashboardUseCase(id);
+    const remainingDashboards = await deleteDashboardUseCase.execute(id);
     setTimeout(() => {
       navigate(`/dashboards/${remainingDashboards[0].id}`);
     }, 100);

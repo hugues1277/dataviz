@@ -102,9 +102,9 @@ const DashboardPage: React.FC = () => {
             isLocked={isLocked}
             dateRange={dateRange}
             variableValues={variableValues}
-            saveChart={(chart: ChartConfig[]) => saveChartUseCase(chart)}
+            saveChart={(chart: ChartConfig[]) => saveChartUseCase.execute(chart)}
             onEdit={(chart: ChartConfig) => setEditingChart(chart)}
-            onDelete={(chart: ChartConfig) => deleteChartUseCase(chart.id)}
+            onDelete={(chart: ChartConfig) => deleteChartUseCase.execute(chart.id)}
             onView={(chart: ChartConfig) => setViewingChart(chart)}
           />
         )}
@@ -125,7 +125,7 @@ const DashboardPage: React.FC = () => {
             dashboard={activeDashboard}
             chartConfig={editingChart}
             onSave={(chart) => {
-              saveChartUseCase(chart);
+              saveChartUseCase.execute(chart);
               setEditingChart(null);
             }}
             onClose={() => setEditingChart(null)}

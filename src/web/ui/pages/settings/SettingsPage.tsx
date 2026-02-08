@@ -30,7 +30,7 @@ const SettingsPage: React.FC = () => {
 
   const handleExport = useCallback(async () => {
     setLoadingOperation(LoadingOperation.Export);
-    await exportDataUseCase();
+    await exportDataUseCase.execute();
     setLoadingOperation(null);
   }, [t]);
 
@@ -38,7 +38,7 @@ const SettingsPage: React.FC = () => {
     async (jsonStr: string) => {
       setLoadingOperation(LoadingOperation.ImportFile);
       const data = JSON.parse(jsonStr);
-      const appDatas = await importDataUseCase({
+      const appDatas = await importDataUseCase.execute({
         dashboards: data.dashboards,
         charts: data.charts,
         connections: data.connections,
@@ -67,7 +67,7 @@ const SettingsPage: React.FC = () => {
 
   const handleReset = useCallback(async () => {
     setLoadingOperation(LoadingOperation.Reset);
-    const success = await resetDataUseCase();
+    const success = await resetDataUseCase.execute();
     setLoadingOperation(null);
 
     if (success) {

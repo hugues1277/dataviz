@@ -4,7 +4,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function renameDashboardUseCase(id: string, name: string): Promise<void> {
+export const renameDashboardUseCase = {
+  execute: async (id: string, name: string): Promise<void> => {
     const store = useDashboardsStore.getState();
     const dashboard = store.activeDashboard;
 
@@ -22,4 +23,5 @@ export async function renameDashboardUseCase(id: string, name: string): Promise<
         logger.error('renameDashboard', error);
         toast.error(i18n.t('common.errorOccurred'));
     }
-}
+  }
+};

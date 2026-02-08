@@ -35,7 +35,7 @@ export const useVariables = (initialVariables?: DashboardVariable[], initialVari
         setVariables(newVariables);
         setVariableValues({ ...variableValues, [variable.name]: resolveVariableValue(variable) });
 
-        saveDashboardVariablesUseCase(newVariables);
+        saveDashboardVariablesUseCase.execute(newVariables);
     }, [variables, variableValues]);
 
     const updateVariable = useCallback(async (variable: DashboardVariable) => {
@@ -43,7 +43,7 @@ export const useVariables = (initialVariables?: DashboardVariable[], initialVari
         setVariables(newVariables);
         setVariableValues(prev => ({ ...prev, [variable.name]: variable.defaultValue }));
 
-        saveDashboardVariablesUseCase(newVariables);
+        saveDashboardVariablesUseCase.execute(newVariables);
     }, [variables, variableValues]);
 
     const deleteVariable = useCallback(async (variableId: string) => {
@@ -51,7 +51,7 @@ export const useVariables = (initialVariables?: DashboardVariable[], initialVari
         setVariables(newVariables);
         setVariableValues(prev => ({ ...prev, [variableId]: "" }));
 
-        saveDashboardVariablesUseCase(newVariables);
+        saveDashboardVariablesUseCase.execute(newVariables);
     }, [variables, variableValues]);
 
     const setVariableValue = useCallback((name: string, value: string) => {

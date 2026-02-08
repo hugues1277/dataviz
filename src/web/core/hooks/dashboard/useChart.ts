@@ -48,7 +48,7 @@ export const useChart = (
       };
 
       setChartConfig(updated);
-      await saveChartUseCase(updated);
+      await saveChartUseCase.execute(updated);
     },
     [chartConfig]
   );

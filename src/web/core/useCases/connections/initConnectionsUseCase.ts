@@ -3,7 +3,8 @@ import { DBConnection } from '../../../../shared/types/types';
 import { useConnectionsStore } from '../../stores/connectionsStore';
 import { storageProvider } from '@/src/web/providers/apiProvider';
 
-export async function initConnectionsUseCase(connections: DBConnection[]): Promise<void> {
+export const initConnectionsUseCase = {
+  execute: async (connections: DBConnection[]): Promise<void> => {
     const store = useConnectionsStore.getState();
 
     try {
@@ -13,4 +14,5 @@ export async function initConnectionsUseCase(connections: DBConnection[]): Promi
     } catch (error: unknown) {
         logger.error('initConnections', error);
     }
-}
+  }
+};

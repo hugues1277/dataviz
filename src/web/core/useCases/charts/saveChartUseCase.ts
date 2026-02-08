@@ -6,7 +6,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function saveChartUseCase(chart: ChartConfig | ChartConfig[]): Promise<void> {
+export const saveChartUseCase = {
+  execute: async (chart: ChartConfig | ChartConfig[]): Promise<void> => {
     const store = useDashboardsStore.getState();
 
     try {
@@ -23,4 +24,5 @@ export async function saveChartUseCase(chart: ChartConfig | ChartConfig[]): Prom
         logger.error('saveChart', error);
         toast.error(i18n.t('common.errorOccurred'));
     }
-}
+  }
+};

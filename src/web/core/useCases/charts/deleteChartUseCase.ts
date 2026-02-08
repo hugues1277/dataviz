@@ -4,7 +4,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function deleteChartUseCase(id: string): Promise<void> {
+export const deleteChartUseCase = {
+  execute: async (id: string): Promise<void> => {
     const store = useDashboardsStore.getState();
 
     try {
@@ -16,4 +17,5 @@ export async function deleteChartUseCase(id: string): Promise<void> {
         logger.error('deleteChart', error);
         toast.error(i18n.t('common.errorOccurred'));
     }
-}
+  }
+};

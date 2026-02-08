@@ -5,7 +5,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function deleteDashboardUseCase(dashboardId: string): Promise<Dashboard[]> {
+export const deleteDashboardUseCase = {
+  execute: async (dashboardId: string): Promise<Dashboard[]> => {
     const store = useDashboardsStore.getState();
 
     try {
@@ -27,4 +28,5 @@ export async function deleteDashboardUseCase(dashboardId: string): Promise<Dashb
         toast.error(i18n.t('common.errorOccurred'));
     }
     return [];
-}
+  }
+};

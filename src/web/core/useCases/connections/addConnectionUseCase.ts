@@ -6,7 +6,8 @@ import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import i18n from '../../../../../i18n';
 
-export async function addConnectionUseCase(connection?: Partial<DBConnection>): Promise<string> {
+export const addConnectionUseCase = {
+  execute: async (connection?: Partial<DBConnection>): Promise<string> => {
     const store = useConnectionsStore.getState();
 
     try {
@@ -29,4 +30,5 @@ export async function addConnectionUseCase(connection?: Partial<DBConnection>): 
     }
 
     return "";
-}
+  }
+};

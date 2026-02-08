@@ -10,25 +10,27 @@ import { initDashboardsUseCase } from '../dashboards/initDashboardsUseCase';
  * Importe des données dans l'application et met à jour les stores.
  * @returns Les données importées pour permettre la navigation dans le composant appelant
  */
-export async function importDataUseCase(data: AppDatas): Promise<AppDatas | null> {
-  try {
-    await storageProvider.importAppDatas(data);
+export const importDataUseCase = {
+  execute: async (data: AppDatas): Promise<AppDatas | null> => {
+    try {
+      await storageProvider.importAppDatas(data);
 
-    const appDatas = await storageProvider.getAppDatas();
+      const appDatas = await storageProvider.getAppDatas();
 
-    // Mise à jour des stores avec les nouvelles données
-    await Promise.all([
-      initDashboardsUseCase(appDatas.dashboards, appDatas.charts),
-      initConnectionsUseCase(appDatas.connections),
-    ]);
+      // Mise à jour des stores avec les nouvelles données
+      await Promise.all([
+        initDashboardsUseCase.execute(appDatas.dashboards, appDatas.charts),
+        initConnectionsUseCase.execute(appDatas.connections),
+      ]);
 
-    toast.success(i18n.t('settings.importSuccess'));
+      toast.success(i18n.t('settings.importSuccess'));
 
-    return appDatas;
-  } catch (error: unknown) {
-    logger.error('importData', error);
-    toast.error(i18n.t('settings.importError'));
+      return appDatas;
+    } catch (error: unknown) {
+      logger.error('importData', error);
+      toast.error(i18n.t('settings.importError'));
+    }
+
+    return null;
   }
-
-  return null;
-}
+};
