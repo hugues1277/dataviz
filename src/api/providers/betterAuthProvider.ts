@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { databaseProvider } from "./databaseProvider";
 
-const baseURL = process.env.BETTER_AUTH_URL || "http://localhost:3001";
+const baseURL = process.env.PRODUCTION_URL || "http://localhost:3001";
 
 /**
  * Instance Better Auth serveur
@@ -14,14 +14,14 @@ export const betterAuthProvider = betterAuth({
         enabled: true,
         disableSignUp: false, // Désactive le sign up, seul le sign in est autorisé
     },
-    trustedOrigins: [baseURL],
-    advanced: {
-        // Configuration des cookies pour le développement local
-        crossSubDomainCookies: {
-            enabled: false, // Désactivé pour localhost
-        },
-        cookiePrefix: "better-auth",
-    },
+    trustedOrigins: ["*"],
+    // advanced: {
+    //     // Configuration des cookies pour le développement local
+    //     crossSubDomainCookies: {
+    //         enabled: false, // Désactivé pour localhost
+    //     },
+    //     cookiePrefix: "better-auth",
+    // },
     session: {
         expiresIn: 60 * 60 * 24 * 7, // 7 jours
         updateAge: 60 * 60 * 24, // Mettre à jour la session tous les jours

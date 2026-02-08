@@ -47,7 +47,7 @@ export function sendJson(res: ServerResponse, status: number, data: any, req?: I
  * Gère les headers CORS
  */
 export function handleCORS(res: ServerResponse, req?: IncomingMessage) {
-  res.setHeader('Access-Control-Allow-Origin', getAllowedOrigin(req));
+  // res.setHeader('Access-Control-Allow-Origin', getAllowedOrigin(req));
   res.setHeader('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
   res.setHeader('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
   res.setHeader('Access-Control-Allow-Credentials', corsHeaders['Access-Control-Allow-Credentials']);
