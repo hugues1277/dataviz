@@ -130,7 +130,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
     [t]
   );
 
-  // Return the active shortcut for the date range difference
+  // Retourner le raccourci actif pour la différence de plage de dates
   const activeShortcut = useMemo(() => {
     return (
       shortcuts.find(

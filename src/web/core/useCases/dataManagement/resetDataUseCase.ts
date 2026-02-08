@@ -2,7 +2,7 @@ import { storageProvider } from '../../../providers/apiProvider';
 import { DEFAULT_DASHBOARD } from '../../../../shared/constants';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../../i18n';
+import i18n from '../../../../i18n/i18n';
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 import { initConnectionsUseCase } from '../connections/initConnectionsUseCase';
 import { initDashboardsUseCase } from '../dashboards/initDashboardsUseCase';

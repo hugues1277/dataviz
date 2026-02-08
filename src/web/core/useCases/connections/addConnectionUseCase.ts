@@ -4,29 +4,29 @@ import { DBConnection } from '../../../../shared/types/types';
 import { DEFAULT_CONNECTION } from '../../../../shared/constants';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../../i18n';
+import i18n from '../../../../i18n/i18n';
 
 export const addConnectionUseCase = {
   execute: async (connection?: Partial<DBConnection>): Promise<string> => {
     const store = useConnectionsStore.getState();
 
     try {
-        const id = crypto.randomUUID();
-        const newConnection: DBConnection = {
-            ...DEFAULT_CONNECTION,
-            ...connection,
-            id,
-        };
+      const id = crypto.randomUUID();
+      const newConnection: DBConnection = {
+        ...DEFAULT_CONNECTION,
+        ...connection,
+        id,
+      };
 
-        await storageProvider.putConnection(newConnection);
+      await storageProvider.putConnection(newConnection);
 
-        const connections = [...(store.connections || []), newConnection];
-        store.setConnections(connections);
+      const connections = [...(store.connections || []), newConnection];
+      store.setConnections(connections);
 
-        return id;
+      return id;
     } catch (error: unknown) {
-        logger.error('addConnection', error);
-        toast.error(i18n.t('common.errorOccurred'));
+      logger.error('addConnection', error);
+      toast.error(i18n.t('common.errorOccurred'));
     }
 
     return "";

@@ -44,7 +44,7 @@ export const encryptionService = {
 
     // Vérifier que le buffer a la taille minimale requise
     if (buf.length < 29) {
-      throw new Error('Invalid encrypted payload: payload too short');
+      throw new Error('Charge utile chiffrée invalide : charge utile trop courte');
     }
 
     const iv = buf.subarray(0, 12);
@@ -53,7 +53,7 @@ export const encryptionService = {
 
     // Vérifier que le tag n'est pas vide
     if (tag.length === 0) {
-      throw new Error('Invalid encrypted payload: authentication tag is empty');
+      throw new Error('Charge utile chiffrée invalide : tag d\'authentification vide');
     }
 
     const decipher = createDecipheriv('aes-256-gcm', this.KEY, iv);

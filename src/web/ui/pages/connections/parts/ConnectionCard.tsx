@@ -13,7 +13,7 @@ import {
 interface ConnectionCardProps {
   connection: DBConnection;
   onEdit: (connection: DBConnection) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
 }
 
 const ConnectionCard: React.FC<ConnectionCardProps> = ({
@@ -45,7 +45,7 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
             <Edit size={18} />
           </button>
           <button
-            onClick={() => onDelete(connection.id)}
+            onClick={() => onDelete(connection.id, connection.name)}
             className="p-2 text-gray-600 hover:text-red-400 transition-all hover:bg-red-500/10 rounded-xl"
           >
             <Trash2 size={18} />

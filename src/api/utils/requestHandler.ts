@@ -28,16 +28,16 @@ export async function requestHandler(
         }
     }
 
-    // CORS preflight
+    // Prévol CORS
     if (req.method === 'OPTIONS') {
         res.statusCode = 200;
         res.end();
         return;
     }
 
-    // Method check
+    // Vérification de la méthode
     if (!Object.keys(options).includes(req.method || '')) {
-        sendJson(res, 405, { error: 'Method not allowed' }, req);
+        sendJson(res, 405, { error: 'Méthode non autorisée' }, req);
         return;
     }
 
@@ -45,7 +45,7 @@ export async function requestHandler(
     try {
         const handler = options[req.method as keyof HandleRequestOptions];
         if (!handler) {
-            sendJson(res, 400, { error: 'Handler not found' }, req);
+            sendJson(res, 400, { error: 'Gestionnaire non trouvé' }, req);
             return;
         }
 
@@ -73,7 +73,7 @@ export async function verifyAuthentication(res: ServerResponse, req: IncomingMes
         return true;
     } catch (error: unknown) {
         logger.error('verifyAuthentication', error);
-        sendJson(res, 401, { error: 'Unauthorized' }, req);
+        sendJson(res, 401, { error: 'Non autorisé' }, req);
         return false;
     }
 }

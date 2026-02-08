@@ -1,16 +1,14 @@
 import React from "react";
-import { Download, Upload, LucideIcon } from "lucide-react";
+import { Download, Upload, Globe, LucideIcon, Trash } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../components/Button";
 
-type ActionType = "export" | "import" | "reset";
+type ActionType = "export" | "import" | "reset" | "language";
 
 interface SettingsActionCardProps {
   type: ActionType;
-  onAction: () => void;
   isLoading: boolean;
-  fileInputRef?: React.RefObject<HTMLInputElement>;
-  onFileChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  children?: React.ReactNode;
 }
 
 const actionConfig: Record<
@@ -50,36 +48,37 @@ const actionConfig: Record<
     showIcon: true,
   },
   reset: {
-    icon: Download, // Pas utilisé mais requis par le type
-    iconColor: "",
-    iconBgColor: "",
+    icon: Trash,
+    iconColor: "text-red-500",
+    iconBgColor: "bg-red-600/10",
     titleKey: "settings.resetTitle",
     descKey: "settings.resetDesc",
     buttonTextKey: "settings.resetBtn",
-    buttonClassName: "hover:bg-red-600",
-    layout: "horizontal",
-    showIcon: false,
+    buttonClassName: "w-full bg-red-600/10 hover:bg-red-600",
+    layout: "centered",
+    showIcon: true,
+  },
+  language: {
+    icon: Globe,
+    iconColor: "text-purple-500",
+    iconBgColor: "bg-purple-600/10",
+    titleKey: "language.title",
+    descKey: "language.description",
+    buttonTextKey: "",
+    buttonClassName: "w-full bg-[#181b1f]",
+    layout: "centered",
+    showIcon: true,
   },
 };
 
 export const SettingsActionCard: React.FC<SettingsActionCardProps> = ({
   type,
-  onAction,
   isLoading,
-  fileInputRef,
-  onFileChange,
+  children,
 }) => {
   const { t } = useTranslation();
   const config = actionConfig[type];
   const Icon = config.icon;
-
-  const handleButtonClick = () => {
-    if (type === "import" && fileInputRef) {
-      fileInputRef.current?.click();
-    } else {
-      onAction();
-    }
-  };
 
   if (config.layout === "horizontal") {
     return (
@@ -90,13 +89,7 @@ export const SettingsActionCard: React.FC<SettingsActionCardProps> = ({
           </h3>
           <p className="text-xs text-gray-500">{t(config.descKey)}</p>
         </div>
-        <Button
-          onClick={onAction}
-          isLoading={isLoading}
-          className={config.buttonClassName}
-        >
-          {t(config.buttonTextKey)}
-        </Button>
+        {children}
       </div>
     );
   }
@@ -114,22 +107,7 @@ export const SettingsActionCard: React.FC<SettingsActionCardProps> = ({
         {t(config.titleKey)}
       </h3>
       <p className="text-xs text-gray-500 mb-8">{t(config.descKey)}</p>
-      <Button
-        onClick={handleButtonClick}
-        isLoading={isLoading}
-        className={config.buttonClassName}
-      >
-        {t(config.buttonTextKey)}
-      </Button>
-      {type === "import" && (
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={onFileChange}
-          accept=".json"
-          className="hidden"
-        />
-      )}
+      {children}
     </div>
   );
 };

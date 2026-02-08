@@ -2,7 +2,7 @@ import { storageProvider } from '../../../providers/apiProvider';
 import { format } from 'date-fns';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../../i18n';
+import i18n from '../../../../i18n/i18n';
 
 /**
  * Exporte toutes les données de l'application (dashboards, charts, connections) dans un fichier JSON.

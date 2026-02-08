@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import App from "./App";
 import { DialogProvider } from "./src/web/ui/components/modal/DialogContext";
 import { SidebarProvider } from "./src/web/core/context/useSidebar";
-import "./i18n";
+import "./src/i18n/i18n";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+  throw new Error("Impossible de trouver l'élément racine pour le montage");
 }
 
 const root = ReactDOM.createRoot(rootElement);

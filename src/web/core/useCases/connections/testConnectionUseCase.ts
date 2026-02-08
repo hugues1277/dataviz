@@ -1,7 +1,7 @@
 import { toast } from 'react-toastify';
 import { DBConnection } from '../../../../shared/types/types';
 import { queryRequestProvider } from '../../../providers/queryRequestProvider';
-import i18n from '../../../../../i18n';
+import i18n from '../../../../i18n/i18n';
 
 export const testConnectionUseCase = {
   execute: async (connection: DBConnection): Promise<void> => {

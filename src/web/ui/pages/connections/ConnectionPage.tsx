@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { DBConnection } from "../../../../shared/types/types";
 import Header from "../../components/layout/Header";
 import { Plus } from "lucide-react";
@@ -15,10 +15,12 @@ import { addConnectionUseCase } from "../../../core/useCases/connections/addConn
 import { updateConnectionUseCase } from "../../../core/useCases/connections/updateConnectionUseCase";
 import { deleteConnectionUseCase } from "../../../core/useCases/connections/deleteConnectionUseCase";
 import { useRefetchDashboardCharts } from "@/src/web/core/hooks/dashboard/useChartQuery";
+import { useDialog } from "../../components/modal/DialogContext";
 
 const ConnectionPage: React.FC = () => {
   const { t } = useTranslation();
   const { connections } = useConnectionsStore();
+  const { confirm } = useDialog();
 
   const [isAdding, setIsAdding] = useState(false);
   const [newConn, setNewConn] = useState<DBConnection | null>(null);
@@ -58,9 +60,22 @@ const ConnectionPage: React.FC = () => {
     resetForm();
   };
 
-  const handleDelete = async (id: string) => {
-    await deleteConnectionUseCase.execute(id);
-  };
+  const handleDelete = useCallback(
+    async (id: string, name: string) => {
+      confirm({
+        title: t("connections.deleteConfirmTitle"),
+        description: t("connections.deleteConfirmDesc", {
+          name: name,
+        }),
+        type: "danger",
+        confirmLabel: t("common.delete"),
+        onConfirm: async () => {
+          await deleteConnectionUseCase.execute(id);
+        },
+      });
+    },
+    [confirm, t]
+  );
 
   return connections === null ? (
     <PageLoading />

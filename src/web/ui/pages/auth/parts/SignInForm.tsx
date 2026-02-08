@@ -3,11 +3,13 @@ import { useNavigate } from "react-router";
 import { signIn } from "../../../../providers/betterAuthWebClient";
 import { Button } from "../../../components/shadcn/button";
 import logger from "../../../../../shared/utils/logger";
+import { useTranslation } from "react-i18next";
 
 /**
  * Composant de formulaire de connexion
  */
 export const SignInForm: React.FC = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -28,7 +30,7 @@ export const SignInForm: React.FC = () => {
       });
 
       if (result.error) {
-        setError(result.error.message || "Erreur lors de la connexion");
+        setError(result.error.message || t("auth.signInError"));
         setIsLoading(false);
         return;
       }
@@ -38,7 +40,7 @@ export const SignInForm: React.FC = () => {
     } catch (error: unknown) {
       logger.error("SignInForm", error);
       setError(
-        error instanceof Error ? error.message : "Une erreur est survenue"
+        error instanceof Error ? error.message : t("auth.genericError")
       );
       setIsLoading(false);
     }
@@ -48,8 +50,8 @@ export const SignInForm: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-[#0b0e14]">
       <div className="w-full max-w-md p-8 space-y-8 bg-[#1a1d29] rounded-lg border border-gray-800">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-2">Connexion</h1>
-          <p className="text-gray-400">Connectez-vous à votre compte</p>
+          <h1 className="text-3xl font-bold text-white mb-2">{t("auth.signIn")}</h1>
+          <p className="text-gray-400">{t("auth.signInSubtitle")}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -64,7 +66,7 @@ export const SignInForm: React.FC = () => {
               htmlFor="email"
               className="block text-sm font-medium text-gray-300"
             >
-              Email
+              {t("auth.email")}
             </label>
             <input
               id="email"
@@ -73,7 +75,7 @@ export const SignInForm: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-2 bg-[#0b0e14] border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="votre@email.com"
+              placeholder={t("auth.emailPlaceholder")}
             />
           </div>
 
@@ -82,7 +84,7 @@ export const SignInForm: React.FC = () => {
               htmlFor="password"
               className="block text-sm font-medium text-gray-300"
             >
-              Mot de passe
+              {t("auth.password")}
             </label>
             <input
               id="password"
@@ -91,7 +93,7 @@ export const SignInForm: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-2 bg-[#0b0e14] border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="••••••••"
+              placeholder={t("auth.passwordPlaceholder")}
             />
           </div>
 
@@ -103,7 +105,7 @@ export const SignInForm: React.FC = () => {
             {isLoading && (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             )}
-            {isLoading ? "Connexion..." : "Se connecter"}
+            {isLoading ? t("auth.signingIn") : t("auth.signInButton")}
           </Button>
         </form>
       </div>

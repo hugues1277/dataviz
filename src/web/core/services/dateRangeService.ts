@@ -12,7 +12,7 @@ export const dateRangeService = {
      */
     async saveDateRange(dashboardId: string, dateRange: DateRange): Promise<void> {
         try {
-            // save the date number of day of dateRange
+            // Sauvegarder le nombre de jours de la plage de dates
             const numberOfDays = differenceInDays(dateRange.to, dateRange.from);
             await localStorage.setItem(`date_range_${dashboardId}`, numberOfDays.toString());
         } catch (error: unknown) {

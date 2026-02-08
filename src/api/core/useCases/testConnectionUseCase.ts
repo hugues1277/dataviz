@@ -9,30 +9,30 @@ import { apiQueryProvider } from '../../providers/queryDbConnectors/apiQueryProv
 export const testConnectionUseCase = {
   execute: async (connection: DBConnection): Promise<void> => {
 
-    // get existing connection
+    // Récupérer la connexion existante
     const existingConnection = await (new ConnectionRepository()).get(connection.id);
 
     if (connection.type === CONNECTION_TYPES.POSTGRES) {
-      // add existing password if missing
+      // Ajouter le mot de passe existant s'il manque
       if ((connection.password ?? "") === "") {
         connection.password = existingConnection?.password ?? "";
       }
 
       const result = await postgresQueryProvider.execute(connection, 'SELECT 1');
       if (!result) {
-        throw new Error('Failed to test connection');
+        throw new Error('Échec du test de connexion');
       }
     } else
 
       if (connection.type === CONNECTION_TYPES.API) {
-        // add existing pass or token if missing
+        // Ajouter le mot de passe ou token existant s'il manque
         if ((connection.apiToken ?? "") === "") {
           connection.apiToken = existingConnection?.apiToken ?? "";
         }
 
         const result = await apiQueryProvider.execute(connection, 'SELECT 1');
         if (!result) {
-          throw new Error('Failed to test connection');
+          throw new Error('Échec du test de connexion');
         }
       }
   },

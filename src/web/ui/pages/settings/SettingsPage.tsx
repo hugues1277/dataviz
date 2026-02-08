@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { LogOut } from "lucide-react";
 import Header from "../../components/layout/Header";
 import PageHeader from "../../components/layout/PageHeader";
@@ -11,6 +11,7 @@ import { SettingsActionCard } from "./parts/SettingsActionCard";
 import { exportDataUseCase } from "../../../core/useCases/dataManagement/exportDataUseCase";
 import { importDataUseCase } from "../../../core/useCases/dataManagement/importDataUseCase";
 import { resetDataUseCase } from "../../../core/useCases/dataManagement/resetDataUseCase";
+import i18n, { LANGUAGES } from "../../../../i18n/i18n";
 
 export enum LoadingOperation {
   Export = "export",
@@ -20,13 +21,25 @@ export enum LoadingOperation {
 
 const SettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n: i18nInstance } = useTranslation();
   const { data: session } = useSession();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loadingOperation, setLoadingOperation] =
     useState<LoadingOperation | null>(null);
+  const [currentLanguage, setCurrentLanguage] = useState(i18nInstance.language);
   const { confirm } = useDialog();
+
+  // Synchroniser l'état avec les changements de langue
+  useEffect(() => {
+    const handleLanguageChanged = (lng: string) => {
+      setCurrentLanguage(lng);
+    };
+    i18n.on("languageChanged", handleLanguageChanged);
+    return () => {
+      i18n.off("languageChanged", handleLanguageChanged);
+    };
+  }, []);
 
   const handleExport = useCallback(async () => {
     setLoadingOperation(LoadingOperation.Export);
@@ -121,23 +134,63 @@ const SettingsPage: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <SettingsActionCard
               type="export"
-              onAction={handleExport}
               isLoading={loadingOperation === LoadingOperation.Export}
-            />
+            >
+              <Button
+                onClick={handleExport}
+                isLoading={loadingOperation === LoadingOperation.Export}
+                className="w-full"
+              >
+                {t("settings.downloadJson")}
+              </Button>
+            </SettingsActionCard>
             <SettingsActionCard
               type="import"
-              onAction={() => {}}
-              onFileChange={handleFileChange}
-              fileInputRef={fileInputRef as React.RefObject<HTMLInputElement>}
               isLoading={loadingOperation === LoadingOperation.ImportFile}
-            />
-          </div>
+            >
+              <Button
+                onClick={() => fileInputRef.current?.click()}
+                isLoading={loadingOperation === LoadingOperation.ImportFile}
+                className="w-full hover:bg-green-600"
+              >
+                {t("settings.fileJson")}
+              </Button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept=".json"
+                className="hidden"
+              />
+            </SettingsActionCard>
 
-          <SettingsActionCard
-            type="reset"
-            onAction={handleFullResetRequest}
-            isLoading={loadingOperation === LoadingOperation.Reset}
-          />
+            <SettingsActionCard type="language" isLoading={false}>
+              <select
+                className="w-full text-white appearance-none outline-none text-center py-3 px-6 lg:px-6 lg:py-3 border border-[#2c3235] hover:bg-purple-500 rounded-2xl text-xs font-black uppercase tracking-widest"
+                value={currentLanguage}
+                onChange={(e) => i18n.changeLanguage(e.target.value)}
+              >
+                {LANGUAGES.map((language) => (
+                  <option key={language} value={language}>
+                    {t(`language.${language}`)}
+                  </option>
+                ))}
+              </select>
+            </SettingsActionCard>
+
+            <SettingsActionCard
+              type="reset"
+              isLoading={loadingOperation === LoadingOperation.Reset}
+            >
+              <Button
+                onClick={handleFullResetRequest}
+                isLoading={loadingOperation === LoadingOperation.Reset}
+                className="w-full hover:bg-red-600"
+              >
+                {t("settings.resetBtn")}
+              </Button>
+            </SettingsActionCard>
+          </div>
         </div>
       </div>
     </div>

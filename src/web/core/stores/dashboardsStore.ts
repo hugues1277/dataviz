@@ -44,7 +44,7 @@ export const useDashboardsStore = create<DashboardsStore>((set, get) => ({
       set({ isLoading: true });
     }
 
-    // Load date range for the active dashboard
+    // Charger la plage de dates pour le dashboard actif
     await useDateRangeStore.getState().loadForDashboard(dashboardId);
 
     set({

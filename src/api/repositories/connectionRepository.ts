@@ -130,10 +130,10 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
     async update(connection: DBConnection, { encrypt = true }: { encrypt?: boolean } = {}): Promise<void> {
         const { id, name, type, ...config } = connection;
 
-        // get the existing connection (sans déchiffrement pour éviter les problèmes)
+        // Récupérer la connexion existante (sans déchiffrement pour éviter les problèmes)
         const existingConnection = await this.get(id, { decrypt: false });
 
-        // if password or apiToken is not set, use the existing connection (déjà chiffrée)
+        // Si le mot de passe ou apiToken n'est pas défini, utiliser la connexion existante (déjà chiffrée)
         if (existingConnection !== null) {
             const existingConfig = existingConnection as DBConnectionConfig;
             if ((config.password ?? "") === "") {

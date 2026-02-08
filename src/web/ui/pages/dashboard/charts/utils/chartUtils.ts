@@ -54,7 +54,7 @@ const parseDate = (value: unknown): Date => {
 
     const date = new Date(value as number);
     if (isNaN(date.getTime())) {
-        throw new Error("Invalid date value");
+        throw new Error("Valeur de date invalide");
     }
 
     return date;

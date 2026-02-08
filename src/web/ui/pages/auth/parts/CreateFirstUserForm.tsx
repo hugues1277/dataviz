@@ -3,11 +3,13 @@ import { signIn } from "../../../../providers/betterAuthWebClient";
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import logger from "../../../../../shared/utils/logger";
+import { useTranslation } from "react-i18next";
 
 /**
  * Composant de formulaire de création du premier utilisateur admin
  */
 export const CreateFirstUserForm: React.FC = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("Admin");
@@ -36,7 +38,7 @@ export const CreateFirstUserForm: React.FC = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Erreur lors de la création de l'utilisateur");
+        setError(data.error || t("auth.createUserError"));
         setIsLoading(false);
         return;
       }
@@ -50,9 +52,7 @@ export const CreateFirstUserForm: React.FC = () => {
         });
 
         if (signInResult.error) {
-          setError(
-            "Utilisateur créé mais erreur lors de la connexion. Veuillez vous connecter manuellement."
-          );
+          setError(t("auth.userCreatedButSignInError"));
           setIsLoading(false);
           // Recharger la page pour afficher le formulaire de connexion
           window.location.reload();
@@ -62,9 +62,7 @@ export const CreateFirstUserForm: React.FC = () => {
         // Redirection vers la page d'accueil
         navigate("/");
       } catch {
-        setError(
-          "Utilisateur créé mais erreur lors de la connexion. Veuillez vous connecter manuellement."
-        );
+        setError(t("auth.userCreatedButSignInError"));
         setIsLoading(false);
         // Recharger la page pour afficher le formulaire de connexion
         window.location.reload();
@@ -73,7 +71,7 @@ export const CreateFirstUserForm: React.FC = () => {
       logger.error("CreateFirstUserForm", error);
 
       setError(
-        error instanceof Error ? error.message : "Une erreur est survenue"
+        error instanceof Error ? error.message : t("auth.genericError")
       );
       setIsLoading(false);
     }
@@ -84,10 +82,10 @@ export const CreateFirstUserForm: React.FC = () => {
       <div className="w-full max-w-md p-8 space-y-8 bg-[#1a1d29] rounded-lg border border-gray-800">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Configuration initiale
+            {t("auth.initialSetup")}
           </h1>
           <p className="text-gray-400">
-            Créez le premier utilisateur administrateur
+            {t("auth.initialSetupSubtitle")}
           </p>
         </div>
 
@@ -103,7 +101,7 @@ export const CreateFirstUserForm: React.FC = () => {
               htmlFor="name"
               className="block text-sm font-medium text-gray-300"
             >
-              Nom
+              {t("auth.name")}
             </label>
             <input
               id="name"
@@ -112,7 +110,7 @@ export const CreateFirstUserForm: React.FC = () => {
               onChange={(e) => setName(e.target.value)}
               required
               className="w-full px-4 py-2 bg-[#0b0e14] border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Admin"
+              placeholder={t("auth.namePlaceholder")}
             />
           </div>
 
@@ -121,7 +119,7 @@ export const CreateFirstUserForm: React.FC = () => {
               htmlFor="email"
               className="block text-sm font-medium text-gray-300"
             >
-              Email
+              {t("auth.email")}
             </label>
             <input
               id="email"
@@ -130,7 +128,7 @@ export const CreateFirstUserForm: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-2 bg-[#0b0e14] border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="admin@example.com"
+              placeholder={t("auth.emailPlaceholderAdmin")}
             />
           </div>
 
@@ -139,7 +137,7 @@ export const CreateFirstUserForm: React.FC = () => {
               htmlFor="password"
               className="block text-sm font-medium text-gray-300"
             >
-              Mot de passe
+              {t("auth.password")}
             </label>
             <input
               id="password"
@@ -149,9 +147,9 @@ export const CreateFirstUserForm: React.FC = () => {
               required
               minLength={8}
               className="w-full px-4 py-2 bg-[#0b0e14] border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="••••••••"
+              placeholder={t("auth.passwordPlaceholder")}
             />
-            <p className="text-xs text-gray-500">Minimum 8 caractères</p>
+            <p className="text-xs text-gray-500">{t("auth.passwordMinLength")}</p>
           </div>
 
           <Button
@@ -162,14 +160,13 @@ export const CreateFirstUserForm: React.FC = () => {
             {isLoading && (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
             )}
-            {isLoading ? "Création..." : "Créer l'utilisateur admin"}
+            {isLoading ? t("auth.creating") : t("auth.createAdminButton")}
           </Button>
         </form>
 
         <div className="text-center text-xs text-gray-500">
           <p>
-            Cette page n'est accessible que lorsqu'aucun utilisateur n'existe
-            dans la base de données.
+            {t("auth.initialSetupNote")}
           </p>
         </div>
       </div>
