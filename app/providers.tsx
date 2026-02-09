@@ -2,6 +2,7 @@
 
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 import { ToastContainer } from "react-toastify";
 import { DialogProvider } from "../src/web/ui/components/modal/DialogContext";
 import { SidebarProvider } from "../src/web/core/context/useSidebar";
@@ -20,24 +21,26 @@ const queryClient = new QueryClient({
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <QueryClientProvider client={queryClient}>
-      <DialogProvider>
-        <SidebarProvider>
-          {children}
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="dark"
-          />
-        </SidebarProvider>
-      </DialogProvider>
-    </QueryClientProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <DialogProvider>
+          <SidebarProvider>
+            {children}
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
+          </SidebarProvider>
+        </DialogProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

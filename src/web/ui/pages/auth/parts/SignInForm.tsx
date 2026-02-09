@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "../../../../providers/betterAuthWebClient";
-import { Button } from "../../../components/shadcn/button";
+import { Button } from "@/components/ui/button";
 import logger from "../../../../../shared/utils/logger";
 import { useTranslation } from "react-i18next";
 
@@ -41,9 +41,7 @@ export const SignInForm: React.FC = () => {
       router.push("/");
     } catch (error: unknown) {
       logger.error("SignInForm", error);
-      setError(
-        error instanceof Error ? error.message : t("auth.genericError")
-      );
+      setError(error instanceof Error ? error.message : t("auth.genericError"));
       setIsLoading(false);
     }
   };
@@ -52,7 +50,9 @@ export const SignInForm: React.FC = () => {
     <div className="flex items-center justify-center min-h-screen bg-[#0b0e14]">
       <div className="w-full max-w-md p-8 space-y-8 bg-[#1a1d29] rounded-lg border border-gray-800">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-white mb-2">{t("auth.signIn")}</h1>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {t("auth.signIn")}
+          </h1>
           <p className="text-gray-400">{t("auth.signInSubtitle")}</p>
         </div>
 

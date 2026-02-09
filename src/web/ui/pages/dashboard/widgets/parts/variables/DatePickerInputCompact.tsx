@@ -5,8 +5,8 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../../../components/shadcn/popover";
-import { Calendar } from "../../../../../components/shadcn/calendar";
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { parseISO, format } from "date-fns";
 import { fr } from "date-fns/locale";
 

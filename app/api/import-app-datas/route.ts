@@ -10,8 +10,8 @@ import logger from '../../../src/shared/utils/logger';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const result = await importAppDatasUseCase.execute(body);
-    return NextResponse.json(result, { status: 200 });
+    await importAppDatasUseCase.execute(body);
+    return NextResponse.json(null, { status: 200 });
   } catch (error: unknown) {
     logger.error('import-app-datas POST API route', error);
     return NextResponse.json(

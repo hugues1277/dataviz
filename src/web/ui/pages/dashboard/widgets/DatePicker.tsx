@@ -10,14 +10,13 @@ import { subDays } from "date-fns/subDays";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { useTranslation } from "react-i18next";
-import { formatDateDisplay as formatDateDisplayUtil } from "../../../../core/utils/dateUtils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "../../../components/shadcn/popover";
-import { Calendar } from "../../../components/shadcn/calendar";
-import { Button } from "../../../components/shadcn/button";
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
 import { cn } from "../../../../core/utils/cn";
 
 interface DatePickerProps {

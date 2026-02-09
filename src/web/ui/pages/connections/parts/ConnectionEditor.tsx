@@ -75,8 +75,8 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
       <div className="flex-1 flex flex-col lg:flex-row overflow-y-auto scrollbar-thin bg-[#0e1014]">
         {/* Colonne gauche : Types de connexions */}
         <div className="w-full lg:w-[320px] lg:border-r border-[#1f2127] bg-[#111217] p-6 lg:p-8 shrink-0 flex flex-col gap-6 overflow-y-auto">
-          <div className="space-y-4">
-            <label className="text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">
+          <div className="space-y-1.5">
+            <label className="block text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] ml-1">
               {t("connections.sourceType")}
             </label>
             <div className="grid grid-cols-1 gap-3">

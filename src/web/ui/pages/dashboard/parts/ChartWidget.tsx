@@ -18,7 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../../components/shadcn/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
 
 interface ChartWidgetProps {
   chart: ChartConfig;

@@ -30,10 +30,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const chartRepository = new ChartRepository();
-    const result = await chartRepository.create(body);
-    return NextResponse.json(result, { status: 200 });
+    await chartRepository.create(body);
+    return NextResponse.json(null, { status: 200 });
   } catch (error: unknown) {
-    logger.error('charts POST API route', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Erreur serveur' },
       { status: 400 }
