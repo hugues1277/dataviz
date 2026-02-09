@@ -37,10 +37,10 @@ export const CreateFirstUserForm: React.FC = () => {
         }),
       });
 
-      const data = await response.json();
+      await response.json();
 
       if (!response.ok) {
-        setError(data.error || t("auth.createUserError"));
+        setError(t("auth.createUserError"));
         setIsLoading(false);
         return;
       }

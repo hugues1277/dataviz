@@ -14,10 +14,16 @@ const nextConfig: NextConfig = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname),
     };
+    // Résolution des modules pour better-auth avec pnpm
+    // Force la résolution de next/headers depuis le node_modules racine
+    config.resolve.modules = [
+      path.resolve(__dirname, 'node_modules'),
+      'node_modules',
+    ];
     return config;
   },
-  // Configuration pour Better Auth - évite les problèmes de résolution de modules
-  serverExternalPackages: ['better-auth'],
+  // Configuration pour Better Auth - transpile better-auth pour éviter les problèmes de résolution
+  transpilePackages: ['better-auth'],
 };
 
 export default nextConfig;

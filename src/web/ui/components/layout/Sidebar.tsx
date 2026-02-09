@@ -94,6 +94,7 @@ const Sidebar: React.FC = () => {
                   alt="logo"
                   width={28}
                   height={28}
+                  unoptimized
                   className="object-contain"
                 />
               </div>

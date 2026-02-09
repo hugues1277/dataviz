@@ -3,15 +3,15 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 
 /**
- * Middleware amélioré avec validation complète de session Better Auth
+ * Proxy amélioré avec validation complète de session Better Auth
  * Utilise auth.api.getSession() pour valider les sessions avec vérification en base de données
  * 
- * Note: Nécessite runtime: "nodejs" pour Next.js 15.2.0+ avec validation complète de session
+ * Note: Le proxy s'exécute toujours sur le runtime Node.js par défaut
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Les routes API ne doivent pas être interceptées par le middleware
+  // Les routes API ne doivent pas être interceptées par le proxy
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
@@ -49,7 +49,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     } catch (error) {
       // En cas d'erreur, permettre l'accès à la page de connexion
-      console.error("Middleware auth error for sign-in:", error);
+      console.error("Proxy auth error for sign-in:", error);
       return NextResponse.next();
     }
   }
@@ -61,7 +61,7 @@ export async function middleware(request: NextRequest) {
 
   // Routes protégées : valider la session
   try {
-    // Utiliser request.headers directement dans le middleware
+    // Utiliser request.headers directement dans le proxy
     const session = await auth.api.getSession({
       headers: request.headers,
     });
@@ -76,7 +76,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     // En cas d'erreur, rediriger vers la page de connexion
-    console.error("Middleware auth error:", error);
+    console.error("Proxy auth error:", error);
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(signInUrl);
@@ -84,7 +84,6 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  runtime: "nodejs", // Nécessaire pour Next.js 15.2.0+ avec validation complète de session
   matcher: [
     /*
      * Match all request paths except for the ones starting with:
