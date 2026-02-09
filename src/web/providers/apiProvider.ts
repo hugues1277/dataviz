@@ -1,5 +1,6 @@
 import { AppDatas, Dashboard, ChartConfig, DBConnection } from '../../shared/types/types';
 import { IStorageProvider } from '../interfaces/IStorageProvider';
+import i18n from '../../i18n/i18n';
 
 const API_BASE = ''; // Utilise le même serveur
 
@@ -16,9 +17,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors du chargement des données de l\'application');
+            throw new Error(i18n.t('exceptions.api.loadAppDataError'));
         }
 
         const data = await response.json();
@@ -32,9 +33,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors du chargement des dashboards et charts');
+            throw new Error(i18n.t('exceptions.api.loadDashboardsError'));
         }
 
         const data = await response.json();
@@ -51,9 +52,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la sauvegarde du dashboard');
+            throw new Error(i18n.t('exceptions.api.saveDashboardError'));
         }
     },
 
@@ -65,9 +66,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la suppression du dashboard');
+            throw new Error(i18n.t('exceptions.api.deleteDashboardError'));
         }
     },
 
@@ -79,9 +80,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors du chargement des charts');
+            throw new Error(i18n.t('exceptions.api.loadChartsError'));
         }
 
         const data = await response.json();
@@ -95,9 +96,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors du chargement des charts');
+            throw new Error(i18n.t('exceptions.api.loadChartsError'));
         }
 
         const data = await response.json();
@@ -114,9 +115,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la sauvegarde du chart');
+            throw new Error(i18n.t('exceptions.api.saveChartError'));
         }
     },
 
@@ -128,9 +129,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la suppression du chart');
+            throw new Error(i18n.t('exceptions.api.deleteChartError'));
         }
     },
 
@@ -142,9 +143,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la suppression des charts');
+            throw new Error(i18n.t('exceptions.api.deleteChartsError'));
         }
     },
 
@@ -157,9 +158,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors du chargement des connections');
+            throw new Error(i18n.t('exceptions.api.loadConnectionsError'));
         }
 
         const data = await response.json();
@@ -176,9 +177,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la sauvegarde de la connection');
+            throw new Error(i18n.t('exceptions.api.saveConnectionError'));
         }
     },
 
@@ -192,9 +193,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la sauvegarde de la connection');
+            throw new Error(i18n.t('exceptions.api.saveConnectionError'));
         }
     },
 
@@ -206,9 +207,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la suppression de la connection');
+            throw new Error(i18n.t('exceptions.api.deleteConnectionError'));
         }
     },
 
@@ -222,9 +223,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de l\'importation des données de l\'application');
+            throw new Error(i18n.t('exceptions.api.importAppDataError'));
         }
     },
 
@@ -235,7 +236,7 @@ export const storageProvider: IStorageProvider = {
         });
 
         if (!response.ok) {
-            throw new Error('Erreur lors de l\'exportation des données de l\'application');
+            throw new Error(i18n.t('exceptions.api.exportAppDataError'));
         }
 
         const data = await response.json();
@@ -250,9 +251,9 @@ export const storageProvider: IStorageProvider = {
 
         if (!response.ok) {
             if (response.status === 401) {
-                throw new Error('Session expirée, veuillez vous reconnecter');
+                throw new Error(i18n.t('exceptions.api.sessionExpired'));
             }
-            throw new Error('Erreur lors de la suppression des données');
+            throw new Error(i18n.t('exceptions.api.clearAllError'));
         }
     },
 };

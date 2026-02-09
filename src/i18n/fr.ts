@@ -246,13 +246,56 @@ export const fr = {
             creating: "Création...",
             createUserError: "Erreur lors de la création de l'utilisateur",
             userCreatedButSignInError: "Utilisateur créé mais erreur lors de la connexion. Veuillez vous connecter manuellement.",
-            initialSetupNote: "Cette page n'est accessible que lorsqu'aucun utilisateur n'existe dans la base de données."
+            initialSetupNote: "Cette page n'est accessible que lorsqu'aucun utilisateur n'existe dans la base de données.",
+            getUserCountError:
+                "Erreur lors de la vérification des utilisateurs"
+
         },
         language: {
             title: "Langue",
             description: "Langue de l'application",
             fr: "Français",
             en: "Anglais"
+        },
+        exceptions: {
+            queryRequest: {
+                proxyError: "Erreur Proxy {{status}}",
+                proxyConnectionError: "Impossible de se connecter au proxy de requête. Error: {{error}}",
+                variableNotFound: "Une variable n'existe pas dans la requête"
+            },
+            api: {
+                sessionExpired: "Session expirée, veuillez vous reconnecter",
+                loadAppDataError: "Erreur lors du chargement des données de l'application",
+                loadDashboardsError: "Erreur lors du chargement des dashboards et charts",
+                saveDashboardError: "Erreur lors de la sauvegarde du dashboard",
+                deleteDashboardError: "Erreur lors de la suppression du dashboard",
+                loadChartsError: "Erreur lors du chargement des charts",
+                saveChartError: "Erreur lors de la sauvegarde du chart",
+                deleteChartError: "Erreur lors de la suppression du chart",
+                deleteChartsError: "Erreur lors de la suppression des charts",
+                loadConnectionsError: "Erreur lors du chargement des connections",
+                saveConnectionError: "Erreur lors de la sauvegarde de la connection",
+                deleteConnectionError: "Erreur lors de la suppression de la connection",
+                importAppDataError: "Erreur lors de l'importation des données de l'application",
+                exportAppDataError: "Erreur lors de l'exportation des données de l'application",
+                clearAllError: "Erreur lors de la suppression des données"
+            },
+            encryption: {
+                invalidPayloadTooShort: "Charge utile chiffrée invalide : charge utile trop courte",
+                invalidPayloadEmptyTag: "Charge utile chiffrée invalide : tag d'authentification vide"
+            },
+            createFirstUser: {
+                emailPasswordRequired: "Email et password sont requis",
+                usersAlreadyExist: "Des utilisateurs existent déjà. Cette fonctionnalité n'est disponible que pour créer le premier utilisateur.",
+                successMessage: "Premier utilisateur admin créé avec succès"
+            },
+            apiQueryProvider: {
+                apiUrlNotDefined: "API URL non définie",
+                apiError: "Erreur API {{status}}"
+            },
+            auth: {
+                invalidSession: "Session invalide ou expirée",
+            }
         }
     }
 };

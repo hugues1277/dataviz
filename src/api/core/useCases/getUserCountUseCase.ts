@@ -2,6 +2,8 @@ import { databaseProvider } from '../../providers/databaseProvider';
 import { runDbMigration } from '../../providers/dbMigration';
 import logger from '../../../shared/utils/logger';
 import UserRepository from '../../repositories/userRepository';
+import { toast } from 'react-toastify';
+import i18n from '../../../i18n/i18n-server';
 
 /**
  * Use case: Récupérer le nombre d'utilisateurs
@@ -27,7 +29,8 @@ export const getUserCountUseCase = {
             }
         } catch (error: unknown) {
             logger.error('getUserCountUseCase', error);
-            throw new Error("Erreur lors de la vérification des utilisateurs");
+            toast.error(i18n.t('auth.getUserCountError'));
+            throw new Error(i18n.t('auth.getUserCountError'));
         }
     }
 };

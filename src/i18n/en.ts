@@ -246,13 +246,54 @@ export const en = {
             creating: "Creating...",
             createUserError: "Error creating user",
             userCreatedButSignInError: "User created but error signing in. Please sign in manually.",
-            initialSetupNote: "This page is only accessible when no users exist in the database."
+            initialSetupNote: "This page is only accessible when no users exist in the database.",
+            getUserCountError: "Error checking users"
         },
         language: {
             title: "Language",
             description: "Choose the language of the application",
             fr: "French",
             en: "English"
+        },
+        exceptions: {
+            queryRequest: {
+                proxyError: "Proxy Error {{status}}",
+                proxyConnectionError: "Unable to connect to query proxy. Error: {{error}}",
+                variableNotFound: "A variable does not exist in the query"
+            },
+            api: {
+                sessionExpired: "Session expired, please reconnect",
+                loadAppDataError: "Error loading application data",
+                loadDashboardsError: "Error loading dashboards and charts",
+                saveDashboardError: "Error saving dashboard",
+                deleteDashboardError: "Error deleting dashboard",
+                loadChartsError: "Error loading charts",
+                saveChartError: "Error saving chart",
+                deleteChartError: "Error deleting chart",
+                deleteChartsError: "Error deleting charts",
+                loadConnectionsError: "Error loading connections",
+                saveConnectionError: "Error saving connection",
+                deleteConnectionError: "Error deleting connection",
+                importAppDataError: "Error importing application data",
+                exportAppDataError: "Error exporting application data",
+                clearAllError: "Error deleting data"
+            },
+            encryption: {
+                invalidPayloadTooShort: "Invalid encrypted payload: payload too short",
+                invalidPayloadEmptyTag: "Invalid encrypted payload: empty authentication tag"
+            },
+            createFirstUser: {
+                emailPasswordRequired: "Email and password are required",
+                usersAlreadyExist: "Users already exist. This feature is only available to create the first user.",
+                successMessage: "First admin user created successfully"
+            },
+            apiQueryProvider: {
+                apiUrlNotDefined: "API URL not defined",
+                apiError: "API Error {{status}}"
+            },
+            auth: {
+                invalidSession: "Invalid or expired session"
+            }
         }
     }
 };

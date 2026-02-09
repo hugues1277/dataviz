@@ -1,5 +1,6 @@
 import { auth } from '../../../../lib/auth';
 import { getUserCountUseCase } from './getUserCountUseCase';
+import i18n from '../../../i18n/i18n-server';
 
 export interface CreateFirstUserInput {
   email: string;
@@ -20,16 +21,14 @@ export interface CreateFirstUserOutput {
 export const createFirstUserUseCase = {
   execute: async (input: CreateFirstUserInput): Promise<CreateFirstUserOutput> => {
     if (!input.email || !input.password) {
-      throw new Error('Email et password sont requis');
+      throw new Error(i18n.t('exceptions.createFirstUser.emailPasswordRequired'));
     }
 
     // Vérifier d'abord s'il y a déjà des utilisateurs
     const { hasUsers } = await getUserCountUseCase.execute();
 
     if (hasUsers) {
-      throw new Error(
-        "Des utilisateurs existent déjà. Cette fonctionnalité n'est disponible que pour créer le premier utilisateur."
-      );
+      throw new Error(i18n.t('exceptions.createFirstUser.usersAlreadyExist'));
     }
 
     // Créer le premier utilisateur en utilisant l'API serveur Better Auth
@@ -45,7 +44,7 @@ export const createFirstUserUseCase = {
     return {
       success: true,
       user: response.user,
-      message: 'Premier utilisateur admin créé avec succès',
+      message: i18n.t('exceptions.createFirstUser.successMessage'),
     };
   },
 };

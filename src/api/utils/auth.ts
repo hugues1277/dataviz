@@ -1,6 +1,6 @@
 import { auth } from '../../../lib/auth';
-import { headers } from 'next/headers';
 import logger from '../../shared/utils/logger';
+import i18n from '../../i18n/i18n-server';
 
 export interface AuthenticatedRequest {
   sessionToken: string;
@@ -23,7 +23,7 @@ export async function getAuthenticationData(headersRecord: Record<string, any>):
     });
 
     if (!session?.user) {
-      throw new Error('Session invalide ou expirée');
+      throw new Error(i18n.t('exceptions.auth.invalidSession'));
     }
 
     // Extraire le token de session depuis les cookies pour compatibilité
@@ -41,7 +41,7 @@ export async function getAuthenticationData(headersRecord: Record<string, any>):
     };
   } catch (error: unknown) {
     logger.error('getAuthenticationData', error);
-    throw new Error('Session invalide ou expirée');
+    throw new Error(i18n.t('exceptions.auth.invalidSession'));
   }
 }
 
