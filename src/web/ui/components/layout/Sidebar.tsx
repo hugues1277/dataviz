@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback } from "react";
 import {
   LayoutDashboard,
@@ -12,24 +14,26 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSidebar } from "../../../core/context/useSidebar";
-import { useNavigate, useLocation, NavLink } from "react-router";
+
+import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
-import logo from "../../../../../assets/logo.png";
+import Image from "next/image";
 import { moveDashboardUseCase } from "@/src/web/core/useCases/dashboards/moveDashboardUseCase";
 import { addDashboardUseCase } from "@/src/web/core/useCases/dashboards/addDashboardUseCase";
 
 const Sidebar: React.FC = () => {
   const { isSidebarOpen, closeSidebar } = useSidebar();
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const router = useRouter();
+  const pathname = usePathname();
   const { dashboards, activeDashboard } = useDashboardsStore();
 
   const [reorderMode, setReorderMode] = useState(false);
 
   const getActiveView = (): "dashboards" | "connections" | "settings" => {
-    if (location.pathname.startsWith("/connections")) return "connections";
-    if (location.pathname.startsWith("/settings")) return "settings";
+    if (pathname?.startsWith("/connections")) return "connections";
+    if (pathname?.startsWith("/settings")) return "settings";
     return "dashboards";
   };
 
@@ -42,35 +46,29 @@ const Sidebar: React.FC = () => {
   const handleSelectDashboard = useCallback(
     (id: string) => {
       if (!reorderMode) {
-        navigate(`/dashboards/${id}`);
+        router.push(`/dashboards/${id}`);
         closeSidebar();
       }
     },
-    [reorderMode, navigate, closeSidebar]
+    [reorderMode, router, closeSidebar]
   );
 
-  const handleMoveUp = useCallback(
-    (id: string) => {
-      moveDashboardUseCase.execute(id, "up");
-    },
-    []
-  );
+  const handleMoveUp = useCallback((id: string) => {
+    moveDashboardUseCase.execute(id, "up");
+  }, []);
 
-  const handleMoveDown = useCallback(
-    (id: string) => {
-      moveDashboardUseCase.execute(id, "down");
-    },
-    []
-  );
+  const handleMoveDown = useCallback((id: string) => {
+    moveDashboardUseCase.execute(id, "down");
+  }, []);
 
   const handleAddDashboard = useCallback(async () => {
     const newId = await addDashboardUseCase.execute();
     // Attendre que le store se mette à jour avec le nouveau dashboard
     setTimeout(() => {
-      navigate(`/dashboards/${newId}`);
+      router.push(`/dashboards/${newId}`);
     }, 50);
     closeSidebar();
-  }, [navigate, closeSidebar]);
+  }, [router, closeSidebar]);
 
   return (
     <>
@@ -91,10 +89,12 @@ const Sidebar: React.FC = () => {
           <div className="p-4 flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded flex items-center justify-center shadow-lg">
-                <img
-                  src={logo}
+                <Image
+                  src="/assets/logo.png"
                   alt="logo"
-                  className="w-full h-full object-contain"
+                  width={28}
+                  height={28}
+                  className="object-contain"
                 />
               </div>
               <span className="text-lg pt-[2px] font-black text-white tracking-tighter uppercase">
@@ -112,25 +112,23 @@ const Sidebar: React.FC = () => {
 
           <nav className="flex-1 px-3 space-y-4 overflow-y-auto pt-2 scrollbar-none">
             <div className="space-y-0.5">
-              <NavLink
-                to={
+              <Link
+                href={
                   activeDashboard?.id
                     ? `/dashboards/${activeDashboard?.id}`
                     : "/"
                 }
-                className={({ isActive }) =>
-                  `w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
-                    isActive || activeView === "dashboards"
-                      ? "bg-[#181b1f] text-blue-400"
-                      : "text-gray-500 hover:text-white"
-                  }`
-                }
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
+                  activeView === "dashboards"
+                    ? "bg-[#181b1f] text-blue-400"
+                    : "text-gray-500 hover:text-white"
+                }`}
               >
                 <LayoutDashboard size={14} />
                 <span className="uppercase tracking-widest">
                   {t("sidebar.dashboards")}
                 </span>
-              </NavLink>
+              </Link>
             </div>
 
             <div className="space-y-2">
@@ -222,38 +220,34 @@ const Sidebar: React.FC = () => {
           </nav>
 
           <div className="p-3 border-t border-[#1f2127] space-y-0.5">
-            <NavLink
-              to="/connections"
+            <Link
+              href="/connections"
               onClick={() => closeSidebar()}
-              className={({ isActive }) =>
-                `w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
-                  isActive
-                    ? "bg-[#181b1f] text-blue-400"
-                    : "text-gray-500 hover:text-white"
-                }`
-              }
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
+                activeView === "connections"
+                  ? "bg-[#181b1f] text-blue-400"
+                  : "text-gray-500 hover:text-white"
+              }`}
             >
               <Database size={14} />
               <span className="uppercase tracking-widest">
                 {t("sidebar.connections")}
               </span>
-            </NavLink>
-            <NavLink
-              to="/settings"
+            </Link>
+            <Link
+              href="/settings"
               onClick={() => closeSidebar()}
-              className={({ isActive }) =>
-                `w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
-                  isActive
-                    ? "bg-[#181b1f] text-blue-400"
-                    : "text-gray-500 hover:text-white"
-                }`
-              }
+              className={`w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
+                activeView === "settings"
+                  ? "bg-[#181b1f] text-blue-400"
+                  : "text-gray-500 hover:text-white"
+              }`}
             >
               <Settings size={14} />
               <span className="uppercase tracking-widest">
                 {t("sidebar.settings")}
               </span>
-            </NavLink>
+            </Link>
           </div>
         </aside>
       </div>

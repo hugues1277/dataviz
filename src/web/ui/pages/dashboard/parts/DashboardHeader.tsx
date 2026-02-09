@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useCallback, useMemo } from "react";
 import { Check } from "lucide-react";
 import { Dashboard } from "../../../../../shared/types/types";
@@ -9,7 +10,8 @@ import { useDashboardsStore } from "../../../../core/stores/dashboardsStore";
 import { useRefetchDashboardCharts } from "../../../../core/hooks/dashboard/useChartQuery";
 import Header from "../../../components/layout/Header";
 import { deleteDashboardUseCase } from "@/src/web/core/useCases/dashboards/deleteDashboardUseCase";
-import { useNavigate } from "react-router";
+
+import { useRouter } from "next/navigation";
 import { renameDashboardUseCase } from "@/src/web/core/useCases/dashboards/renameDashboardUseCase";
 
 interface DashboardHeaderProps {
@@ -32,7 +34,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const { t } = useTranslation();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const { dateRange, setDateRange, isAllTime, setAllTime } =
     useDateRangeStore();
@@ -64,9 +66,9 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 
     const remainingDashboards = await deleteDashboardUseCase.execute(id);
     setTimeout(() => {
-      navigate(`/dashboards/${remainingDashboards[0].id}`);
+      router.push(`/dashboards/${remainingDashboards[0].id}`);
     }, 100);
-  }, [navigate, activeDashboard, canDeleteDashboard]);
+  }, [router, activeDashboard, canDeleteDashboard]);
 
   if (!activeDashboard) return null;
 

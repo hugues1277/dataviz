@@ -1,4 +1,5 @@
-import { betterAuthProvider } from '../providers/betterAuthProvider';
+import { auth } from '../../../lib/auth';
+import { headers } from 'next/headers';
 import logger from '../../shared/utils/logger';
 
 export interface AuthenticatedRequest {
@@ -10,35 +11,33 @@ export interface AuthenticatedRequest {
 /**
  * Vérifie l'authentification via Better Auth à partir des headers HTTP
  * Lève une erreur si l'utilisateur n'est pas authentifié
+ * 
+ * Pour les server components/actions Next.js, utilisez directement:
+ * const session = await auth.api.getSession({ headers: await headers() });
  */
-export async function getAuthenticationData(headers: Record<string, any>): Promise<AuthenticatedRequest> {
-  const cookieHeader = headers.cookie || '';
-
-  // Extraire le token de session depuis les cookies
-  const sessionToken = cookieHeader
-    .split(';')
-    .map((c: string) => c.trim())
-    .find((c: string) => c.startsWith('better-auth.session_token='))
-    ?.split('=')[1];
-
-  if (!sessionToken) {
-    throw new Error('Non authentifié : aucun token de session');
-  }
-
+export async function getAuthenticationData(headersRecord: Record<string, any>): Promise<AuthenticatedRequest> {
   try {
-    // Vérifier la session avec Better Auth
-    const session = await betterAuthProvider.api.getSession({
-      headers: { cookie: `better-auth.session_token=${sessionToken}` },
+    // Utiliser l'API Better Auth avec les headers fournis
+    const session = await auth.api.getSession({
+      headers: headersRecord as HeadersInit,
     });
 
     if (!session?.user) {
       throw new Error('Session invalide ou expirée');
     }
 
+    // Extraire le token de session depuis les cookies pour compatibilité
+    const cookieHeader = headersRecord.cookie || '';
+    const sessionToken = cookieHeader
+      .split(';')
+      .map((c: string) => c.trim())
+      .find((c: string) => c.startsWith('better-auth.session_token='))
+      ?.split('=')[1] || '';
+
     return {
       sessionToken,
       userId: session.user.id,
-      userEmail: session.user.email,
+      userEmail: session.user.email || '',
     };
   } catch (error: unknown) {
     logger.error('getAuthenticationData', error);

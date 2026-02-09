@@ -1,11 +1,14 @@
+"use client";
+
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { LogOut } from "lucide-react";
 import Header from "../../components/layout/Header";
 import PageHeader from "../../components/layout/PageHeader";
 import { useDialog } from "../../components/modal/DialogContext";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
-import { signOut, useSession } from "../../../providers/betterAuthWebClient";
+
+import { useRouter } from "next/navigation";
+import { signOut } from "@/src/web/providers/betterAuthWebClient";
 import { Button } from "../../components/Button";
 import { SettingsActionCard } from "./parts/SettingsActionCard";
 import { exportDataUseCase } from "../../../core/useCases/dataManagement/exportDataUseCase";
@@ -20,9 +23,8 @@ export enum LoadingOperation {
 }
 
 const SettingsPage: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { t, i18n: i18nInstance } = useTranslation();
-  const { data: session } = useSession();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loadingOperation, setLoadingOperation] =
@@ -59,10 +61,10 @@ const SettingsPage: React.FC = () => {
       setLoadingOperation(null);
 
       if (appDatas && appDatas.dashboards.length > 0) {
-        navigate(`/dashboards/${appDatas.dashboards[0].id}`);
+        router.push(`/dashboards/${appDatas.dashboards[0].id}`);
       }
     },
-    [navigate]
+    [router]
   );
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,9 +86,9 @@ const SettingsPage: React.FC = () => {
     setLoadingOperation(null);
 
     if (success) {
-      navigate("/");
+      router.push("/");
     }
-  }, [navigate]);
+  }, [router]);
 
   const handleFullResetRequest = useCallback(() => {
     confirm({
@@ -108,10 +110,10 @@ const SettingsPage: React.FC = () => {
       confirmLabel: t("common.logoutConfirmBtn"),
       onConfirm: async () => {
         await signOut();
-        navigate("/sign-in");
+        router.push("/sign-in");
       },
     });
-  }, [navigate, confirm, t]);
+  }, [router, confirm, t]);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -123,11 +125,9 @@ const SettingsPage: React.FC = () => {
             title={t("settings.title")}
             description={t("settings.desc")}
             actions={
-              session?.user && (
-                <Button onClick={handleSignOut}>
-                  <LogOut size={16} /> {t("common.logout")}
-                </Button>
-              )
+              <Button onClick={handleSignOut}>
+                <LogOut size={16} /> {t("common.logout")}
+              </Button>
             }
           />
 

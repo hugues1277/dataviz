@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import { useSession } from "../../../providers/betterAuthWebClient";
 import { CreateFirstUserForm } from "./parts/CreateFirstUserForm";
 import { SignInForm } from "./parts/SignInForm";
@@ -8,7 +10,7 @@ import logger from "../../../../shared/utils/logger";
 export const SignInPage: React.FC = () => {
   const [hasUsers, setHasUsers] = useState<boolean | null>(null);
   const { data: session, isPending } = useSession();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Vérifier si des utilisateurs existent au chargement et si non, afficher le formulaire de création du premier utilisateur
   useEffect(() => {
@@ -33,9 +35,9 @@ export const SignInPage: React.FC = () => {
 
     // Si l'utilisateur est déjà connecté, rediriger vers l'accueil
     if (session?.user) {
-      navigate("/");
+      router.push("/");
     }
-  }, [isPending, session, hasUsers, navigate]);
+  }, [isPending, session, hasUsers, router]);
 
   if (isPending) {
     return (

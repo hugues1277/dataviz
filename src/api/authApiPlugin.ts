@@ -5,7 +5,6 @@ import { handleCORS, readBody, sendJson } from './utils/request';
 // Use cases
 import { getUserCountUseCase } from './core/useCases/getUserCountUseCase';
 import { createFirstUserUseCase } from './core/useCases/createFirstUserUseCase';
-import { betterAuthProxyUseCase } from './core/useCases/betterAuthProxyUseCase';
 import { requestHandler } from './utils/requestHandler';
 import logger from '../shared/utils/logger';
 
@@ -18,58 +17,16 @@ import logger from '../shared/utils/logger';
  * - Providers pour les services externes (database, auth)
  * 
  * Routes:
- * - /api/auth/* -> Better Auth (tous les endpoints)
  * - /api/admin/create-first-user -> Créer le premier utilisateur admin
  * - /api/admin/check-has-users -> Vérifier si des utilisateurs existent
  * - /health -> Health check
+ * 
+ * Note: Better Auth est maintenant géré directement via Next.js App Router dans app/api/auth/[...all]/route.ts
  */
 export function authApiPlugin(): Plugin {
   return {
     name: 'api-plugin',
     configureServer(server) {
-      // Better Auth - tous les endpoints Better Auth (sign-in, sign-up, get-session, etc.)
-      server.middlewares.use('/api/auth', async (req: IncomingMessage, res: ServerResponse) => {
-        handleCORS(res, req);
-        if (req.method === 'OPTIONS') {
-          res.statusCode = 200;
-          res.end();
-          return;
-        }
-
-        try {
-          // Lire le body si présent
-          const body = req.method !== 'GET' && req.method !== 'HEAD'
-            ? await readBody(req)
-            : undefined;
-
-          // Appeler le use case Better Auth
-          const result = await betterAuthProxyUseCase.execute({
-            method: req.method || 'GET',
-            url: req.url || '',
-            headers: req.headers,
-            body,
-          });
-
-          // Copier les headers de la réponse (notamment les cookies de session)
-          result.headers.forEach((value, key) => {
-            res.setHeader(key, value);
-          });
-
-          // Définir le code de statut et envoyer le body
-          res.statusCode = result.status;
-          if (result.body) {
-            res.end(result.body);
-          } else {
-            res.end();
-          }
-        } catch (error: unknown) {
-          logger.error('authApiPlugin', error);
-
-          if (!res.headersSent) {
-            sendJson(res, 500, { error: error instanceof Error ? error.message : 'Erreur serveur' }, req);
-          }
-        }
-      });
 
       // POST /api/admin/create-first-user - Créer le premier utilisateur admin
       server.middlewares.use('/api/admin/create-first-user', async (req: IncomingMessage, res: ServerResponse) => {

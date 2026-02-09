@@ -1,7 +1,9 @@
+"use client";
+
 import { Button } from "../../../components/shadcn/button";
 import { signIn } from "../../../../providers/betterAuthWebClient";
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import logger from "../../../../../shared/utils/logger";
 import { useTranslation } from "react-i18next";
 
@@ -15,7 +17,7 @@ export const CreateFirstUserForm: React.FC = () => {
   const [name, setName] = useState("Admin");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,7 +62,7 @@ export const CreateFirstUserForm: React.FC = () => {
         }
 
         // Redirection vers la page d'accueil
-        navigate("/");
+        router.push("/");
       } catch {
         setError(t("auth.userCreatedButSignInError"));
         setIsLoading(false);

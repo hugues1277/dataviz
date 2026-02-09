@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import { useSession } from "../../../providers/betterAuthWebClient";
 
 interface ProtectedRouteProps {
@@ -7,13 +9,14 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  console.log("ProtectedRoute");
   const { data: session, isPending } = useSession();
-  const navigate = useNavigate();
+  const router = useRouter();
   useEffect(() => {
     if (!isPending && !session?.user) {
-      navigate("/sign-in");
+      router.push("/sign-in");
     }
-  }, [session, navigate, isPending]);
+  }, [session, router, isPending]);
 
   return <>{children}</>;
 };

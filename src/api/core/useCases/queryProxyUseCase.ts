@@ -1,6 +1,6 @@
 import ConnectionRepository from '../../repositories/connectionRepository';
 import { CONNECTION_TYPES, QueryResult } from '../../../shared/types/types';
-import { queryProxyService } from '../../core/services/queryProxyService';
+import { queryProxyService } from '../services/queryProxyService';
 import { apiQueryProvider } from '../../providers/queryDbConnectors/apiQueryProvider';
 import { postgresQueryProvider } from '../../providers/queryDbConnectors/postgresQueryProvider';
 

@@ -1,6 +1,8 @@
+"use client";
+
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import { Database, Plus } from "lucide-react";
 import { Button } from "../../../components/Button";
 import { useConnectionsStore } from "@/src/web/core/stores/connectionsStore";
@@ -13,7 +15,7 @@ const EmptyDashboardState: React.FC<EmptyDashboardStateProps> = ({
   onAddChart,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const router = useRouter();
   const { connections } = useConnectionsStore();
 
   return (
@@ -40,7 +42,7 @@ const EmptyDashboardState: React.FC<EmptyDashboardStateProps> = ({
             {t("dashboard.noConnections")}
           </h2>
           <Button
-            onClick={() => navigate("/connections")}
+            onClick={() => router.push("/connections")}
             variant="primary"
             icon={<Database size={16} />}
           >

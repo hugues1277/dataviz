@@ -1,5 +1,5 @@
-import { betterAuthProvider } from '../../providers/betterAuthProvider';
-import { getUserCountUseCase } from '../../core/useCases/getUserCountUseCase';
+import { auth } from '../../../../lib/auth';
+import { getUserCountUseCase } from './getUserCountUseCase';
 
 export interface CreateFirstUserInput {
   email: string;
@@ -33,8 +33,8 @@ export const createFirstUserUseCase = {
     }
 
     // Créer le premier utilisateur en utilisant l'API serveur Better Auth
-    // betterAuthProvider.api.signUpEmail gère automatiquement le hash du mot de passe
-    const response = await betterAuthProvider.api.signUpEmail({
+    // auth.api.signUpEmail gère automatiquement le hash du mot de passe
+    const response = await auth.api.signUpEmail({
       body: {
         email: input.email,
         password: input.password,

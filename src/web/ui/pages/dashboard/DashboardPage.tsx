@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { ChartConfig } from "../../../../shared/types/types";
 import ChartEditor from "./parts/ChartEditor";
@@ -7,7 +8,8 @@ import { useTranslation } from "react-i18next";
 import { useDateRangeStore } from "../../../core/stores/useDateRangeStore";
 import ChartPreview from "./parts/ChartPreview";
 import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
-import { useParams } from "react-router";
+
+import { useParams } from "next/navigation";
 import DashboardHeader from "./parts/DashboardHeader";
 import { saveChartUseCase } from "@/src/web/core/useCases/charts/saveChartUseCase";
 import { deleteChartUseCase } from "@/src/web/core/useCases/charts/deleteChartUseCase";
@@ -22,7 +24,8 @@ const DashboardPage: React.FC = () => {
   const [editingChart, setEditingChart] = useState<ChartConfig | null>(null);
   const [viewingChart, setViewingChart] = useState<ChartConfig | null>(null);
   const { dateRange } = useDateRangeStore();
-  const { dashboardId } = useParams<{ dashboardId: string }>();
+  const params = useParams();
+  const dashboardId = params?.dashboardId as string | undefined;
   const [isLoading, setIsLoading] = useState(true);
 
   const { dashboards, allCharts, activeDashboard, setActiveDashboard } =
@@ -102,9 +105,13 @@ const DashboardPage: React.FC = () => {
             isLocked={isLocked}
             dateRange={dateRange}
             variableValues={variableValues}
-            saveChart={(chart: ChartConfig[]) => saveChartUseCase.execute(chart)}
+            saveChart={(chart: ChartConfig[]) =>
+              saveChartUseCase.execute(chart)
+            }
             onEdit={(chart: ChartConfig) => setEditingChart(chart)}
-            onDelete={(chart: ChartConfig) => deleteChartUseCase.execute(chart.id)}
+            onDelete={(chart: ChartConfig) =>
+              deleteChartUseCase.execute(chart.id)
+            }
             onView={(chart: ChartConfig) => setViewingChart(chart)}
           />
         )}

@@ -1,0 +1,25 @@
+{
+    // "githubPullRequests.ignoredPullRequestBranches": [
+    //     "develop"
+    // ],
+    "terminal.integrated.cwd": "${workspaceFolder}/",
+    "workbench.notification.position": "bottom-right",
+    "editor.formatOnSave": true,
+    // "editor.hover.enabled": false,
+    "editor.hover.delay": 1000,
+    // "editor.codeActionsOnSave": {
+    //     "source.fixAll": "explicit"
+    // },
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+    "explorer.fileNesting.patterns": {
+        "package.json": "*.config, node_modules, tsconfig*.json, .eslintrc.*, .gitignore, pnpm-lock.yaml, index.html, .env*, index.tsx, App.tsx, i18n.ts, *.json, *.css, README.md, favicon.ico",
+    },
+    //hide in explorer
+    "files.exclude": {
+        "**/node_modules": true,
+    },
+    "search.exclude": {
+        "node_modules": true,
+    },
+}

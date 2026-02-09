@@ -1,5 +1,7 @@
+"use client";
+
 import React, { useState } from "react";
-import { useNavigate } from "react-router";
+import { useRouter } from "next/navigation";
 import { signIn } from "../../../../providers/betterAuthWebClient";
 import { Button } from "../../../components/shadcn/button";
 import logger from "../../../../../shared/utils/logger";
@@ -15,7 +17,7 @@ export const SignInForm: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +38,7 @@ export const SignInForm: React.FC = () => {
       }
 
       // Redirection après connexion réussie
-      navigate("/");
+      router.push("/");
     } catch (error: unknown) {
       logger.error("SignInForm", error);
       setError(

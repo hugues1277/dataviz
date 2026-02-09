@@ -1,3 +1,5 @@
+"use client";
+
 import { fr } from './fr';
 import { en } from './en';
 import i18n from 'i18next';
@@ -9,7 +11,11 @@ const resources = {
 };
 
 // Charger la langue depuis localStorage ou utiliser 'fr' par défaut
+// Fonction sécurisée pour le SSR
 const getStoredLanguage = (): string => {
+  if (typeof window === 'undefined') {
+    return 'fr';
+  }
   try {
     const stored = localStorage.getItem('i18nextLng');
     return stored && (stored === 'fr' || stored === 'en') ? stored : 'fr';
@@ -33,10 +39,12 @@ i18n
 
 // Sauvegarder la langue dans localStorage quand elle change
 i18n.on('languageChanged', (lng) => {
-  try {
-    localStorage.setItem('i18nextLng', lng);
-  } catch (error) {
-    console.error('Failed to save language preference:', error);
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('i18nextLng', lng);
+    } catch (error) {
+      console.error('Failed to save language preference:', error);
+    }
   }
 });
 
