@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import exportDataUseCase from '../../../src/api/core/useCases/exportDataUseCase';
-import logger from '../../../src/shared/utils/logger';
+import exportDataUseCase from '../../../../src/api/core/useCases/exportDataUseCase';
+import logger from '../../../../src/shared/utils/logger';
 
 /**
- * Route API: GET /api/export-app-datas
+ * Route API: GET /api/settings/export
  * Exporte les données de l'application
  * Basée sur apiPlugin.ts
  */
@@ -12,7 +12,7 @@ export async function GET() {
     const result = await exportDataUseCase.execute();
     return NextResponse.json(result, { status: 200 });
   } catch (error: unknown) {
-    logger.error('export-app-datas GET API route', error);
+    logger.error('settings/export GET API route', error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Erreur serveur' },
       { status: 500 }

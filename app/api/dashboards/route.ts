@@ -10,8 +10,8 @@ import logger from '../../../src/shared/utils/logger';
 export async function GET() {
   try {
     const dashboardRepository = new DashboardRepository();
-    const result = await dashboardRepository.getAll();
-    return NextResponse.json(result, { status: 200 });
+    await dashboardRepository.getAll();
+    return NextResponse.json(null, { status: 200 });
   } catch (error: unknown) {
     logger.error('dashboards GET API route', error);
     return NextResponse.json(
@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const dashboardRepository = new DashboardRepository();
-    const result = await dashboardRepository.create(body);
-    return NextResponse.json(result, { status: 200 });
+    await dashboardRepository.create(body);
+    return NextResponse.json(null, { status: 200 });
   } catch (error: unknown) {
     logger.error('dashboards POST API route', error);
     return NextResponse.json(

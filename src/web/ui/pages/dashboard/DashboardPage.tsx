@@ -17,6 +17,7 @@ import { DEFAULT_CHART } from "@/src/shared/constants";
 import { useVariables } from "@/src/web/core/hooks/dashboard/useVariables";
 import PageLoading from "../../components/layout/PageLoading";
 import EmptyDashboardState from "./parts/EmptyDashboardState";
+import router from "next/router";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
@@ -109,9 +110,11 @@ const DashboardPage: React.FC = () => {
               saveChartUseCase.execute(chart)
             }
             onEdit={(chart: ChartConfig) => setEditingChart(chart)}
-            onDelete={(chart: ChartConfig) =>
-              deleteChartUseCase.execute(chart.id)
-            }
+            onDelete={async (chart: ChartConfig) => {
+              await deleteChartUseCase.execute(chart.id);
+              // redirect to first dashboard
+              router.replace(`/dashboards/${dashboards[0].id}`);
+            }}
             onView={(chart: ChartConfig) => setViewingChart(chart)}
           />
         )}

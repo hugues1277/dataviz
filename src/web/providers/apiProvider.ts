@@ -213,7 +213,7 @@ export const storageProvider: IStorageProvider = {
     },
 
     async importAppDatas(appDatas: AppDatas): Promise<void> {
-        const response = await fetch(`${API_BASE}/api/import-app-datas`, {
+        const response = await fetch(`${API_BASE}/api/settings/import`, {
             method: 'POST',
             credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
@@ -229,7 +229,7 @@ export const storageProvider: IStorageProvider = {
     },
 
     async exportAppDatas(): Promise<AppDatas> {
-        const response = await fetch(`${API_BASE}/api/export-app-datas`, {
+        const response = await fetch(`${API_BASE}/api/settings/export`, {
             method: 'GET',
             credentials: 'include',
         });
@@ -243,7 +243,7 @@ export const storageProvider: IStorageProvider = {
     },
 
     async clearAll(): Promise<void> {
-        const response = await fetch(`${API_BASE}/api/clear-all`, {
+        const response = await fetch(`${API_BASE}/api/settings/clear`, {
             method: 'POST',
             credentials: 'include',
         });

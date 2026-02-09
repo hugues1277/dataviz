@@ -30,8 +30,8 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const connectionRepository = new ConnectionRepository();
-    const result = await connectionRepository.create(body);
-    return NextResponse.json(result, { status: 200 });
+    await connectionRepository.create(body);
+    return NextResponse.json(null, { status: 200 });
   } catch (error: unknown) {
     logger.error('connections POST API route', error);
     return NextResponse.json(
@@ -50,8 +50,8 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
     const connectionRepository = new ConnectionRepository();
-    const result = await connectionRepository.update(body);
-    return NextResponse.json(result, { status: 200 });
+    await connectionRepository.update(body);
+    return NextResponse.json(null, { status: 200 });
   } catch (error: unknown) {
     logger.error('connections PUT API route', error);
     return NextResponse.json(

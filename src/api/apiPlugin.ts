@@ -28,7 +28,9 @@ import ConnectionRepository from './repositories/connectionRepository';
  * - /api/charts -> CRUD charts
  * - /api/connections -> CRUD connections
  * - /api/query-proxy -> Proxy pour requêtes SQL externes
- * - /api/import-app-datas -> Importer les données de l'application
+ * - /api/settings/import -> Importer les données de l'application
+ * - /api/settings/export -> Exporter les données de l'application
+ * - /api/settings/clear -> Supprimer toutes les données de l'application
  */
 export function apiPlugin(): Plugin {
   return {
@@ -143,8 +145,8 @@ export function apiPlugin(): Plugin {
         });
       });
 
-      // POST /api/import-app-datas - Importer les données de l'application
-      server.middlewares.use('/api/import-app-datas', async (req: IncomingMessage, res: ServerResponse) => {
+      // POST /api/settings/import - Importer les données de l'application
+      server.middlewares.use('/api/settings/import', async (req: IncomingMessage, res: ServerResponse) => {
         requestHandler(req, res, {
           'POST':
             async () => {
@@ -156,8 +158,8 @@ export function apiPlugin(): Plugin {
         );
       });
 
-      // POST /api/export-app-datas - Exporter les données de l'application
-      server.middlewares.use('/api/export-app-datas', async (req: IncomingMessage, res: ServerResponse) => {
+      // GET /api/settings/export - Exporter les données de l'application
+      server.middlewares.use('/api/settings/export', async (req: IncomingMessage, res: ServerResponse) => {
         requestHandler(req, res, {
           'GET':
             async () => {
@@ -166,8 +168,8 @@ export function apiPlugin(): Plugin {
         });
       });
 
-      // POST /api/clear-all - Supprimer toutes les données de l'application
-      server.middlewares.use('/api/clear-all', async (req: IncomingMessage, res: ServerResponse) => {
+      // POST /api/settings/clear - Supprimer toutes les données de l'application
+      server.middlewares.use('/api/settings/clear', async (req: IncomingMessage, res: ServerResponse) => {
         requestHandler(req, res, {
           'POST':
             async () => {

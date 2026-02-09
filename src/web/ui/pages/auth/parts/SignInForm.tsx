@@ -32,16 +32,34 @@ export const SignInForm: React.FC = () => {
       });
 
       if (result.error) {
-        setError(result.error.message || t("auth.signInError"));
+        const errorMessage = result.error.message || t("auth.signInError");
+        setError(errorMessage);
+        setIsLoading(false);
+        logger.error("SignInForm", { error: result.error, email });
+        return;
+      }
+
+      // Vérifier que la connexion a réussi
+      if (!result.data) {
+        setError(t("auth.signInError"));
         setIsLoading(false);
         return;
       }
 
       // Redirection après connexion réussie
-      router.push("/");
+      // Utiliser le paramètre redirect de l'URL si présent
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirect = urlParams.get("redirect");
+      const redirectPath = redirect && redirect.startsWith("/") ? redirect : "/";
+      
+      router.push(redirectPath);
+      router.refresh(); // Rafraîchir pour mettre à jour la session
     } catch (error: unknown) {
       logger.error("SignInForm", error);
-      setError(error instanceof Error ? error.message : t("auth.genericError"));
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : t("auth.genericError");
+      setError(errorMessage);
       setIsLoading(false);
     }
   };
