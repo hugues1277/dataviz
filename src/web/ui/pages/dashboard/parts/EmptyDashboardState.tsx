@@ -23,7 +23,7 @@ const EmptyDashboardState: React.FC<EmptyDashboardStateProps> = ({
       <div className="w-16 h-16 bg-[#181b1f] rounded-full flex items-center justify-center border border-[#2c3235]">
         <Plus size={24} className="text-gray-600" />
       </div>
-      {connections.length > 0 ? (
+      {connections && connections.length > 0 ? (
         <>
           <h2 className="text-lg font-bold text-white mb-2 max-w-sm">
             {t("dashboard.noCharts")}

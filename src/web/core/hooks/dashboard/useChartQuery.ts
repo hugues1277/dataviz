@@ -14,7 +14,7 @@ export const useChartQuery = (
   variableValues?: Record<string, string>,
 ) => {
   const { connections } = useConnectionsStore();
-  const connection = connections.find((c) => c.id === chartConnectionId);
+  const connection = connections?.find((c) => c.id === chartConnectionId);
 
   const queryVariablesValues = useMemo(() => {
     return getQueryVariablesValues(variableValues || {}, query, dateRange);
