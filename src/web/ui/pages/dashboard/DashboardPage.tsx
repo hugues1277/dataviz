@@ -69,6 +69,22 @@ const DashboardPage: React.FC = () => {
     });
   }, [activeDashboard?.id]);
 
+  const handleCloneChart = useCallback(
+    (chart: ChartConfig) => {
+      if (!activeDashboard?.id) return;
+
+      const clonedChart: ChartConfig = {
+        ...chart,
+        id: crypto.randomUUID(),
+        dashboardId: activeDashboard.id,
+        title: `${chart.title} (${t("common.clone")})`,
+        layout: undefined,
+      };
+      saveChartUseCase.execute(clonedChart);
+    },
+    [activeDashboard?.id, t]
+  );
+
   const charts = useMemo(() => {
     return allCharts.filter((c) => c.dashboardId === activeDashboard?.id);
   }, [activeDashboard?.id, allCharts]);
@@ -110,10 +126,9 @@ const DashboardPage: React.FC = () => {
               saveChartUseCase.execute(chart)
             }
             onEdit={(chart: ChartConfig) => setEditingChart(chart)}
+            onClone={handleCloneChart}
             onDelete={async (chart: ChartConfig) => {
               await deleteChartUseCase.execute(chart.id);
-              // redirect to first dashboard
-              router.replace(`/dashboards/${dashboards[0].id}`);
             }}
             onView={(chart: ChartConfig) => setViewingChart(chart)}
           />

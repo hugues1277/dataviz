@@ -6,6 +6,7 @@ export const en = {
             delete: "Delete",
             rename: "Rename",
             edit: "Edit",
+            clone: "Clone",
             refresh: "Refresh",
             loading: "Loading...",
             confirm: "Confirm",
@@ -53,7 +54,14 @@ export const en = {
             deleteDesc: "Do you really want to delete the chart \"{{title}}\"?",
             expand: "Expand",
             filter: "Filter...",
-            waitingForData: "Waiting for data"
+            waitingForData: "Waiting for data",
+            displayAsTable: "Table view",
+            downloadCsv: "Download CSV",
+            exportCsvSuccess: "CSV downloaded.",
+            exportCsvNoData: "No data to export.",
+            rowsPerPage: "Rows per page",
+            paginationPrev: "Previous",
+            paginationNext: "Next"
         },
         editor: {
             subtitle: "Chart editor",

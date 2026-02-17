@@ -7,6 +7,7 @@ import {
   AnnotationConfig,
   QueryResult,
   DashboardVariable,
+  CHART_TYPES,
 } from "../../../../../shared/types/types";
 import Chart from "../charts/Chart";
 import DatePicker from "../widgets/DatePicker";
@@ -17,6 +18,7 @@ import { useChart } from "../../../../core/hooks/dashboard/useChart";
 import Modal from "../../../components/modal/Modal";
 import AnnotationPanel from "./AnnotationPanel";
 import { useVariables } from "../../../../core/hooks/dashboard/useVariables";
+import Toggle from "../../../components/widget/Toggle";
 
 interface ChartPreviewProps {
   chartConfig: ChartConfig;
@@ -33,6 +35,7 @@ interface ChartPreviewContentProps {
   isLoading: boolean;
   annotations?: AnnotationConfig[];
   onXYAxisClick?: (isX: boolean, value: string) => void;
+  forceTableView?: boolean;
 }
 
 export const ChartPreviewContent: React.FC<ChartPreviewContentProps> = ({
@@ -41,11 +44,12 @@ export const ChartPreviewContent: React.FC<ChartPreviewContentProps> = ({
   isLoading: loading,
   annotations,
   onXYAxisClick,
+  forceTableView = false,
 }) => {
   const { t } = useTranslation();
   return (
     <div className="flex-1 p-2 lg:p-4 flex flex-col overflow-hidden">
-      <div className="flex-1 w-full bg-[#111217] rounded-xl border border-[#1f2127] p-1 lg:p-2 lg:py-5 shadow-2xl flex flex-col overflow-hidden">
+      <div className="flex-1 w-full bg-[#111217] rounded-xl border border-[#1f2127] p-1 lg:p-2 lg:py-3 shadow-2xl flex flex-col overflow-hidden">
         {loading && !data && (
           <div className="absolute inset-0 z-20 bg-[#111217]/50 backdrop-blur-sm flex items-center justify-center rounded-xl">
             <div className="flex flex-col items-center gap-2.5">
@@ -67,7 +71,7 @@ export const ChartPreviewContent: React.FC<ChartPreviewContentProps> = ({
         ) : data ? (
           <div className="flex-1 min-h-0 min-w-0">
             <Chart
-              type={chartConfig.type}
+              type={forceTableView ? CHART_TYPES.TABLE : chartConfig.type}
               version={chartConfig.version}
               rows={data.rows}
               columns={data.columns}
@@ -123,6 +127,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
 
   // Gérer l'état du panel d'annotations
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [forceTableView, setForceTableView] = useState(false);
 
   const toggleAnnotationPanel = useCallback(() => {
     setIsPanelOpen((prev) => !prev);
@@ -176,6 +181,12 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
           )}
 
           <div className="ml-auto flex items-center gap-1.5">
+            <Toggle
+              label={t("chart.displayAsTable")}
+              enabled={forceTableView}
+              onChange={setForceTableView}
+              className="text-[10px] text-gray-400 shrink-0 mx-2 gap-[2px]"
+            />
             {isGraph && (
               <button
                 onClick={toggleAnnotationPanel}
@@ -212,6 +223,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
           isLoading={loading}
           annotations={annotations}
           onXYAxisClick={handleXYAxisClick}
+          forceTableView={forceTableView}
         />
       </div>
 

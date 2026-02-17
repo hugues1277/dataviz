@@ -6,6 +6,7 @@ export const fr = {
             delete: "Supprimer",
             rename: "Renommer",
             edit: "Modifier",
+            clone: "Dupliquer",
             refresh: "Rafraîchir",
             loading: "Chargement...",
             confirm: "Confirmer",
@@ -53,7 +54,14 @@ export const fr = {
             deleteDesc: "Voulez-vous vraiment supprimer le graphique \"{{title}}\"\u00A0?",
             expand: "Agrandir",
             filter: "Filtrer...",
-            waitingForData: "En attente de données"
+            waitingForData: "En attente de données",
+            displayAsTable: "Tableau",
+            downloadCsv: "Télécharger CSV",
+            exportCsvSuccess: "CSV téléchargé.",
+            exportCsvNoData: "Aucune donnée à exporter.",
+            rowsPerPage: "Lignes par page",
+            paginationPrev: "Précédent",
+            paginationNext: "Suivant"
         },
         editor: {
             subtitle: "Éditeur de graphique",

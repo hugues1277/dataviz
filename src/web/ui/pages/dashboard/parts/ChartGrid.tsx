@@ -11,6 +11,7 @@ interface ChartGridProps {
   variableValues: Record<string, string>;
   saveChart: (charts: ChartConfig[]) => void;
   onEdit: (chart: ChartConfig) => void;
+  onClone: (chart: ChartConfig) => void;
   onDelete: (chart: ChartConfig) => void;
   onView: (chart: ChartConfig) => void;
 }
@@ -22,6 +23,7 @@ const ChartGrid: React.FC<ChartGridProps> = ({
   variableValues,
   saveChart,
   onEdit,
+  onClone,
   onDelete,
   onView,
 }) => {
@@ -72,6 +74,7 @@ const ChartGrid: React.FC<ChartGridProps> = ({
                 variableValues={variableValues}
                 isEditable={!isLocked && !isSmallScreen}
                 onEdit={() => onEdit(chart)}
+                onClone={() => onClone(chart)}
                 onDelete={() => onDelete(chart)}
                 onView={() => onView(chart)}
               />

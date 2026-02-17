@@ -8,6 +8,7 @@ import {
   Trash2,
   GripHorizontal,
   Eye,
+  Copy,
 } from "lucide-react";
 import Chart from "../charts/Chart";
 import { useDialog } from "../../../components/modal/DialogContext";
@@ -26,6 +27,7 @@ interface ChartWidgetProps {
   dateRange: DateRange;
   variableValues: Record<string, string>;
   onEdit: () => void;
+  onClone: () => void;
   onDelete: () => void;
   onView?: () => void;
 }
@@ -36,6 +38,7 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
   variableValues,
   dateRange,
   onEdit,
+  onClone,
   onDelete,
   onView,
 }) => {
@@ -130,6 +133,16 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
               >
                 <Edit2 className="mr-2" size={12} />
                 {t("common.edit")}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onClone();
+                }}
+                className="focus:bg-white/10 rounded-lg"
+              >
+                <Copy className="mr-2" size={12} />
+                {t("common.clone")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={(e) => {
