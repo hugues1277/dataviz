@@ -2,6 +2,17 @@
 
 A modern, lightweight, and simple data visualization application. Alternative to Metabase and Grafana, designed to be fast, intuitive, and easy to deploy.
 
+## Screenshots
+
+<p align="center">
+  <img src="captures/dashboard-preview-1.png" width="75%">
+</p>
+<p align="center">
+  <img src="captures/dashboard-preview-2.png" width="32%">
+  <img src="captures/dashboard-preview-3.png" width="32%">
+  <img src="captures/dashboard-preview-4.png" width="32%">
+</p>
+
 ## Key Features
 
 ### Visualizations
