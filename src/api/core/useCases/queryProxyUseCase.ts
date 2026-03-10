@@ -16,11 +16,13 @@ export interface QueryProxyInput {
 export const queryProxyUseCase = {
   execute: async (input: QueryProxyInput): Promise<QueryResult> => {
 
-    if (!queryProxyService.isAllowedQuery(input.query, 'postgresql')) {
-      throw new Error('Requête non autorisée');
+    const query = removeCommentsFromQuery(input.query);
+
+    if (!queryProxyService.isAllowedQuery(query, 'postgresql')) {
+      throw new Error('Requête non autorisée ou au mauvais format');
     }
 
-    if (!input.connectionId || !input.query) {
+    if (!input.connectionId || !query) {
       throw new Error('Paramètres de connexion ou requête manquants');
     }
 
@@ -31,12 +33,17 @@ export const queryProxyUseCase = {
       throw new Error('Connexion non trouvée');
     }
 
-    if (connection.type === CONNECTION_TYPES.API) {
-      return await apiQueryProvider.execute(connection, input.query);
-    } else if (connection.type === CONNECTION_TYPES.POSTGRES) {
-      return await postgresQueryProvider.execute(connection, input.query);
-    } else {
-      throw new Error('Type de connexion non supporté');
+    switch (connection.type) {
+      case CONNECTION_TYPES.API:
+        return await apiQueryProvider.execute(connection, query);
+      case CONNECTION_TYPES.POSTGRES:
+        return await postgresQueryProvider.execute(connection, query);
+      default:
+        throw new Error('Type de connexion non supporté');
     }
   },
 };
+
+const removeCommentsFromQuery = (query: string): string => {
+  return query.replace(/--.*\n/g, '');
+}

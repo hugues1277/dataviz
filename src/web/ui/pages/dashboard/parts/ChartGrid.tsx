@@ -72,7 +72,7 @@ const ChartGrid: React.FC<ChartGridProps> = ({
                 chart={chart}
                 dateRange={dateRange}
                 variableValues={variableValues}
-                isEditable={!isLocked && !isSmallScreen}
+                isLocked={isLocked || isSmallScreen}
                 onEdit={() => onEdit(chart)}
                 onClone={() => onClone(chart)}
                 onDelete={() => onDelete(chart)}

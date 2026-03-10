@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const result = await testConnectionUseCase.execute(body);
-    return NextResponse.json(result, { status: 200 });
+    return NextResponse.json({ success: result }, { status: 200 });
   } catch (error: unknown) {
     logger.error('connections/test POST API route', error);
     return NextResponse.json(

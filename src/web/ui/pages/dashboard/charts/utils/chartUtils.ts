@@ -74,3 +74,51 @@ export const getHeightForRotatedXAxis = (labels?: string[]): number | null => {
     const moyenne = labels.reduce((acc, label) => acc + label.length, 0) / labels.length;
     return Math.round(moyenne * 4.5);
 };
+
+/** Part du range pour le seuil : on décale quand min > range * THRESHOLD_RATIO */
+const Y_AXIS_THRESHOLD_RATIO = 0.06;
+/** Part du range pour l'offset (marge sous la valeur min) */
+const Y_AXIS_OFFSET_RATIO = 0.04;
+
+/**
+ * Crée une fonction de domaine Y pour Recharts.
+ * Calcule dynamiquement threshold et offset à partir des données :
+ * - threshold = 5% du range : on décale quand min est "significatif"
+ * - offset = 2% du range : marge visuelle sous la valeur min
+ */
+export const createYAxisDomainFunction = () => {
+    return ([dataMin, dataMax]: [number, number]): [number, number] => {
+        const range = dataMax - dataMin;
+        if (range <= 0) return [dataMin, dataMax];
+
+        const threshold = range * Y_AXIS_THRESHOLD_RATIO;
+        const offset = Math.max(1, range * Y_AXIS_OFFSET_RATIO);
+
+        if (dataMin > 0 && dataMin > threshold) {
+            return [dataMin - offset, dataMax];
+        }
+        return [dataMin, dataMax];
+    };
+};
+
+/**
+ * Indique si allowDataOverflow doit être activé (quand on applique le décalage).
+ */
+export const getYAxisAllowDataOverflow = (
+    rows: any[],
+    yAxisKeys: string[]
+): boolean => {
+    const values = rows.flatMap((row) =>
+        yAxisKeys.map((key) => {
+            const v = row[key];
+            return typeof v === "number" ? v : Number(v);
+        })
+    ).filter((v) => !isNaN(v) && isFinite(v));
+    const min = values.length ? Math.min(...values) : 0;
+    const max = values.length ? Math.max(...values) : 0;
+    const range = max - min;
+    if (range <= 0) return false;
+
+    const threshold = range * Y_AXIS_THRESHOLD_RATIO;
+    return min > 0 && min > threshold;
+};

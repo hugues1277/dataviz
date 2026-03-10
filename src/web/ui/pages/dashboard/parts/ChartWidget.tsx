@@ -23,7 +23,7 @@ import {
 
 interface ChartWidgetProps {
   chart: ChartConfig;
-  isEditable: boolean;
+  isLocked: boolean;
   dateRange: DateRange;
   variableValues: Record<string, string>;
   onEdit: () => void;
@@ -34,7 +34,7 @@ interface ChartWidgetProps {
 
 const ChartWidget: React.FC<ChartWidgetProps> = ({
   chart,
-  isEditable,
+  isLocked,
   variableValues,
   dateRange,
   onEdit,
@@ -69,94 +69,96 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
 
   return (
     <div
-      onDoubleClick={onView}
+      onDoubleClick={isLocked ? onView : undefined}
       className={`bg-[#111217] border ${
-        isEditable ? "border-blue-500/20" : "border-[#1f2127]"
+        isLocked ? "border-[#1f2127]" : "border-blue-500/20 resize"
       } rounded-xl flex flex-col h-full group transition-all overflow-hidden relative shadow-lg`}
     >
       <div
         className={`px-3 py-1.5 flex items-center justify-between border-b border-[#1f2127]/50 ${
-          isEditable ? "chart-drag-handle cursor-move bg-[#181b1f]" : ""
+          isLocked ? "" : "chart-drag-handle cursor-move bg-[#181b1f]"
         }`}
       >
         <div className="flex items-center gap-2 overflow-hidden flex-1">
-          {isEditable && (
+          {!isLocked && (
             <GripHorizontal size={12} className="text-gray-600 shrink-0" />
           )}
           <h3
-            onClick={onView}
+            onClick={isLocked ? onView : undefined}
             className="font-bold text-[10px] text-gray-400 truncate uppercase tracking-wider cursor-pointer hover:text-white transition-colors"
           >
             {chart.title}
           </h3>
         </div>
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onView?.();
-            }}
-            title={t("chart.expand")}
-            className="p-1 hover:bg-[#1f2127] rounded text-gray-500 hover:text-blue-400 transition-colors"
-          >
-            <Eye size={12} />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              refetch();
-            }}
-            title={t("common.refresh")}
-            className="p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
-          >
-            <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-          </button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button
-                onClick={(e) => e.stopPropagation()}
-                className="hidden md:block p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
-              >
-                <MoreVertical size={12} />
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-32 border-[#2c3235] bg-[#181b1f] rounded-xl shadow-2xl"
+        {isLocked && (
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2 shrink-0">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onView?.();
+              }}
+              title={t("chart.expand")}
+              className="p-1 hover:bg-[#1f2127] rounded text-gray-500 hover:text-blue-400 transition-colors"
             >
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit();
-                }}
-                className="focus:bg-white/10 rounded-lg"
+              <Eye size={12} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                refetch();
+              }}
+              title={t("common.refresh")}
+              className="p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
+            >
+              <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  className="hidden md:block p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
+                >
+                  <MoreVertical size={12} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-32 border-[#2c3235] bg-[#181b1f] rounded-xl shadow-2xl"
               >
-                <Edit2 className="mr-2" size={12} />
-                {t("common.edit")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClone();
-                }}
-                className="focus:bg-white/10 rounded-lg"
-              >
-                <Copy className="mr-2" size={12} />
-                {t("common.clone")}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteRequest();
-                }}
-                className="text-red-500 focus:bg-white/10 rounded-lg"
-              >
-                <Trash2 className="mr-2" size={12} />
-                {t("common.delete")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEdit();
+                  }}
+                  className="focus:bg-white/10 rounded-lg"
+                >
+                  <Edit2 className="mr-2" size={12} />
+                  {t("common.edit")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClone();
+                  }}
+                  className="focus:bg-white/10 rounded-lg"
+                >
+                  <Copy className="mr-2" size={12} />
+                  {t("common.clone")}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteRequest();
+                  }}
+                  className="text-red-500 focus:bg-white/10 rounded-lg"
+                >
+                  <Trash2 className="mr-2" size={12} />
+                  {t("common.delete")}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 p-2 overflow-hidden min-h-0 min-w-0 cursor-default">

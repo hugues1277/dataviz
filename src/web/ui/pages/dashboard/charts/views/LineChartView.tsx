@@ -5,7 +5,10 @@ import {
   BaseChartViewProps,
   ChartBaseElements,
 } from "../components/ChartBaseElements";
-import { getHeightForRotatedXAxis } from "../utils/chartUtils";
+import {
+  createYAxisDomainFunction,
+  getYAxisAllowDataOverflow,
+} from "../utils/chartUtils";
 
 export const LineChartView: React.FC<BaseChartViewProps> = ({
   rows,
@@ -23,6 +26,12 @@ export const LineChartView: React.FC<BaseChartViewProps> = ({
   onXAxisClick,
   onYAxisClick,
 }) => {
+  const yAxisDomain = useMemo(() => createYAxisDomainFunction(), []);
+  const yAxisAllowDataOverflow = useMemo(
+    () => getYAxisAllowDataOverflow(rows, yAxisKeys),
+    [rows, yAxisKeys]
+  );
+
   return (
     <div className="w-full h-full min-w-0 min-h-[200px]">
       <ResponsiveContainer width="100%" height="100%">
@@ -43,6 +52,8 @@ export const LineChartView: React.FC<BaseChartViewProps> = ({
             xAxisTitle={xAxisTitle}
             yAxisFormat={yAxisFormats[yAxisKeys[0]]}
             yAxisTitle={yAxisTitle}
+            yAxisDomain={yAxisDomain}
+            yAxisAllowDataOverflow={yAxisAllowDataOverflow}
             annotations={annotations}
             onXAxisClick={onXAxisClick}
             onYAxisClick={onYAxisClick}

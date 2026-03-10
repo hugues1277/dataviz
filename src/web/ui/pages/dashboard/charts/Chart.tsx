@@ -8,8 +8,6 @@ import {
 } from "../../../../../shared/types/types";
 import { EmptyState } from "../../../components/widget/EmptyState";
 import { useTranslation } from "react-i18next";
-import { useChartSorting } from "./hooks/useChartSorting";
-import { useChartFiltering } from "./hooks/useChartFiltering";
 import { useHiddenKeys } from "./hooks/useHiddenKeys";
 import { LineChartView } from "./views/LineChartView";
 import { BarChartView } from "./views/BarChartView";

@@ -43,6 +43,10 @@ type ChartBaseElementsProps = {
   onLegendToggle?: (key: string) => void;
   onXAxisClick?: (value: string) => void;
   onYAxisClick?: (value: string) => void;
+  /** Domaine de l'axe Y: [min, max] ou fonction ([dataMin, dataMax]) => [min, max] */
+  yAxisDomain?: [string | number, string | number] | ((domain: [number, number]) => [number, number]);
+  /** Force le domaine Y personnalisé (allowDataOverflow) */
+  yAxisAllowDataOverflow?: boolean;
 };
 
 export const ChartBaseElements: React.FC<ChartBaseElementsProps> = ({
@@ -59,6 +63,8 @@ export const ChartBaseElements: React.FC<ChartBaseElementsProps> = ({
   showLegend,
   hiddenKeys = {},
   onLegendToggle = () => {},
+  yAxisDomain,
+  yAxisAllowDataOverflow,
 }) => {
   return (
     <>
@@ -79,6 +85,8 @@ export const ChartBaseElements: React.FC<ChartBaseElementsProps> = ({
         yAxisTitle={yAxisTitle}
         fontSize={10}
         onAxisClick={onYAxisClick}
+        domain={yAxisDomain}
+        allowDataOverflow={yAxisAllowDataOverflow}
       />
 
       <Tooltip

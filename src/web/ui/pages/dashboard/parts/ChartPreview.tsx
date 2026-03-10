@@ -71,6 +71,7 @@ export const ChartPreviewContent: React.FC<ChartPreviewContentProps> = ({
         ) : data ? (
           <div className="flex-1 min-h-0 min-w-0">
             <Chart
+              chartId={chartConfig.id}
               type={forceTableView ? CHART_TYPES.TABLE : chartConfig.type}
               version={chartConfig.version}
               rows={data.rows}

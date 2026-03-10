@@ -8,6 +8,10 @@ interface ChartYAxisProps {
   yAxisTitle?: string;
   fontSize?: number;
   onAxisClick?: (value: string) => void;
+  /** Domaine de l'axe Y: [min, max] ou fonction ([dataMin, dataMax]) => [min, max] */
+  domain?: [string | number, string | number] | ((domain: [number, number]) => [number, number]);
+  /** Force le domaine personnalisé (évite l'expansion auto de Recharts) */
+  allowDataOverflow?: boolean;
 }
 
 export const ChartYAxis: React.FC<ChartYAxisProps> = ({
@@ -15,9 +19,13 @@ export const ChartYAxis: React.FC<ChartYAxisProps> = ({
   yAxisTitle,
   fontSize = 8,
   onAxisClick,
+  domain,
+  allowDataOverflow,
 }) => {
   return (
     <YAxis
+      domain={domain}
+      allowDataOverflow={allowDataOverflow}
       stroke="#4b5563"
       fontSize={fontSize}
       tickLine={false}
