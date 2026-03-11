@@ -1,6 +1,6 @@
-import { DBConnection, QueryResult } from '../../../shared/types/types';
-import { DbQueryProviderInterface } from '../../interfaces/dbQueryProviderInterface';
-import { getServerMessage } from '../../../shared/messages/serverMessages';
+import type { DBConnection, QueryResult } from "@/src/shared/types";
+import type { DbQueryProviderInterface } from "@/src/api/interfaces/dbQueryProviderInterface";
+import { getServerMessage } from "@/src/shared/messages/serverMessages";
 
 export const apiQueryProvider: DbQueryProviderInterface = {
     execute: async (connection: DBConnection, query: string): Promise<QueryResult> => {

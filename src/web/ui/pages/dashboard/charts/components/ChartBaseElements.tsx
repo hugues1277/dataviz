@@ -8,8 +8,8 @@ import { ChartLegend } from "./ChartLegend";
 import {
   ChartVersionType,
   XAxisFormat,
-} from "../../../../../../shared/types/types";
-import { AnnotationConfig } from "../../../../../../shared/types/types";
+} from "../../../../../../shared/types";
+import type { AnnotationConfig } from "../../../../../../shared/types";
 
 export interface BaseChartViewProps {
   rows: any[];

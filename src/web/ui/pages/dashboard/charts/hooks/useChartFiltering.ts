@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import type { XAxisFormat } from "../../../../../../shared/types";
 import { formatValue } from "../utils/chartUtils";
 
 export const useChartFiltering = (

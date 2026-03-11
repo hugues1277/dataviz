@@ -3,13 +3,13 @@ import {
   CONNECTION_TYPES,
   DBConnection,
   isApiType,
-} from "../../../../../shared/types/types";
+} from "../../../../../shared/types";
 import { Database, Globe, HardDrive } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Modal from "../../../components/modal/Modal";
 import { Button } from "../../../components/Button";
 import { testConnectionUseCase } from "../../../../core/useCases/connections/testConnectionUseCase";
-import { isDatabaseType } from "../../../../../shared/types/types";
+import { isDatabaseType } from "../../../../../shared/types";
 
 interface ConnectionEditorProps {
   connection: DBConnection | null;

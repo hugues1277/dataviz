@@ -6,11 +6,7 @@ import { getAuthWithRole } from "@/src/api/utils/roleAuth";
  */
 export async function GET(request: NextRequest) {
   try {
-    const headersRecord =
-      request.headers instanceof Headers
-        ? Object.fromEntries(request.headers.entries())
-        : (request.headers as Record<string, any>);
-    const auth = await getAuthWithRole(headersRecord);
+    const auth = await getAuthWithRole(request.headers);
 
     return NextResponse.json({
       user: { id: auth.userId, email: auth.userEmail },
@@ -19,6 +15,9 @@ export async function GET(request: NextRequest) {
       canEdit: auth.role === "edit" || auth.role === "admin",
     });
   } catch {
-    return NextResponse.json({ isAdmin: false, role: "read", canEdit: false }, { status: 401 });
+    return NextResponse.json(
+      { isAdmin: false, role: "read", canEdit: false },
+      { status: 401 }
+    );
   }
 }

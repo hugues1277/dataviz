@@ -1,6 +1,6 @@
 import React from "react";
 import { YAxis } from "recharts";
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import type { XAxisFormat } from "../../../../../../shared/types";
 import { formatValue } from "../utils/chartUtils";
 
 interface ChartYAxisProps {

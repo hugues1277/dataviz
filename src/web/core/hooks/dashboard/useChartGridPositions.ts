@@ -5,7 +5,7 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { ChartConfig } from "../../../../shared/types/types";
+import type { ChartConfig } from "../../../../shared/types";
 import {
   calculateSmallScreenLayout,
   calculateDesktopLayout,

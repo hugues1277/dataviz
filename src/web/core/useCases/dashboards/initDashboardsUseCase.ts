@@ -1,6 +1,6 @@
 import { storageProvider } from '../../../providers/apiProvider';
 import logger from '../../../../shared/utils/logger';
-import { Dashboard, ChartConfig } from '../../../../shared/types/types';
+import type { Dashboard, ChartConfig } from "../../../../shared/types";
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 
 export const initDashboardsUseCase = {

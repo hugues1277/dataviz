@@ -5,7 +5,7 @@ import {
   AnnotationConfig,
   CHART_TYPES,
   ChartVersionType,
-} from "../../../../../shared/types/types";
+} from "../../../../../shared/types";
 import { EmptyState } from "../../../components/widget/EmptyState";
 import { useTranslation } from "react-i18next";
 import { useHiddenKeys } from "./hooks/useHiddenKeys";

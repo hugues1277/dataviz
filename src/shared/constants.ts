@@ -1,4 +1,10 @@
-import { AnnotationConfig, ChartConfig, CONNECTION_TYPES, Dashboard, DBConnection } from "./types/types";
+import {
+  type AnnotationConfig,
+  type ChartConfig,
+  CONNECTION_TYPES,
+  type Dashboard,
+  type DBConnection,
+} from "./types";
 
 export const ALL_TIME_FROM = new Date("2000-01-01T00:00:00");
 export const ALL_TIME_TO = new Date("2100-12-31T23:59:00");
@@ -25,8 +31,8 @@ export const CHART_COLORS = [
 
 export const ANNOTATION_COLORS = ["#ef4444", "#f59e0b", "#3b82f6", "#10b981", "#8b5cf6"];
 
-export const DEFAULT_CHART_QUERY = "SELECT current_timestamp as time, floor(random() * 100) as value";
-
+export const DEFAULT_CHART_QUERY =
+  "SELECT current_timestamp as time, floor(random() * 100) as value";
 
 export const QUERY_CACHE_TTL = 3600; // 1 heure de cache par défaut
 

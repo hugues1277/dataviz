@@ -1,6 +1,10 @@
 import { format } from "date-fns";
 import { subDays } from "date-fns/subDays";
-import { DashboardVariable, DateRange, VARIABLE_TYPES } from "../../../shared/types/types";
+import {
+  type DashboardVariable,
+  type DateRange,
+  VARIABLE_TYPES,
+} from "../../../shared/types";
 
 export const resolveVariableValue = (variable: DashboardVariable): string => {
   const { type, defaultValue } = variable;

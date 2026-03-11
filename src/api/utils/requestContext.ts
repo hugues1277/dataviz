@@ -1,6 +1,5 @@
 import { AsyncLocalStorage } from "async_hooks";
-
-export type UserRole = "admin" | "edit" | "read";
+import type { UserRole } from "@/src/api/types";
 
 const asyncLocalStorage = new AsyncLocalStorage<UserRole>();
 

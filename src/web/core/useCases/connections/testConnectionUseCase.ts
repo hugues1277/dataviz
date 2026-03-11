@@ -1,5 +1,9 @@
 import { toast } from 'react-toastify';
-import { DBConnection, isApiType, isDatabaseType } from '../../../../shared/types/types';
+import {
+  type DBConnection,
+  isApiType,
+  isDatabaseType,
+} from "../../../../shared/types";
 import { queryRequestProvider } from '../../../providers/queryRequestProvider';
 import { t } from '../../../../i18n/i18n';
 

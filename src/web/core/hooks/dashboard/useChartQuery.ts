@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { QueryResult, DateRange } from '../../../../shared/types/types';
+import type { QueryResult, DateRange } from "../../../../shared/types";
 import { queryRequestProvider } from '../../../providers/queryRequestProvider';
 import { useConnectionsStore } from '../../stores/connectionsStore';
 import { getQueryVariablesValues } from '../../utils/variableUtils';

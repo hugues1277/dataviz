@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { DateRange } from "../../../../shared/types/types";
+import type { DateRange } from "../../../../shared/types";
 import { ALL_TIME_FROM, ALL_TIME_TO } from "../../../../shared/constants";
 
 const calculateIsAllTime = (dateRange: DateRange): boolean => {

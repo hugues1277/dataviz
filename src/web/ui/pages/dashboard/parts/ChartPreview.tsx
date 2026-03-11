@@ -9,7 +9,7 @@ import {
   QueryResult,
   DashboardVariable,
   CHART_TYPES,
-} from "../../../../../shared/types/types";
+} from "../../../../../shared/types";
 import Chart from "../charts/Chart";
 import DatePicker from "../widgets/DatePicker";
 import VariablesPicker from "../widgets/VariablesPicker";

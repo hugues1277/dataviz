@@ -1,4 +1,4 @@
-import { ChartConfig, DBConnection } from '../../../shared/types/types';
+import type { ChartConfig, DBConnection } from "../../../shared/types";
 
 /**
  * Ajoute ou met à jour un chart dans une liste

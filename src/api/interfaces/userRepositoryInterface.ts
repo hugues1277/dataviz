@@ -1,10 +1,10 @@
-import ObjectRepositoryInterface from "./objectRepositoryInterface";
-import { User } from "better-auth";
+import type { User } from "better-auth";
+import ObjectRepositoryInterface from "@/src/api/interfaces/objectRepositoryInterface";
 
-class UserRepositoryInterface extends ObjectRepositoryInterface<User> {
-    async getCount(): Promise<number> {
-        throw new Error('Not implemented');
-    }
+abstract class UserRepositoryInterface extends ObjectRepositoryInterface<User> {
+  async getCount(): Promise<number> {
+    throw new Error("Not implemented");
+  }
 }
 
 export default UserRepositoryInterface;

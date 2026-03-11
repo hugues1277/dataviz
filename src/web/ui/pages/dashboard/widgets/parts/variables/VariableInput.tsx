@@ -4,7 +4,7 @@ import { ToggleLeft, ToggleRight, ChevronDown, Check } from "lucide-react";
 import {
   DashboardVariable,
   VARIABLE_TYPES,
-} from "../../../../../../../shared/types/types";
+} from "../../../../../../../shared/types";
 import DatePickerInputCompact from "./DatePickerInputCompact";
 
 interface VariableInputProps {

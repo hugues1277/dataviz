@@ -1,10 +1,8 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 /**
- * Route API: GET /health
- * Health check endpoint
- * Basée sur authApiPlugin.ts
+ * GET /api/health - Health check endpoint
  */
 export async function GET() {
-  return NextResponse.json({ status: 'ok' }, { status: 200 });
+  return NextResponse.json({ status: "ok" }, { status: 200 });
 }

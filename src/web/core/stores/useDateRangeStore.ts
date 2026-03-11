@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DateRange } from '../../../shared/types/types';
+import type { DateRange } from "../../../shared/types";
 import { ALL_TIME_FROM, ALL_TIME_TO, DEFAULT_DATE_RANGE_DAYS } from '../../../shared/constants';
 import { dateRangeService } from '../services/dateRangeService';
 import { isSameRange, setStartAndEndOfDay } from '../utils/dateUtils';

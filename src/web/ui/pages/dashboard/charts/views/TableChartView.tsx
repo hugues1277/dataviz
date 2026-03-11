@@ -9,7 +9,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import type { XAxisFormat } from "../../../../../../shared/types";
 import { formatValue } from "../utils/chartUtils";
 import { useChartFiltering } from "../hooks/useChartFiltering";
 import { useChartSorting } from "../hooks/useChartSorting";

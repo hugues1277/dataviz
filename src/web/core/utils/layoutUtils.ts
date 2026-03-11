@@ -1,4 +1,4 @@
-import { ChartConfig } from "../../../shared/types/types";
+import type { ChartConfig } from "../../../shared/types";
 
 export const calculateSmallScreenLayout = (charts: ChartConfig[]) => {
   // Trier les charts par y puis par x

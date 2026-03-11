@@ -4,7 +4,7 @@ import {
   Infinity as InfinityIcon,
   ChevronDown,
 } from "lucide-react";
-import { DateRange } from "../../../../../shared/types/types";
+import type { DateRange } from "../../../../../shared/types";
 import { differenceInDays, parseISO } from "date-fns";
 import { subDays } from "date-fns/subDays";
 import { format } from "date-fns";

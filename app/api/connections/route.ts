@@ -1,11 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import ConnectionRepository from '../../../src/api/repositories/connectionRepository';
-import logger from '../../../src/shared/utils/logger';
-import { getAuthWithRole, requireEditOrAdmin } from '../../../src/api/utils/roleAuth';
+import { NextRequest, NextResponse } from "next/server";
+import ConnectionRepository from "@/src/api/repositories/connectionRepository";
+import { getAuthWithRole, requireEditOrAdmin } from "@/src/api/utils/roleAuth";
+import { handleApiError } from "@/src/api/utils/apiErrorHandler";
 
 /**
- * Route API: GET /api/connections
- * Récupère toutes les connections (auth requise)
+ * GET /api/connections - Récupère toutes les connexions (auth requise)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -13,19 +12,16 @@ export async function GET(request: NextRequest) {
     const connectionRepository = new ConnectionRepository();
     const result = await connectionRepository.getAll();
     return NextResponse.json(result, { status: 200 });
-  } catch (error: unknown) {
-    logger.error('connections GET API route', error);
-    const msg = error instanceof Error ? error.message : 'Erreur serveur';
-    if (msg.includes('Session') || msg.includes('authentifié')) {
-      return NextResponse.json({ error: msg }, { status: 401 });
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+  } catch (error) {
+    return handleApiError(error, {
+      routeName: "connections GET",
+      defaultStatus: 500,
+    });
   }
 }
 
 /**
- * Route API: POST /api/connections
- * Crée une nouvelle connection (edit ou admin)
+ * POST /api/connections - Crée une nouvelle connexion (edit ou admin)
  */
 export async function POST(request: NextRequest) {
   try {
@@ -34,22 +30,16 @@ export async function POST(request: NextRequest) {
     const connectionRepository = new ConnectionRepository();
     await connectionRepository.create(body);
     return NextResponse.json(null, { status: 200 });
-  } catch (error: unknown) {
-    logger.error('connections POST API route', error);
-    const msg = error instanceof Error ? error.message : 'Erreur serveur';
-    if (msg.includes('Session') || msg.includes('authentifié')) {
-      return NextResponse.json({ error: msg }, { status: 401 });
-    }
-    if (msg.includes('lecture seule') || msg.includes('Droits')) {
-      return NextResponse.json({ error: msg }, { status: 403 });
-    }
-    return NextResponse.json({ error: msg }, { status: 400 });
+  } catch (error) {
+    return handleApiError(error, {
+      routeName: "connections POST",
+      defaultStatus: 400,
+    });
   }
 }
 
 /**
- * Route API: PUT /api/connections
- * Met à jour une connection (edit ou admin)
+ * PUT /api/connections - Met à jour une connexion (edit ou admin)
  */
 export async function PUT(request: NextRequest) {
   try {
@@ -58,15 +48,10 @@ export async function PUT(request: NextRequest) {
     const connectionRepository = new ConnectionRepository();
     await connectionRepository.update(body);
     return NextResponse.json(null, { status: 200 });
-  } catch (error: unknown) {
-    logger.error('connections PUT API route', error);
-    const msg = error instanceof Error ? error.message : 'Erreur serveur';
-    if (msg.includes('Session') || msg.includes('authentifié')) {
-      return NextResponse.json({ error: msg }, { status: 401 });
-    }
-    if (msg.includes('lecture seule') || msg.includes('Droits')) {
-      return NextResponse.json({ error: msg }, { status: 403 });
-    }
-    return NextResponse.json({ error: msg }, { status: 400 });
+  } catch (error) {
+    return handleApiError(error, {
+      routeName: "connections PUT",
+      defaultStatus: 400,
+    });
   }
 }

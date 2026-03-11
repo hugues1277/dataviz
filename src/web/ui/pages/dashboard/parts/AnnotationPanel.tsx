@@ -1,6 +1,6 @@
 import React from "react";
 import { ArrowLeft, ArrowRight, ArrowDown, ArrowUp, Pencil, Pin, Plus, Trash2 } from "lucide-react";
-import { AnnotationConfig } from "../../../../../shared/types/types";
+import type { AnnotationConfig } from "../../../../../shared/types";
 import { useTranslation } from "react-i18next";
 import { ANNOTATION_COLORS } from "../../../../../shared/constants";
 

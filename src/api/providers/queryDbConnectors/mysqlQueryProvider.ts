@@ -1,6 +1,6 @@
-import mysql from 'mysql2/promise';
-import { DBConnection, QueryResult } from '../../../shared/types/types';
-import { DbQueryProviderInterface } from '../../interfaces/dbQueryProviderInterface';
+import mysql from "mysql2/promise";
+import type { DBConnection, QueryResult } from "@/src/shared/types";
+import type { DbQueryProviderInterface } from "@/src/api/interfaces/dbQueryProviderInterface";
 
 export const mysqlQueryProvider: DbQueryProviderInterface = {
     execute: async (connection: DBConnection, query: string): Promise<QueryResult> => {

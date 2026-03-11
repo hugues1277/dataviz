@@ -1,9 +1,10 @@
-import { getAuthenticationData } from "./auth";
-import UserRepository, { UserWithRole } from "../repositories/userRepository";
-import { getServerMessage } from "../../shared/messages/serverMessages";
-import { setRequestRole } from "./requestContext";
+import { getAuthenticationData } from "@/src/api/utils/auth";
+import UserRepository, { UserWithRole } from "@/src/api/repositories/userRepository";
+import { getServerMessage } from "@/src/shared/messages/serverMessages";
+import { setRequestRole } from "@/src/api/utils/requestContext";
+import type { UserRole } from "@/src/api/types";
 
-export type UserRole = "admin" | "edit" | "read";
+export type { UserRole };
 
 export interface AuthWithRole {
   userId: string;

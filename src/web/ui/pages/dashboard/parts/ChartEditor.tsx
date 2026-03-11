@@ -7,7 +7,7 @@ import {
   DateRange,
   CHART_TYPES,
   CHART_VERSION,
-} from "../../../../../shared/types/types";
+} from "../../../../../shared/types";
 import {
   Play,
   Eye,

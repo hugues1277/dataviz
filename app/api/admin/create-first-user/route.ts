@@ -1,11 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createFirstUserUseCase } from '../../../../src/api/core/useCases/createFirstUserUseCase';
-import logger from '../../../../src/shared/utils/logger';
+import { NextRequest, NextResponse } from "next/server";
+import { createFirstUserUseCase } from "@/src/api/core/useCases/createFirstUserUseCase";
+import { handleApiError } from "@/src/api/utils/apiErrorHandler";
 
 /**
- * Route API: POST /api/admin/create-first-user
- * Crée le premier utilisateur admin
- * Basée sur authApiPlugin.ts
+ * POST /api/admin/create-first-user - Crée le premier utilisateur admin
  */
 export async function POST(request: NextRequest) {
   try {
@@ -14,18 +12,21 @@ export async function POST(request: NextRequest) {
 
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email et password sont requis' },
+        { error: "Email et password sont requis" },
         { status: 400 }
       );
     }
 
-    const result = await createFirstUserUseCase.execute({ email, password, name });
+    const result = await createFirstUserUseCase.execute({
+      email,
+      password,
+      name,
+    });
     return NextResponse.json(result, { status: 200 });
-  } catch (error: unknown) {
-    logger.error('create-first-user API route', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erreur serveur' },
-      { status: 400 }
-    );
+  } catch (error) {
+    return handleApiError(error, {
+      routeName: "admin/create-first-user POST",
+      defaultStatus: 400,
+    });
   }
 }

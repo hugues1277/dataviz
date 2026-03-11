@@ -1,4 +1,4 @@
-import { DashboardVariable } from '../../../../shared/types/types';
+import type { DashboardVariable } from "../../../../shared/types";
 import { getDefaultVariableValues, resolveVariableValue } from '../../utils/variableUtils';
 import { useState, useCallback } from 'react';
 import { saveDashboardVariablesUseCase } from '../../useCases/dashboards/saveDashboardVariablesUseCase';

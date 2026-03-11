@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { ChartConfig } from "../../../../shared/types/types";
+import type { ChartConfig } from "../../../../shared/types";
 import ChartEditor from "./parts/ChartEditor";
 import VariablesPicker from "./widgets/VariablesPicker";
 import ChartGrid from "./parts/ChartGrid";

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Dashboard, ChartConfig } from '../../../shared/types/types';
+import type { Dashboard, ChartConfig } from "../../../shared/types";
 import { useVariables } from '../hooks/dashboard/useVariables';
 import { useDateRangeStore } from './useDateRangeStore';
 

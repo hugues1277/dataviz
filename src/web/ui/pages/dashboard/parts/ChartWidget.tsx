@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { ChartConfig, DateRange } from "../../../../../shared/types/types";
+import type { ChartConfig, DateRange } from "../../../../../shared/types";
 import {
   MoreVertical,
   AlertCircle,

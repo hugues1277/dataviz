@@ -2,15 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/src/api/utils/adminAuth";
 import { databaseProvider } from "@/src/api/providers/databaseProvider";
 import { hashPassword } from "better-auth/crypto";
-import logger from "@/src/shared/utils/logger";
+import { handleApiError } from "@/src/api/utils/apiErrorHandler";
+import type { RouteParamsWithId } from "@/src/api/utils/routeParams";
 
 /**
  * POST /api/admin/users/[id]/reset-password - Réinitialise le mot de passe (admin uniquement)
  */
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: RouteParamsWithId
+): Promise<NextResponse> {
   try {
     await requireAdmin(request.headers);
     const { id } = await params;
@@ -53,11 +54,9 @@ export async function POST(
       await pool.end();
     }
   } catch (error) {
-    logger.error("POST /api/admin/users/[id]/reset-password", error);
-    const msg = (error as Error).message;
-    if (msg.includes("forbidden") || msg.includes("autorisé")) {
-      return NextResponse.json({ error: msg }, { status: 403 });
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return handleApiError(error, {
+      routeName: "admin/users reset-password POST",
+      defaultStatus: 500,
+    });
   }
 }

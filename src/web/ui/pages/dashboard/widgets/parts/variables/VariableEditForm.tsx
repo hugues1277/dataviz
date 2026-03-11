@@ -5,7 +5,7 @@ import {
   DashboardVariable,
   VARIABLE_TYPES,
   VariableType,
-} from "../../../../../../../shared/types/types";
+} from "../../../../../../../shared/types";
 
 interface VariableEditFormProps {
   isEditing: boolean;

@@ -1,10 +1,16 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { runDbMigration } from "@/src/api/providers/dbMigration";
+import logger from "@/src/shared/utils/logger";
 
 function isTablesMissingError(error: unknown): boolean {
-  const err = error as { code?: string; body?: { code?: string }; message?: string; cause?: unknown };
+  const err = error as {
+    code?: string;
+    body?: { code?: string };
+    message?: string;
+    cause?: unknown;
+  };
   const msg = String(err?.message ?? (err?.cause as Error)?.message ?? "");
   const bodyCode = (err?.body as { code?: string })?.code;
   return (
@@ -15,7 +21,9 @@ function isTablesMissingError(error: unknown): boolean {
   );
 }
 
-async function getSessionWithMigration(headers: Headers): Promise<Awaited<ReturnType<typeof auth.api.getSession>> | null> {
+async function getSessionWithMigration(
+  headers: Headers
+): Promise<Awaited<ReturnType<typeof auth.api.getSession>> | null> {
   try {
     return await auth.api.getSession({ headers });
   } catch (error) {
@@ -56,7 +64,7 @@ export async function proxy(request: NextRequest) {
 
       return NextResponse.next();
     } catch (error) {
-      console.error("Proxy auth error for sign-in:", error);
+      logger.error("Proxy auth error for sign-in", error);
       return NextResponse.next();
     }
   }
@@ -76,7 +84,7 @@ export async function proxy(request: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
-    console.error("Proxy auth error:", error);
+    logger.error("Proxy auth error", error);
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(signInUrl);

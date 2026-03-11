@@ -1,4 +1,4 @@
-import { DBConnection, QueryResult } from '../../shared/types/types';
+import type { DBConnection, QueryResult } from "../../shared/types";
 import logger from '../../shared/utils/logger';
 import { IQueryRequestProvider } from '../interfaces/IQueryRequestProvider';
 import { t } from '../../i18n/i18n';

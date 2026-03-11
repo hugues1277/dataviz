@@ -1,6 +1,6 @@
 import { useConnectionsStore } from '../../stores/connectionsStore';
 import { storageProvider } from '../../../providers/apiProvider';
-import { DBConnection } from '../../../../shared/types/types';
+import type { DBConnection } from "../../../../shared/types";
 import { DEFAULT_CONNECTION } from '../../../../shared/constants';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';

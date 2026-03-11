@@ -1,6 +1,6 @@
 import React from "react";
 import { Settings2 } from "lucide-react";
-import { DashboardVariable } from "../../../../../../../shared/types/types";
+import type { DashboardVariable } from "../../../../../../../shared/types";
 import VariableInput from "./VariableInput";
 
 interface VariableItemProps {

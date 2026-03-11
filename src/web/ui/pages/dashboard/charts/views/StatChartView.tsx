@@ -1,5 +1,5 @@
 import React from "react";
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import type { XAxisFormat } from "../../../../../../shared/types";
 import { CHART_COLORS } from "../../../../../../shared/constants";
 import { formatValue } from "../utils/chartUtils";
 

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { DBConnection } from '../../../shared/types/types';
+import type { DBConnection } from "../../../shared/types";
 import { createConnectionsMap } from '../utils/storeUtils';
 
 interface ConnectionsStore {

@@ -1,22 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server';
-import ChartRepository from '../../../../../src/api/repositories/chartRepository';
-import logger from '../../../../../src/shared/utils/logger';
-import { getAuthWithRole, requireEditOrAdmin } from '../../../../../src/api/utils/roleAuth';
+import { NextRequest, NextResponse } from "next/server";
+import ChartRepository from "@/src/api/repositories/chartRepository";
+import { getAuthWithRole, requireEditOrAdmin } from "@/src/api/utils/roleAuth";
+import { handleApiError } from "@/src/api/utils/apiErrorHandler";
+import type { RouteParamsWithId } from "@/src/api/utils/routeParams";
 
 /**
- * Route API: GET /api/dashboards/[id]/charts
- * Récupère tous les charts d'un dashboard (auth requise)
+ * GET /api/dashboards/[id]/charts - Récupère tous les charts d'un dashboard (auth requise)
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: RouteParamsWithId
+): Promise<NextResponse> {
   try {
     await getAuthWithRole(request.headers);
     const { id } = await params;
+
     if (!id) {
       return NextResponse.json(
-        { error: 'ID du dashboard requis' },
+        { error: "ID du dashboard requis" },
         { status: 400 }
       );
     }
@@ -24,30 +25,28 @@ export async function GET(
     const chartRepository = new ChartRepository();
     const charts = await chartRepository.getByDashboard(id);
     return NextResponse.json({ charts }, { status: 200 });
-  } catch (error: unknown) {
-    logger.error('dashboards charts GET API route', error);
-    const msg = error instanceof Error ? error.message : 'Erreur serveur';
-    if (msg.includes('Session') || msg.includes('authentifié')) {
-      return NextResponse.json({ error: msg }, { status: 401 });
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+  } catch (error) {
+    return handleApiError(error, {
+      routeName: "dashboards charts GET",
+      defaultStatus: 500,
+    });
   }
 }
 
 /**
- * Route API: DELETE /api/dashboards/[id]/charts
- * Supprime tous les charts d'un dashboard (edit ou admin)
+ * DELETE /api/dashboards/[id]/charts - Supprime tous les charts d'un dashboard (edit ou admin)
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: RouteParamsWithId
+): Promise<NextResponse> {
   try {
     await requireEditOrAdmin(request.headers);
     const { id } = await params;
+
     if (!id) {
       return NextResponse.json(
-        { error: 'ID du dashboard requis' },
+        { error: "ID du dashboard requis" },
         { status: 400 }
       );
     }
@@ -55,15 +54,10 @@ export async function DELETE(
     const chartRepository = new ChartRepository();
     await chartRepository.deleteByDashboardId(id);
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch (error: unknown) {
-    logger.error('dashboards charts DELETE API route', error);
-    const msg = error instanceof Error ? error.message : 'Erreur serveur';
-    if (msg.includes('Session') || msg.includes('authentifié')) {
-      return NextResponse.json({ error: msg }, { status: 401 });
-    }
-    if (msg.includes('lecture seule') || msg.includes('Droits')) {
-      return NextResponse.json({ error: msg }, { status: 403 });
-    }
-    return NextResponse.json({ error: msg }, { status: 400 });
+  } catch (error) {
+    return handleApiError(error, {
+      routeName: "dashboards charts DELETE",
+      defaultStatus: 400,
+    });
   }
 }

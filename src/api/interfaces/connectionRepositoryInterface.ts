@@ -1,15 +1,19 @@
-import { DBConnection } from "@/src/shared/types/types";
-import ObjectRepositoryInterface from "./objectRepositoryInterface";
+import type { DBConnection } from "@/src/shared/types";
+import ObjectRepositoryInterface from "@/src/api/interfaces/objectRepositoryInterface";
 
-class ConnectionRepositoryInterface extends ObjectRepositoryInterface<DBConnection> {
+abstract class ConnectionRepositoryInterface extends ObjectRepositoryInterface<DBConnection> {
+  override async getAll(
+    _options: { fullConfig?: boolean; decrypt?: boolean } = {}
+  ): Promise<DBConnection[]> {
+    throw new Error("Not implemented");
+  }
 
-    async getAll({ fullConfig = false, decrypt = false }: { fullConfig?: boolean, decrypt?: boolean } = {}): Promise<DBConnection[]> {
-        throw new Error('Not implemented');
-    }
-
-    async get(id: string, { decrypt = true }: { decrypt?: boolean } = {}): Promise<DBConnection | null> {
-        throw new Error('Not implemented');
-    }
+  override async get(
+    _id: string,
+    _options?: { decrypt?: boolean }
+  ): Promise<DBConnection | null> {
+    throw new Error("Not implemented");
+  }
 }
 
 export default ConnectionRepositoryInterface;

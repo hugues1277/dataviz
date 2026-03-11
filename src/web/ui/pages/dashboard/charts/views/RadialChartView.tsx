@@ -6,7 +6,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import type { XAxisFormat } from "../../../../../../shared/types";
 import { CHART_COLORS } from "../../../../../../shared/constants";
 import { formatValue, customTooltipStyle } from "../utils/chartUtils";
 

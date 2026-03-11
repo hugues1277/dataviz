@@ -1,11 +1,13 @@
-import { logger, User } from "better-auth";
-import { databaseProvider } from "../providers/databaseProvider";
-import UserRepositoryInterface from "../interfaces/userRepositoryInterface";
+import { User } from "better-auth";
+import { databaseProvider } from "@/src/api/providers/databaseProvider";
+import UserRepositoryInterface from "@/src/api/interfaces/userRepositoryInterface";
+import type { UserRole } from "@/src/api/types";
+import logger from "@/src/shared/utils/logger";
 
-export type UserRole = "admin" | "read" | "edit";
+export type { UserRole };
 
 export interface UserWithRole extends User {
-    role?: UserRole;
+  role?: UserRole;
 }
 
 class UserRepository extends UserRepositoryInterface {
@@ -15,8 +17,8 @@ class UserRepository extends UserRepositoryInterface {
             const pool = databaseProvider.createPool();
             const result = await pool.query(`SELECT COUNT(*) FROM "user"`, []);
             return parseInt(result.rows[0]?.count || "0", 10);
-        } catch (error: any) {
-            logger.error('UserRepository.getCount', error);
+        } catch (error: unknown) {
+            logger.error("UserRepository.getCount", error);
             throw error;
         }
     }
@@ -50,8 +52,11 @@ class UserRepository extends UserRepositoryInterface {
     async get(id: string): Promise<UserWithRole | null> {
         const pool = databaseProvider.createPool();
         try {
-            const result = await pool.query(`SELECT id, name, email, role FROM "user" WHERE id = $1`, [id]);
-            return result.rows[0] as UserWithRole;
+            const result = await pool.query(
+                `SELECT id, name, email, role FROM "user" WHERE id = $1`,
+                [id]
+            );
+            return (result.rows[0] as UserWithRole) ?? null;
         } finally {
             await pool.end();
         }

@@ -1,6 +1,6 @@
 import React from "react";
 import { ReferenceLine } from "recharts";
-import { AnnotationConfig } from "../../../../../../shared/types/types";
+import type { AnnotationConfig } from "../../../../../../shared/types";
 
 interface ChartAnnotationsProps {
   annotations: AnnotationConfig[];

@@ -1,4 +1,9 @@
-import { AppDatas, Dashboard, ChartConfig, DBConnection } from '../../shared/types/types';
+import type {
+  AppDatas,
+  Dashboard,
+  ChartConfig,
+  DBConnection,
+} from "../../shared/types";
 import { IStorageProvider } from '../interfaces/IStorageProvider';
 import { t } from '../../i18n/i18n';
 

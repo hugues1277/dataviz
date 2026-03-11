@@ -1,5 +1,5 @@
-import { DBConnection, QueryResult } from '../../shared/types/types';
+import type { DBConnection, QueryResult } from "@/src/shared/types";
 
 export interface DbQueryProviderInterface {
-    execute: (connection: DBConnection, query: string) => Promise<QueryResult>;
+  execute(connection: DBConnection, query: string): Promise<QueryResult>;
 }

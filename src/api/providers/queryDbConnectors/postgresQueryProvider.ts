@@ -1,6 +1,6 @@
-import { Pool } from 'pg';
-import { DBConnection, QueryResult } from '../../../shared/types/types';
-import { DbQueryProviderInterface } from '../../interfaces/dbQueryProviderInterface';
+import { Pool } from "pg";
+import type { DBConnection, QueryResult } from "@/src/shared/types";
+import type { DbQueryProviderInterface } from "@/src/api/interfaces/dbQueryProviderInterface";
 
 export const postgresQueryProvider: DbQueryProviderInterface = {
     execute: async (connection: DBConnection, query: string): Promise<QueryResult> => {

@@ -5,7 +5,7 @@ import {
   BaseChartViewProps,
   ChartBaseElements,
 } from "../components/ChartBaseElements";
-import { CHART_VERSION } from "../../../../../../shared/types/types";
+import { CHART_VERSION } from "../../../../../../shared/types";
 
 const VERSIONS = [CHART_VERSION.BAR_CLASSIC, CHART_VERSION.BAR_STACKED];
 

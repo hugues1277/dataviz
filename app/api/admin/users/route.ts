@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/src/api/utils/adminAuth";
 import UserRepository from "@/src/api/repositories/userRepository";
 import { auth } from "@/lib/auth";
-import logger from "@/src/shared/utils/logger";
+import { handleApiError } from "@/src/api/utils/apiErrorHandler";
 
 /**
  * GET /api/admin/users - Liste tous les utilisateurs (admin uniquement)
@@ -14,11 +14,10 @@ export async function GET(request: NextRequest) {
     const users = await userRepository.getAll();
     return NextResponse.json(users);
   } catch (error) {
-    logger.error("GET /api/admin/users", error);
-    return NextResponse.json(
-      { error: (error as Error).message },
-      { status: 403 }
-    );
+    return handleApiError(error, {
+      routeName: "admin/users GET",
+      defaultStatus: 403,
+    });
   }
 }
 
@@ -54,7 +53,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Définir le rôle : admin, read ou edit
     const userRole = role === "admin" ? "admin" : role === "read" ? "read" : "edit";
     const userRepository = new UserRepository();
     await userRepository.updateRole(response.user.id, userRole);
@@ -66,17 +64,10 @@ export async function POST(request: NextRequest) {
       role: userRole,
     });
   } catch (error) {
-    logger.error("POST /api/admin/users", error);
-    const msg = (error as Error).message;
-    if (msg.includes("forbidden") || msg.includes("autorisé")) {
-      return NextResponse.json({ error: msg }, { status: 403 });
-    }
-    if (msg.includes("unique") || msg.includes("duplicate")) {
-      return NextResponse.json(
-        { error: "Un utilisateur avec cet email existe déjà" },
-        { status: 409 }
-      );
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return handleApiError(error, {
+      routeName: "admin/users POST",
+      defaultStatus: 500,
+      conflictMessage: "Un utilisateur avec cet email existe déjà",
+    });
   }
 }

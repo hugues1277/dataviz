@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { DBConnection } from "../../../../shared/types/types";
+import type { DBConnection } from "../../../../shared/types";
 import { useUserRole } from "@/src/web/core/hooks/useUserRole";
 import Header from "../../components/layout/Header";
 import { Plus } from "lucide-react";

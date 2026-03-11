@@ -24,12 +24,19 @@ const messages: Record<string, string> = {
     "Charge utile chiffrée invalide : tag d'authentification vide",
 };
 
-export function getServerMessage(key: string, params?: Record<string, string | number>): string {
+/**
+ * Récupère un message serveur par clé, avec remplacement optionnel des placeholders.
+ * Placeholders au format {{key}} (ex: {{status}}).
+ */
+export function getServerMessage(
+  key: string,
+  params?: Record<string, string | number>
+): string {
   let msg = messages[key] ?? key;
   if (params) {
-    Object.entries(params).forEach(([k, v]) => {
+    for (const [k, v] of Object.entries(params)) {
       msg = msg.replace(new RegExp(`{{${k}}}`, "g"), String(v));
-    });
+    }
   }
   return msg;
 }

@@ -1,6 +1,6 @@
-import { Pool } from 'pg';
 import "dotenv/config";
-import { getRequestRole } from '../utils/requestContext';
+import { Pool } from "pg";
+import { getRequestRole } from "@/src/api/utils/requestContext";
 
 const DATABASE_URL = process.env.DATABASE_URL;
 

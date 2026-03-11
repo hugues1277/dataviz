@@ -1,5 +1,5 @@
 import React from "react";
-import { ChartConfig, DateRange } from "../../../../../shared/types/types";
+import type { ChartConfig, DateRange } from "../../../../../shared/types";
 import ChartWidget from "./ChartWidget";
 import { useChartGridPositions } from "../../../../core/hooks/dashboard/useChartGridPositions";
 import ReactGridLayout from "react-grid-layout";

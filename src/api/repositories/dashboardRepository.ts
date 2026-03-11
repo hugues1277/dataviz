@@ -1,8 +1,8 @@
-import { databaseProvider } from '../providers/databaseProvider';
+import { databaseProvider } from "@/src/api/providers/databaseProvider";
+import type { Dashboard, DashboardVariable } from "@/src/shared/types";
+import ObjectRepositoryInterface from "@/src/api/interfaces/objectRepositoryInterface";
 
 const { queryWithRole } = databaseProvider;
-import type { Dashboard, DashboardVariable } from '../../shared/types/types';
-import ObjectRepositoryInterface from '../interfaces/objectRepositoryInterface';
 
 class DashboardRepository extends ObjectRepositoryInterface<Dashboard> {
     private createRequest = `INSERT INTO dashboards (id, name, order_index, variables) VALUES ($1, $2, $3, $4) ON CONFLICT (id) DO UPDATE SET

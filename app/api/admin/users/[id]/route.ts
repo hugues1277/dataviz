@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/src/api/utils/adminAuth";
 import UserRepository, { UserRole } from "@/src/api/repositories/userRepository";
-import logger from "@/src/shared/utils/logger";
+import { handleApiError } from "@/src/api/utils/apiErrorHandler";
+import type { RouteParamsWithId } from "@/src/api/utils/routeParams";
 
 /**
  * PATCH /api/admin/users/[id] - Met à jour un utilisateur (name, email, role)
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  { params }: RouteParamsWithId
+): Promise<NextResponse> {
   try {
     await requireAdmin(request.headers);
     const { id } = await params;
@@ -20,7 +21,10 @@ export async function PATCH(
     const userRepository = new UserRepository();
     const user = await userRepository.get(id);
     if (!user) {
-      return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Utilisateur non trouvé" },
+        { status: 404 }
+      );
     }
 
     const currentRole = (user as { role?: string }).role;
@@ -54,12 +58,10 @@ export async function PATCH(
     const updated = await userRepository.get(id);
     return NextResponse.json(updated);
   } catch (error) {
-    logger.error("PATCH /api/admin/users/[id]", error);
-    const msg = (error as Error).message;
-    if (msg.includes("forbidden") || msg.includes("autorisé")) {
-      return NextResponse.json({ error: msg }, { status: 403 });
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return handleApiError(error, {
+      routeName: "admin/users PATCH",
+      defaultStatus: 500,
+    });
   }
 }
 
@@ -67,20 +69,22 @@ export async function PATCH(
  * DELETE /api/admin/users/[id] - Supprime un utilisateur (admin uniquement)
  */
 export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+  request: NextRequest,
+  { params }: RouteParamsWithId
+): Promise<NextResponse> {
   try {
-    await requireAdmin(_request.headers);
+    await requireAdmin(request.headers);
     const { id } = await params;
 
     const userRepository = new UserRepository();
     const user = await userRepository.get(id);
     if (!user) {
-      return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Utilisateur non trouvé" },
+        { status: 404 }
+      );
     }
 
-    // Supprimer un admin : il doit rester au moins un admin
     if ((user as { role?: string }).role === "admin") {
       const adminCount = await userRepository.getAdminCount();
       if (adminCount <= 1) {
@@ -94,11 +98,9 @@ export async function DELETE(
     await userRepository.delete(id);
     return NextResponse.json({ success: true });
   } catch (error) {
-    logger.error("DELETE /api/admin/users/[id]", error);
-    const msg = (error as Error).message;
-    if (msg.includes("forbidden") || msg.includes("autorisé")) {
-      return NextResponse.json({ error: msg }, { status: 403 });
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return handleApiError(error, {
+      routeName: "admin/users DELETE",
+      defaultStatus: 500,
+    });
   }
 }

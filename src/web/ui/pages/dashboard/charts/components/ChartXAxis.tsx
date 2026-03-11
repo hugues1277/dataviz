@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { XAxis } from "recharts";
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import type { XAxisFormat } from "../../../../../../shared/types";
 import { formatValue, getHeightForRotatedXAxis } from "../utils/chartUtils";
 
 interface ChartXAxisProps {

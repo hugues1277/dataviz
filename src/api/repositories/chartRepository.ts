@@ -1,8 +1,8 @@
-import { databaseProvider } from '../providers/databaseProvider';
+import { databaseProvider } from "@/src/api/providers/databaseProvider";
+import type { ChartConfig, ChartType } from "@/src/shared/types";
+import ChartRepositoryInterface from "@/src/api/interfaces/chartRepositoryInterface";
 
 const { queryWithRole } = databaseProvider;
-import type { ChartConfig, ChartType } from '../../shared/types/types';
-import ChartRepositoryInterface from '../interfaces/chartRepositoryInterface';
 
 class ChartRepository extends ChartRepositoryInterface {
 

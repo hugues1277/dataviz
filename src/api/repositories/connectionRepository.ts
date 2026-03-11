@@ -1,9 +1,13 @@
-import { databaseProvider } from '../providers/databaseProvider';
+import { databaseProvider } from "@/src/api/providers/databaseProvider";
+import { encryptionService } from "@/src/api/core/services/encryptionService";
+import type {
+  DBConnection,
+  DBConnectionConfig,
+  ConnectionType,
+} from "@/src/shared/types";
+import ConnectionRepositoryInterface from "@/src/api/interfaces/connectionRepositoryInterface";
 
 const { queryWithRole } = databaseProvider;
-import { encryptionService } from '../core/services/encryptionService';
-import type { DBConnection, DBConnectionConfig, ConnectionType } from '../../shared/types/types';
-import ConnectionRepositoryInterface from '../interfaces/connectionRepositoryInterface';
 
 const SENSITIVE_FIELDS: (keyof DBConnectionConfig)[] = ['password', 'apiToken'];
 

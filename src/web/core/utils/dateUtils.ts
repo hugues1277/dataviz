@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { parseISO } from "date-fns/parseISO";
 import logger from '../../../shared/utils/logger';
-import { DateRange } from "../../../shared/types/types";
+import type { DateRange } from "../../../shared/types";
 
 export const formatDateDisplay = (dateStr: string, isAllTime: boolean, t: (key: string) => string): string => {
   if (isAllTime) return t("common.allTime");

@@ -1,5 +1,5 @@
 import { useMemo, useCallback, useState, SetStateAction, Dispatch } from "react";
-import { ChartConfig, AnnotationConfig } from "../../../../shared/types/types";
+import type { ChartConfig, AnnotationConfig } from "../../../../shared/types";
 import { getQueryVariablesNames, usesDateInQuery } from "../../utils/variableUtils";
 import { saveChartUseCase } from "../../useCases/charts/saveChartUseCase";
 import { DEFAULT_ANNOTATION } from "@/src/shared/constants";

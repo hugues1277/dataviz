@@ -1,4 +1,9 @@
-import { AppDatas, Dashboard, ChartConfig, DBConnection } from '../../shared/types/types';
+import type {
+  AppDatas,
+  Dashboard,
+  ChartConfig,
+  DBConnection,
+} from "../../shared/types";
 
 export interface IStorageProvider {
   // App Datas

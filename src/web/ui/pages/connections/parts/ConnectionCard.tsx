@@ -2,7 +2,7 @@ import React from "react";
 import {
   DBConnection,
   CONNECTION_TYPES,
-} from "../../../../../shared/types/types";
+} from "../../../../../shared/types";
 import {
   Database,
   Globe,

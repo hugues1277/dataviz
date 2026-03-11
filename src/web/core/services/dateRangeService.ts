@@ -1,5 +1,5 @@
 import { differenceInDays, subDays } from 'date-fns';
-import { DateRange } from '../../../shared/types/types';
+import type { DateRange } from "../../../shared/types";
 import logger from '../../../shared/utils/logger';
 import { setStartAndEndOfDay } from '../utils/dateUtils';
 

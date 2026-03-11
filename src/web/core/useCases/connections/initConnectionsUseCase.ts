@@ -1,5 +1,5 @@
 import logger from '../../../../shared/utils/logger';
-import { DBConnection } from '../../../../shared/types/types';
+import type { DBConnection } from "../../../../shared/types";
 import { useConnectionsStore } from '../../stores/connectionsStore';
 import { storageProvider } from '@/src/web/providers/apiProvider';
 

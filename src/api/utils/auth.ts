@@ -1,6 +1,6 @@
-import { auth } from '../../../lib/auth';
-import logger from '../../shared/utils/logger';
-import { getServerMessage } from '../../shared/messages/serverMessages';
+import { auth } from "@/lib/auth";
+import logger from "@/src/shared/utils/logger";
+import { getServerMessage } from "@/src/shared/messages/serverMessages";
 
 export interface AuthenticatedRequest {
   sessionToken: string;
@@ -23,7 +23,7 @@ export async function getAuthenticationData(headersRecord: Record<string, any>):
     });
 
     if (!session?.user) {
-      throw new Error(getServerMessage('exceptions.auth.invalidSession'));
+      throw new Error(getServerMessage("exceptions.auth.invalidSession"));
     }
 
     // Extraire le token de session depuis les cookies pour compatibilité
@@ -41,7 +41,7 @@ export async function getAuthenticationData(headersRecord: Record<string, any>):
     };
   } catch (error: unknown) {
     logger.error('getAuthenticationData', error);
-    throw new Error(getServerMessage('exceptions.auth.invalidSession'));
+    throw new Error(getServerMessage("exceptions.auth.invalidSession"));
   }
 }
 
@@ -49,8 +49,10 @@ export async function getAuthenticationData(headersRecord: Record<string, any>):
  * Middleware pour gérer les erreurs d'authentification de manière uniforme
  */
 export function isAuthenticationError(error: Error): boolean {
-  return error.message.includes('authentifié') ||
-    error.message.includes('Session') ||
-    error.message.includes('token');
+  return (
+    error.message.includes("authentifié") ||
+    error.message.includes("Session") ||
+    error.message.includes("token")
+  );
 }
 

@@ -1,4 +1,4 @@
-import { XAxisFormat } from "../../../../../../shared/types/types";
+import type { XAxisFormat } from "../../../../../../shared/types";
 import logger from "../../../../../../shared/utils/logger";
 import { format, parseISO } from 'date-fns';
 

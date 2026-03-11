@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
-import { DashboardVariable } from "../../../../../shared/types/types";
+import type { DashboardVariable } from "../../../../../shared/types";
 import VariableItem from "./parts/variables/VariableItem";
 import VariableEditForm from "./parts/variables/VariableEditForm";
 

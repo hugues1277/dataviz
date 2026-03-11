@@ -1,4 +1,4 @@
-import { AppDatas } from '../../../../shared/types/types';
+import type { AppDatas } from "../../../../shared/types";
 import { storageProvider } from '../../../providers/apiProvider';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';

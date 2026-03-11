@@ -1,6 +1,6 @@
 import { useDashboardsStore } from '../../stores/dashboardsStore';
 import { storageProvider } from '../../../providers/apiProvider';
-import { Dashboard } from '@/src/shared/types/types';
+import type { Dashboard } from "@/src/shared/types";
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
 import { t } from '../../../../i18n/i18n';

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useCallback, useMemo } from "react";
 import { Check } from "lucide-react";
-import { Dashboard } from "../../../../../shared/types/types";
+import type { Dashboard } from "../../../../../shared/types";
 import { useTranslation } from "react-i18next";
 import DatePicker from "../widgets/DatePicker";
 import DashboardActions from "../widgets/DashboardActions";

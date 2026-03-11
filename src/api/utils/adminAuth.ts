@@ -1,8 +1,7 @@
-import { getAuthenticationData } from "./auth";
-import UserRepository, { UserWithRole } from "../repositories/userRepository";
-import { getServerMessage } from "../../shared/messages/serverMessages";
-
-export type UserRole = "admin" | "read" | "edit";
+import { getAuthenticationData } from "@/src/api/utils/auth";
+import UserRepository, { UserWithRole } from "@/src/api/repositories/userRepository";
+import { getServerMessage } from "@/src/shared/messages/serverMessages";
+import type { UserRole } from "@/src/api/types";
 
 /**
  * Vérifie que l'utilisateur connecté est admin (role === "admin" en base).
