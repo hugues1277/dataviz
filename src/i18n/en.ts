@@ -145,7 +145,9 @@ export const en = {
             connectionTestFailed: "Connection test failed",
             connectionTestError: "Error testing connection",
             deleteConfirmTitle: "Delete connection",
-            deleteConfirmDesc: "Do you really want to delete the connection \"{{name}}\"?"
+            deleteConfirmDesc: "Do you really want to delete the connection \"{{name}}\"?",
+            setAsDefault: "Set as default",
+            defaultConnection: "Default"
         },
         settings: {
             title: "Settings & Import/Export",

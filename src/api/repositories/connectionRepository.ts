@@ -35,6 +35,7 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
                 id: row.id,
                 name: row.name,
                 type: row.type,
+                isDefault: row.config?.isDefault,
                 host: row.config.host,
                 port: row.config.port,
                 database: row.config.database,

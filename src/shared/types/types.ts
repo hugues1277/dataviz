@@ -66,6 +66,7 @@ export interface DBConnection {
   id: string;
   name: string;
   type: ConnectionType;
+  isDefault?: boolean;
   // Postgres fields
   host?: string;
   port?: number;

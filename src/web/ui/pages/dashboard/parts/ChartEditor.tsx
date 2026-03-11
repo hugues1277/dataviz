@@ -37,6 +37,7 @@ import { sql } from "@codemirror/lang-sql";
 import { vscodeDark } from "@uiw/codemirror-theme-vscode";
 import { formatSqlQuery } from "../../../../core/utils/sqlUtils";
 import { useConnectionsStore } from "../../../../core/stores/connectionsStore";
+import { sortConnectionsWithDefaultFirst } from "../../../../core/utils/storeUtils";
 import { ChartPreviewContent } from "./ChartPreview";
 import { useDateRange } from "../../../../core/hooks/dashboard/useDateRange";
 import { useChart } from "../../../../core/hooks/dashboard/useChart";
@@ -193,6 +194,11 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
   onClose,
 }) => {
   const { connectionsMap } = useConnectionsStore();
+  const sortedConnections = useMemo(
+    () =>
+      sortConnectionsWithDefaultFirst(Object.values(connectionsMap)),
+    [connectionsMap]
+  );
   const { t } = useTranslation();
   const { dateRange, setDateRange, isAllTime, setAllTime } = useDateRange();
 
@@ -214,17 +220,16 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
   const getConnection = useCallback(() => {
     let connectionId = chartConfig.connectionId;
     if (connectionId === "") {
-      const connections = Object.values(connectionsMap);
-      if (connections.length === 0) return null;
+      if (sortedConnections.length === 0) return null;
 
-      connectionId = connections[0]?.id;
+      connectionId = sortedConnections[0]?.id;
       setChartConfig((prev: ChartConfig) => ({
         ...prev,
         connectionId: connectionId || "",
       }));
     }
     return connectionsMap[connectionId];
-  }, [chartConfig.connectionId, connectionsMap, setChartConfig]);
+  }, [chartConfig.connectionId, connectionsMap, sortedConnections, setChartConfig]);
 
   const fetchChartData = useCallback(
     async (dateRange: DateRange) => {
@@ -516,9 +521,10 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
                       }))
                     }
                   >
-                    {Object.values(connectionsMap).map((c) => (
+                    {sortedConnections.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
+                        {c.isDefault ? ` (${t("connections.defaultConnection")})` : ""}
                       </option>
                     ))}
                   </select>

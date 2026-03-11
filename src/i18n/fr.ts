@@ -145,7 +145,9 @@ export const fr = {
             connectionTestFailed: "Échec du test de connexion",
             connectionTestError: "Erreur lors du test de connexion",
             deleteConfirmTitle: "Supprimer la connexion",
-            deleteConfirmDesc: "Voulez-vous vraiment supprimer la connexion \"{{name}}\" ?"
+            deleteConfirmDesc: "Voulez-vous vraiment supprimer la connexion \"{{name}}\" ?",
+            setAsDefault: "Définir par défaut",
+            defaultConnection: "Défaut"
         },
         settings: {
             title: "Paramètres & Import/Export",

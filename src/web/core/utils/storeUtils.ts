@@ -24,3 +24,16 @@ export function createConnectionsMap(
     return acc;
   }, {} as Record<string, DBConnection>);
 }
+
+/**
+ * Trie les connexions avec la connexion par défaut en premier
+ */
+export function sortConnectionsWithDefaultFirst(
+  connections: DBConnection[]
+): DBConnection[] {
+  return [...connections].sort((a, b) => {
+    if (a.isDefault) return -1;
+    if (b.isDefault) return 1;
+    return 0;
+  });
+}

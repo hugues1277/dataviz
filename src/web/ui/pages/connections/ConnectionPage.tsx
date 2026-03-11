@@ -14,6 +14,7 @@ import PageLoading from "../../components/layout/PageLoading";
 import { addConnectionUseCase } from "../../../core/useCases/connections/addConnectionUseCase";
 import { updateConnectionUseCase } from "../../../core/useCases/connections/updateConnectionUseCase";
 import { deleteConnectionUseCase } from "../../../core/useCases/connections/deleteConnectionUseCase";
+import { setDefaultConnectionUseCase } from "../../../core/useCases/connections/setDefaultConnectionUseCase";
 import { useRefetchDashboardCharts } from "@/src/web/core/hooks/dashboard/useChartQuery";
 import { useDialog } from "../../components/modal/DialogContext";
 
@@ -51,14 +52,27 @@ const ConnectionPage: React.FC = () => {
 
   const handleSave = async (connection: DBConnection) => {
     if (isAdding) {
-      await addConnectionUseCase.execute(connection);
+      const id = await addConnectionUseCase.execute(connection);
+      if (connection.isDefault && id) {
+        await setDefaultConnectionUseCase.execute(id);
+      }
     } else {
       await updateConnectionUseCase.execute(connection);
+      if (connection.isDefault) {
+        await setDefaultConnectionUseCase.execute(connection.id);
+      }
       await refetchDashboardCharts();
     }
 
     resetForm();
   };
+
+  const handleSetDefault = useCallback(
+    async (id: string) => {
+      await setDefaultConnectionUseCase.execute(id);
+    },
+    []
+  );
 
   const handleDelete = useCallback(
     async (id: string, name: string) => {
@@ -104,6 +118,7 @@ const ConnectionPage: React.FC = () => {
                 connection={conn}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                onSetDefault={handleSetDefault}
               />
             ))}
 

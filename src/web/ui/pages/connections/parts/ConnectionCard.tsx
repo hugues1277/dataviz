@@ -8,19 +8,24 @@ import {
   Shield,
   Edit,
   Trash2,
+  Star,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface ConnectionCardProps {
   connection: DBConnection;
   onEdit: (connection: DBConnection) => void;
   onDelete: (id: string, name: string) => void;
+  onSetDefault?: (id: string) => void;
 }
 
 const ConnectionCard: React.FC<ConnectionCardProps> = ({
   connection,
   onEdit,
   onDelete,
+  onSetDefault,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="bg-[#111217] border border-[#1f2127] rounded-3xl p-6 flex flex-col group hover:border-blue-500/50 transition-all shadow-lg relative overflow-hidden select-none">
       <div className="flex items-start justify-between mb-4">
@@ -38,6 +43,22 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
           )}
         </div>
         <div className="flex items-center gap-2">
+          {onSetDefault && (
+            <button
+              onClick={() => onSetDefault(connection.id)}
+              title={t("connections.setAsDefault")}
+              className={`p-2 transition-all rounded-xl ${
+                connection.isDefault
+                  ? "text-amber-400 bg-amber-500/10"
+                  : "text-gray-600 hover:text-amber-400 hover:bg-amber-500/10"
+              }`}
+            >
+              <Star
+                size={18}
+                className={connection.isDefault ? "fill-current" : ""}
+              />
+            </button>
+          )}
           <button
             onClick={() => onEdit(connection)}
             className="p-2 text-gray-600 hover:text-blue-400 transition-all hover:bg-blue-500/10 rounded-xl"
@@ -80,15 +101,22 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
       </div>
 
       <div className="mt-4 pt-4 border-t border-[#1f2127] flex items-center justify-between">
-        <span
-          className={`text-[8px] font-black uppercase px-2 py-1 rounded ${
-            connection.type === "api"
-              ? "bg-purple-500/10 text-purple-400"
-              : "bg-blue-500/10 text-blue-400"
-          }`}
-        >
-          {connection.type}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-[8px] font-black uppercase px-2 py-1 rounded ${
+              connection.type === "api"
+                ? "bg-purple-500/10 text-purple-400"
+                : "bg-blue-500/10 text-blue-400"
+            }`}
+          >
+            {connection.type}
+          </span>
+          {connection.isDefault && (
+            <span className="text-[8px] font-black uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-400">
+              {t("connections.defaultConnection")}
+            </span>
+          )}
+        </div>
         {connection.ssl ||
           (connection.type === "api" && (
             <span className="flex items-center gap-1 text-[8px] font-black uppercase text-green-500/70">
