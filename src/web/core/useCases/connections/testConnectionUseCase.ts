@@ -1,21 +1,22 @@
 import { toast } from 'react-toastify';
-import { DBConnection } from '../../../../shared/types/types';
+import { DBConnection, isApiType, isDatabaseType } from '../../../../shared/types/types';
 import { queryRequestProvider } from '../../../providers/queryRequestProvider';
-import i18n from '../../../../i18n/i18n';
+import { t } from '../../../../i18n/i18n';
 
 export const testConnectionUseCase = {
   execute: async (connection: DBConnection): Promise<void> => {
-    if ((connection.type === "postgres" && !connection.host) || (connection.type === "api" && !connection.apiUrl)) return;
+    if (isDatabaseType(connection.type) && !connection.host) return;
+    if (isApiType(connection.type) && !connection.apiUrl) return;
 
     try {
       const result = await queryRequestProvider.testConnection(connection);
       if (!result) {
-        toast.error(i18n.t('connections.connectionTestFailed'));
+        toast.error(t('connections.connectionTestFailed'));
       } else {
-        toast.success(i18n.t('connections.connectionTestSuccess'));
+        toast.success(t('connections.connectionTestSuccess'));
       }
     } catch (error) {
-      toast.error(i18n.t('connections.connectionTestError'));
+      toast.error(t('connections.connectionTestError'));
     }
   }
 };

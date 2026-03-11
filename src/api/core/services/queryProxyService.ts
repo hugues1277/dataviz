@@ -1,5 +1,6 @@
 import logger from '../../../shared/utils/logger';
 import pkg from 'node-sql-parser';
+import { CONNECTION_TYPES } from '../../../shared/types/types';
 const { Parser } = pkg;
 
 export const queryProxyService = {
@@ -7,7 +8,7 @@ export const queryProxyService = {
      * Vérifie que la requête SQL est composée UNIQUEMENT de SELECT
      * (y compris UNION, sous-requêtes, window functions, ORDER BY, etc.)
      */
-    isAllowedQuery: (query: string, type: 'postgresql' | 'mysql' | 'sqlite'): boolean => {
+    isAllowedQuery: (query: string, type: 'postgres' | 'mysql'): boolean => {
         try {
             // Vérifications préliminaires
             if (!query || typeof query !== 'string') {
@@ -41,7 +42,7 @@ export const queryProxyService = {
 
             try {
                 ast = parser.astify(query, {
-                    database: type,
+                    database: type === CONNECTION_TYPES.POSTGRES ? 'postgresql' : type,
                 });
             } catch (parseError: unknown) {
                 logger.error('queryProxyService', parseError);

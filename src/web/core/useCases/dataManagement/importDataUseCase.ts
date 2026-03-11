@@ -2,7 +2,7 @@ import { AppDatas } from '../../../../shared/types/types';
 import { storageProvider } from '../../../providers/apiProvider';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../i18n/i18n';
+import { t } from '../../../../i18n/i18n';
 import { initConnectionsUseCase } from '../connections/initConnectionsUseCase';
 import { initDashboardsUseCase } from '../dashboards/initDashboardsUseCase';
 
@@ -23,12 +23,12 @@ export const importDataUseCase = {
         initConnectionsUseCase.execute(appDatas.connections),
       ]);
 
-      toast.success(i18n.t('settings.importSuccess'));
+      toast.success(t('settings.importSuccess'));
 
       return appDatas;
     } catch (error: unknown) {
       logger.error('importData', error);
-      toast.error(i18n.t('settings.importError'));
+      toast.error(t('settings.importError'));
     }
 
     return null;

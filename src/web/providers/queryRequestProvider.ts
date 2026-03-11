@@ -1,7 +1,7 @@
 import { DBConnection, QueryResult } from '../../shared/types/types';
 import logger from '../../shared/utils/logger';
 import { IQueryRequestProvider } from '../interfaces/IQueryRequestProvider';
-import i18n from '../../i18n/i18n';
+import { t } from '../../i18n/i18n';
 
 export class QueryRequestProvider implements IQueryRequestProvider {
   /**
@@ -21,7 +21,7 @@ export class QueryRequestProvider implements IQueryRequestProvider {
       });
 
       if (!response.ok) {
-        let errorMessage = i18n.t('exceptions.queryRequest.proxyError', { status: response.status });
+        let errorMessage = t('exceptions.queryRequest.proxyError', { status: response.status });
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorMessage;
@@ -40,7 +40,7 @@ export class QueryRequestProvider implements IQueryRequestProvider {
 
       // Améliorer les messages d'erreur pour les erreurs réseau
       const errorMessage = logger.getErrorMessage(error);
-      throw new Error(i18n.t('exceptions.queryRequest.proxyConnectionError', { error: errorMessage }));
+      throw new Error(t('exceptions.queryRequest.proxyConnectionError', { error: errorMessage }));
     }
   }
 
@@ -71,7 +71,7 @@ export class QueryRequestProvider implements IQueryRequestProvider {
 
     // Vérifier qu'il ne reste plus de variables non remplacées
     if (processedSql.includes('{') || processedSql.includes('}')) {
-      throw new Error(i18n.t('exceptions.queryRequest.variableNotFound'));
+      throw new Error(t('exceptions.queryRequest.variableNotFound'));
     }
 
     return processedSql;

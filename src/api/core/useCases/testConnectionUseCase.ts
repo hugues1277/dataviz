@@ -1,6 +1,7 @@
 import { CONNECTION_TYPES, DBConnection } from '../../../shared/types/types';
 import ConnectionRepository from '../../repositories/connectionRepository';
 import { postgresQueryProvider } from '../../providers/queryDbConnectors/postgresQueryProvider';
+import { mysqlQueryProvider } from '../../providers/queryDbConnectors/mysqlQueryProvider';
 import { apiQueryProvider } from '../../providers/queryDbConnectors/apiQueryProvider';
 /**
  * Use case: Tester une connexion à une base de données ou une API
@@ -12,26 +13,31 @@ export const testConnectionUseCase = {
     // Récupérer la connexion existante
     const existingConnection = await (new ConnectionRepository()).get(connection.id);
 
-    if (connection.type === CONNECTION_TYPES.POSTGRES) {
-      // Ajouter le mot de passe existant s'il manque
-      if ((connection.password ?? "") === "") {
-        connection.password = existingConnection?.password ?? "";
-      }
-
-      const result = await postgresQueryProvider.execute(connection, 'SELECT 1');
-      if (!result) {
-        throw new Error('Échec du test de connexion');
-      }
-    } else if (connection.type === CONNECTION_TYPES.API) {
-      // Ajouter le mot de passe ou token existant s'il manque
-      if ((connection.apiToken ?? "") === "") {
-        connection.apiToken = existingConnection?.apiToken ?? "";
-      }
-
-      const result = await apiQueryProvider.execute(connection, 'SELECT 1');
-      if (!result) {
-        throw new Error('Échec du test de connexion');
-      }
+    switch (connection.type) {
+      case CONNECTION_TYPES.POSTGRES:
+        if ((connection.password ?? "") === "") {
+          connection.password = existingConnection?.password ?? "";
+        }
+        if (!(await postgresQueryProvider.execute(connection, 'SELECT 1'))) {
+          throw new Error('Échec du test de connexion');
+        }
+        break;
+      case CONNECTION_TYPES.MYSQL:
+        if ((connection.password ?? "") === "") {
+          connection.password = existingConnection?.password ?? "";
+        }
+        if (!(await mysqlQueryProvider.execute(connection, 'SELECT 1'))) {
+          throw new Error('Échec du test de connexion');
+        }
+        break;
+      case CONNECTION_TYPES.API:
+        if ((connection.apiToken ?? "") === "") {
+          connection.apiToken = existingConnection?.apiToken ?? "";
+        }
+        if (!(await apiQueryProvider.execute(connection, 'SELECT 1'))) {
+          throw new Error('Échec du test de connexion');
+        }
+        break;
     }
 
     return true;

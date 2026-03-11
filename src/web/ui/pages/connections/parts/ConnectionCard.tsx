@@ -1,5 +1,8 @@
 import React from "react";
-import { DBConnection } from "../../../../../shared/types/types";
+import {
+  DBConnection,
+  CONNECTION_TYPES,
+} from "../../../../../shared/types/types";
 import {
   Database,
   Globe,
@@ -31,12 +34,14 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
       <div className="flex items-start justify-between mb-4">
         <div
           className={`w-12 h-12 ${
-            connection.type === "api"
+            connection.type === CONNECTION_TYPES.API
               ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
+              : connection.type === CONNECTION_TYPES.MYSQL
+              ? "bg-orange-500/10 text-orange-400 border-orange-500/20"
               : "bg-blue-500/10 text-blue-400 border-blue-500/20"
           } rounded-2xl flex items-center justify-center border`}
         >
-          {connection.type === "api" ? (
+          {connection.type === CONNECTION_TYPES.API ? (
             <Globe size={24} />
           ) : (
             <HardDrive size={24} />
@@ -79,7 +84,7 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
       </h4>
 
       <div className="space-y-2 h-[40px]">
-        {connection.type === "api" ? (
+        {connection.type === CONNECTION_TYPES.API ? (
           <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold truncate">
             <Link2 size={12} className="text-purple-500 shrink-0" />
             <span className="truncate">{connection.apiUrl}</span>
@@ -89,7 +94,9 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
             <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold truncate">
               <Globe size={12} className="text-blue-500 shrink-0" />
               <span>
-                {connection.host}:{connection.port}
+                {connection.host}:
+                {connection.port ??
+                  (connection.type === CONNECTION_TYPES.MYSQL ? 3306 : 5432)}
               </span>
             </div>
             <div className="flex items-center gap-2 text-[10px] text-gray-500 font-bold truncate">
@@ -104,12 +111,18 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
         <div className="flex items-center gap-2">
           <span
             className={`text-[8px] font-black uppercase px-2 py-1 rounded ${
-              connection.type === "api"
+              connection.type === CONNECTION_TYPES.API
                 ? "bg-purple-500/10 text-purple-400"
+                : connection.type === CONNECTION_TYPES.MYSQL
+                ? "bg-orange-500/10 text-orange-400"
                 : "bg-blue-500/10 text-blue-400"
             }`}
           >
-            {connection.type}
+            {connection.type === CONNECTION_TYPES.POSTGRES
+              ? t("connections.postgresql")
+              : connection.type === CONNECTION_TYPES.MYSQL
+              ? t("connections.mysql")
+              : connection.type}
           </span>
           {connection.isDefault && (
             <span className="text-[8px] font-black uppercase px-2 py-1 rounded bg-amber-500/10 text-amber-400">
@@ -118,7 +131,7 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
           )}
         </div>
         {connection.ssl ||
-          (connection.type === "api" && (
+          (connection.type === CONNECTION_TYPES.API && (
             <span className="flex items-center gap-1 text-[8px] font-black uppercase text-green-500/70">
               <Shield size={10} /> Secure
             </span>

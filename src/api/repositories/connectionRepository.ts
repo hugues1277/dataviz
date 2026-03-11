@@ -134,7 +134,7 @@ class ConnectionRepository extends ConnectionRepositoryInterface {
         // Récupérer la connexion existante (sans déchiffrement pour éviter les problèmes)
         const existingConnection = await this.get(id, { decrypt: false });
 
-        // Si le mot de passe ou apiToken n'est pas défini, utiliser la connexion existante (déjà chiffrée)
+        // Si le mot de passe ou apiToken n'est pas défini, utiliser la connexion existante
         if (existingConnection !== null) {
             const existingConfig = existingConnection as DBConnectionConfig;
             if ((config.password ?? "") === "") {

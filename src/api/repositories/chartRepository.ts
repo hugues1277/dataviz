@@ -74,7 +74,7 @@ class ChartRepository extends ChartRepositoryInterface {
             const result = await pool.query(`
         SELECT id, dashboard_id, title, query, connection_id, type, config
         FROM charts 
-        WHERE dashboard_id = $2
+        WHERE dashboard_id = $1
       `, [id]);
 
             return result.rows.map(row => ({
@@ -148,6 +148,18 @@ class ChartRepository extends ChartRepositoryInterface {
         const pool = databaseProvider.createPool();
         try {
             await pool.query(`DELETE FROM charts WHERE id = $1`, [id]);
+        } finally {
+            await pool.end();
+        }
+    }
+
+    /**
+     * Supprimer tous les charts d'un dashboard
+     */
+    async deleteByDashboardId(dashboardId: string): Promise<void> {
+        const pool = databaseProvider.createPool();
+        try {
+            await pool.query(`DELETE FROM charts WHERE dashboard_id = $1`, [dashboardId]);
         } finally {
             await pool.end();
         }

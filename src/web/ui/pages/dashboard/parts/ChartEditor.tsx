@@ -195,8 +195,7 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
 }) => {
   const { connectionsMap } = useConnectionsStore();
   const sortedConnections = useMemo(
-    () =>
-      sortConnectionsWithDefaultFirst(Object.values(connectionsMap)),
+    () => sortConnectionsWithDefaultFirst(Object.values(connectionsMap)),
     [connectionsMap]
   );
   const { t } = useTranslation();
@@ -229,7 +228,12 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
       }));
     }
     return connectionsMap[connectionId];
-  }, [chartConfig.connectionId, connectionsMap, sortedConnections, setChartConfig]);
+  }, [
+    chartConfig.connectionId,
+    connectionsMap,
+    sortedConnections,
+    setChartConfig,
+  ]);
 
   const fetchChartData = useCallback(
     async (dateRange: DateRange) => {
@@ -524,7 +528,9 @@ const ChartEditor: React.FC<ChartEditorProps> = ({
                     {sortedConnections.map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.name}
-                        {c.isDefault ? ` (${t("connections.defaultConnection")})` : ""}
+                        {c.isDefault
+                          ? ` (${t("connections.defaultConnection")})`
+                          : ""}
                       </option>
                     ))}
                   </select>

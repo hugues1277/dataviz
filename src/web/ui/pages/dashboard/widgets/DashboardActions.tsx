@@ -1,13 +1,13 @@
 import React, { useCallback } from "react";
 import {
   Plus,
-  RefreshCw,
   Lock,
   Unlock,
   MoreVertical,
   Edit3,
   Trash2,
 } from "lucide-react";
+import { RefreshIconButton } from "../../../components/RefreshIconButton";
 import { Dashboard } from "../../../../../shared/types/types";
 import { useTranslation } from "react-i18next";
 import {
@@ -44,6 +44,11 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({
   const { t } = useTranslation();
   const { confirm, showAlert } = useDialog();
 
+  const handleRefreshClick = useCallback(() => {
+    onRefresh();
+    onCloseDropdown?.();
+  }, [onRefresh, onCloseDropdown]);
+
   const handleDeleteDashboard = useCallback(async () => {
     if (!activeDashboard) return;
 
@@ -76,16 +81,12 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({
   return (
     <div className="hidden lg:flex items-center gap-2 shrink-0">
       {/* Bouton Refresh */}
-      <button
-        onClick={() => {
-          onRefresh();
-          onCloseDropdown?.();
-        }}
+      <RefreshIconButton
+        onClick={handleRefreshClick}
+        size={18}
         title={t("header.refreshTip")}
         className="p-2 rounded-lg text-gray-600 hover:text-white hover:bg-[#181b1f] transition-colors"
-      >
-        <RefreshCw size={18} />
-      </button>
+      />
       {!isLocked && (
         <button
           onClick={() => {

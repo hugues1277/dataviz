@@ -1,12 +1,20 @@
 export const CONNECTION_TYPES = {
   POSTGRES: 'postgres',
+  MYSQL: 'mysql',
   API: 'api',
 } as const;
+
+export const isDatabaseType = (type: ConnectionType) => {
+  return type === CONNECTION_TYPES.POSTGRES || type === CONNECTION_TYPES.MYSQL;
+};
+
+export const isApiType = (type: ConnectionType) => {
+  return type === CONNECTION_TYPES.API;
+};
 
 export const DATABASE_TYPES = {
   POSTGRES: 'postgresql',
   MYSQL: 'mysql',
-  SQLITE: 'sqlite',
 } as const;
 
 export const CHART_TYPES = {
@@ -38,7 +46,7 @@ export type ChartType = (typeof CHART_TYPES)[keyof typeof CHART_TYPES];
 export type VariableType = (typeof VARIABLE_TYPES)[keyof typeof VARIABLE_TYPES];
 export type ChartVersionType = (typeof CHART_VERSION)[keyof typeof CHART_VERSION];
 export type XAxisFormat = 'string' | 'date' | 'datetime' | 'time' | 'int';
-export type ConnectionType = 'postgres' | 'api';
+export type ConnectionType = (typeof CONNECTION_TYPES)[keyof typeof CONNECTION_TYPES];
 
 export interface VariableOption {
   label: string;
@@ -54,12 +62,16 @@ export interface DashboardVariable {
   options?: VariableOption[];
 }
 
+/** Pour axe X : top | bottom. Pour axe Y : left | right */
+export type AnnotationLabelPosition = 'top' | 'bottom' | 'left' | 'right';
+
 export interface AnnotationConfig {
   id: string;
   type: 'x' | 'y';
   value: string | number;
   label: string;
   color: string;
+  labelPosition?: AnnotationLabelPosition;
 }
 
 export interface DBConnection {

@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../i18n/i18n';
+import { t } from '../../../../i18n/i18n';
 
 function escapeCsvCell(value: unknown): string {
   const str = value == null ? '' : String(value);
@@ -34,7 +34,7 @@ export const exportChartDatasToCsvUseCase = {
   execute: async ({ rows, columns, filename }: ExportChartDatasToCsvInput): Promise<void> => {
     try {
       if (!rows.length || !columns.length) {
-        toast.error(i18n.t('chart.exportCsvNoData'));
+        toast.error(t('chart.exportCsvNoData'));
         return;
       }
       const csv = rowsToCsv(rows, columns);
@@ -47,10 +47,10 @@ export const exportChartDatasToCsvUseCase = {
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      toast.success(i18n.t('chart.exportCsvSuccess'));
+      toast.success(t('chart.exportCsvSuccess'));
     } catch (error: unknown) {
       logger.error('exportTableToCsv', error);
-      toast.error(i18n.t('common.errorOccurred'));
+      toast.error(t('common.errorOccurred'));
     }
   },
 };

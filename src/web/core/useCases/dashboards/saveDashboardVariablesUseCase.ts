@@ -3,7 +3,7 @@ import { storageProvider } from '../../../providers/apiProvider';
 import { DashboardVariable } from '../../../../shared/types/types';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../i18n/i18n';
+import { t } from '../../../../i18n/i18n';
 
 export const saveDashboardVariablesUseCase = {
   execute: async (variables: DashboardVariable[]): Promise<void> => {
@@ -22,7 +22,7 @@ export const saveDashboardVariablesUseCase = {
       store.setDashboards(updatedDashboards);
     } catch (error: unknown) {
       logger.error('saveDashboardVariables', error);
-      toast.error(i18n.t('common.errorOccurred'));
+      toast.error(t('common.errorOccurred'));
     }
   }
 };

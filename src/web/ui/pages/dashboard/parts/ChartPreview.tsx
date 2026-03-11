@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from "react";
-import { Play, RefreshCw, AlertCircle, Pin, Maximize2 } from "lucide-react";
+import { Play, AlertCircle, Pin, Maximize2 } from "lucide-react";
+import { RefreshIconButton } from "../../../components/RefreshIconButton";
 import { useTranslation } from "react-i18next";
 import {
   ChartConfig,
@@ -19,6 +20,7 @@ import Modal from "../../../components/modal/Modal";
 import AnnotationPanel from "./AnnotationPanel";
 import { useVariables } from "../../../../core/hooks/dashboard/useVariables";
 import Toggle from "../../../components/widget/Toggle";
+import { DEFAULT_ANNOTATION } from "../../../../../shared/constants";
 
 interface ChartPreviewProps {
   chartConfig: ChartConfig;
@@ -121,14 +123,42 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
     annotations,
     addAnnotation,
     removeAnnotation,
+    updateAnnotation,
     handleXYAxisClick,
     newAnnotation,
     setNewAnnotation,
   } = useChart(initialChartConfig);
 
+  // Prévisualisation en live : affichée dès qu'une valeur valide est saisie
+  const hasValidValue =
+    newAnnotation.value !== "" &&
+    newAnnotation.value !== undefined &&
+    (newAnnotation.type === "x" || !isNaN(Number(newAnnotation.value)));
+  const previewAnnotation = hasValidValue
+    ? {
+        ...newAnnotation,
+        label: newAnnotation.label || String(newAnnotation.value),
+      }
+    : null;
+  const annotationsToDisplay = [
+    ...annotations,
+    ...(previewAnnotation ? [previewAnnotation] : []),
+  ];
+
   // Gérer l'état du panel d'annotations
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [forceTableView, setForceTableView] = useState(false);
+  const [editingAnnotationId, setEditingAnnotationId] = useState<string | null>(null);
+
+  const handleEditAnnotation = useCallback((ann: AnnotationConfig) => {
+    setNewAnnotation(ann);
+    setEditingAnnotationId(ann.id);
+  }, [setNewAnnotation]);
+
+  const handleEditComplete = useCallback(() => {
+    setEditingAnnotationId(null);
+    setNewAnnotation({ ...DEFAULT_ANNOTATION, id: crypto.randomUUID() });
+  }, [setNewAnnotation]);
 
   const toggleAnnotationPanel = useCallback(() => {
     setIsPanelOpen((prev) => !prev);
@@ -152,7 +182,10 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
     variableValues
   );
 
-  const isGraph = chartConfig.type === "line" || chartConfig.type === "bar";
+  const isGraph =
+    chartConfig.type === "line" ||
+    chartConfig.type === "bar" ||
+    chartConfig.type === "area";
 
   const content = (
     <div className="flex h-full bg-[#0b0e14] overflow-hidden relative">
@@ -209,12 +242,13 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
                 )}
               </button>
             )}
-            <button
+            <RefreshIconButton
               onClick={() => refetch()}
+              loading={loading}
+              size={12}
+              title={t("header.refreshTip")}
               className="p-1.5 bg-[#181b1f] border border-[#2c3235] rounded-lg text-gray-500 hover:text-white transition-all"
-            >
-              <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-            </button>
+            />
           </div>
         </div>
 
@@ -222,7 +256,7 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
           chartConfig={chartConfig}
           data={data}
           isLoading={loading}
-          annotations={annotations}
+          annotations={annotationsToDisplay}
           onXYAxisClick={handleXYAxisClick}
           forceTableView={forceTableView}
         />
@@ -236,6 +270,10 @@ const ChartPreview: React.FC<ChartPreviewProps> = ({
         setNewAnnotation={setNewAnnotation}
         addAnnotation={addAnnotation}
         removeAnnotation={removeAnnotation}
+        updateAnnotation={updateAnnotation}
+        onEditAnnotation={handleEditAnnotation}
+        onEditComplete={handleEditComplete}
+        editingAnnotationId={editingAnnotationId}
       />
     </div>
   );

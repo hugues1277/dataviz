@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { DBConnection } from "../../../../../shared/types/types";
-import { Database, Globe } from "lucide-react";
+import {
+  CONNECTION_TYPES,
+  DBConnection,
+  isApiType,
+} from "../../../../../shared/types/types";
+import { Database, Globe, HardDrive } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import Modal from "../../../components/modal/Modal";
 import { Button } from "../../../components/Button";
 import { testConnectionUseCase } from "../../../../core/useCases/connections/testConnectionUseCase";
+import { isDatabaseType } from "../../../../../shared/types/types";
 
 interface ConnectionEditorProps {
   connection: DBConnection | null;
@@ -29,8 +34,8 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
 
   const handleSave = () => {
     if (!newConn?.name) return;
-    if (newConn.type === "postgres" && !newConn.host) return;
-    if (newConn.type === "api" && !newConn.apiUrl) return;
+    if (isDatabaseType(newConn.type) && !newConn.host) return;
+    if (isApiType(newConn.type) && !newConn.apiUrl) return;
 
     onSave(newConn);
   };
@@ -50,7 +55,11 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
       title={isAdding ? t("connections.addTitle") : t("connections.editTitle")}
       description={t("connections.configureParams")}
       icon={
-        newConn.type === "api" ? <Globe size={16} /> : <Database size={16} />
+        newConn.type === CONNECTION_TYPES.API ? (
+          <Globe size={16} />
+        ) : (
+          <Database size={16} />
+        )
       }
       onClose={onClose}
       actions={
@@ -60,8 +69,8 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
             isLoading={isLoading}
             disabled={
               !newConn?.name ||
-              (newConn.type === "postgres" && !newConn.host) ||
-              (newConn.type === "api" && !newConn.apiUrl)
+              (isDatabaseType(newConn.type) && !newConn.host) ||
+              (newConn.type === CONNECTION_TYPES.API && !newConn.apiUrl)
             }
           >
             {t("connections.checkConnection")}
@@ -81,16 +90,18 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
             </label>
             <div className="grid grid-cols-1 gap-3">
               <button
-                onClick={() => setNewConn({ ...newConn, type: "postgres" })}
+                onClick={() =>
+                  setNewConn({ ...newConn, type: CONNECTION_TYPES.POSTGRES })
+                }
                 className={`flex items-center gap-4 p-5 rounded-3xl border transition-all text-left ${
-                  newConn.type === "postgres"
+                  newConn.type === CONNECTION_TYPES.POSTGRES
                     ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-600/20"
                     : "bg-[#181b1f] border-[#2c3235] text-gray-500 hover:border-blue-500/30"
                 }`}
               >
                 <div
                   className={`p-3 rounded-xl ${
-                    newConn.type === "postgres"
+                    newConn.type === CONNECTION_TYPES.POSTGRES
                       ? "bg-white/20"
                       : "bg-blue-500/10 text-blue-400"
                   }`}
@@ -108,16 +119,47 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
               </button>
 
               <button
-                onClick={() => setNewConn({ ...newConn, type: "api" })}
+                onClick={() =>
+                  setNewConn({ ...newConn, type: CONNECTION_TYPES.MYSQL })
+                }
                 className={`flex items-center gap-4 p-5 rounded-3xl border transition-all text-left ${
-                  newConn.type === "api"
+                  newConn.type === CONNECTION_TYPES.MYSQL
+                    ? "bg-orange-600 border-orange-600 text-white shadow-lg shadow-orange-600/20"
+                    : "bg-[#181b1f] border-[#2c3235] text-gray-500 hover:border-orange-500/30"
+                }`}
+              >
+                <div
+                  className={`p-3 rounded-xl ${
+                    newConn.type === CONNECTION_TYPES.MYSQL
+                      ? "bg-white/20"
+                      : "bg-orange-500/10 text-orange-400"
+                  }`}
+                >
+                  <HardDrive size={20} />
+                </div>
+                <div>
+                  <p className="text-xs font-black uppercase tracking-widest">
+                    {t("connections.mysql")}
+                  </p>
+                  <p className="text-[9px] opacity-60 font-bold uppercase mt-0.5">
+                    {t("connections.directDatabase")}
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() =>
+                  setNewConn({ ...newConn, type: CONNECTION_TYPES.API })
+                }
+                className={`flex items-center gap-4 p-5 rounded-3xl border transition-all text-left ${
+                  newConn.type === CONNECTION_TYPES.API
                     ? "bg-purple-600 border-purple-600 text-white shadow-lg shadow-purple-600/20"
                     : "bg-[#181b1f] border-[#2c3235] text-gray-500 hover:border-purple-500/30"
                 }`}
               >
                 <div
                   className={`p-3 rounded-xl ${
-                    newConn.type === "api"
+                    newConn.type === CONNECTION_TYPES.API
                       ? "bg-white/20"
                       : "bg-purple-500/10 text-purple-400"
                   }`}
@@ -160,7 +202,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
               />
             </div>
 
-            {newConn.type === "postgres" ? (
+            {isDatabaseType(newConn.type) ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -185,11 +227,14 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
                     <input
                       type="number"
                       className="w-full bg-[#181b1f] border border-[#2c3235] rounded-xl px-4 py-3 text-xs text-white outline-none focus:border-blue-500 transition-all"
-                      value={newConn.port}
+                      value={
+                        newConn.port ??
+                        (newConn.type === CONNECTION_TYPES.MYSQL ? 3306 : 5432)
+                      }
                       onChange={(e) =>
                         setNewConn({
                           ...newConn,
-                          port: parseInt(e.target.value),
+                          port: parseInt(e.target.value) || undefined,
                         })
                       }
                     />
@@ -271,7 +316,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : newConn.type === CONNECTION_TYPES.API ? (
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="space-y-2">
                   <label className="block text-[9px] font-black text-gray-600 uppercase tracking-widest ml-1">
@@ -321,7 +366,7 @@ const ConnectionEditor: React.FC<ConnectionEditorProps> = ({
                   </p>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </div>

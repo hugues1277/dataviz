@@ -7,6 +7,18 @@ interface ChartAnnotationsProps {
   fontSize?: number;
 }
 
+const getLabelPosition = (
+  type: "x" | "y",
+  labelPosition: "top" | "bottom" | "left" | "right" | undefined
+): string => {
+  if (type === "x") {
+    const pos = (labelPosition === "top" || labelPosition === "bottom" ? labelPosition : undefined) ?? "top";
+    return pos === "top" ? "insideTopLeft" : "insideBottomLeft";
+  }
+  const pos = (labelPosition === "left" || labelPosition === "right" ? labelPosition : undefined) ?? "right";
+  return pos === "right" ? "insideTopRight" : "insideTopLeft";
+};
+
 export const ChartAnnotations: React.FC<ChartAnnotationsProps> = ({
   annotations,
   fontSize = 8,
@@ -23,7 +35,10 @@ export const ChartAnnotations: React.FC<ChartAnnotationsProps> = ({
             strokeDasharray="3 3"
             label={{
               value: ann.label,
-              position: isX ? "insideTopLeft" : "insideTopRight",
+              position: getLabelPosition(
+                ann.type,
+                ann.labelPosition ?? "top"
+              ) as "insideTopLeft" | "insideBottomLeft" | "insideTopRight" | "insideBottomRight",
               fill: ann.color,
               fontSize: fontSize + 1,
               fontWeight: "normal",

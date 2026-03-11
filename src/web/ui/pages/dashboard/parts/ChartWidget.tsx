@@ -2,7 +2,6 @@ import React, { useCallback } from "react";
 import { ChartConfig, DateRange } from "../../../../../shared/types/types";
 import {
   MoreVertical,
-  RefreshCw,
   AlertCircle,
   Edit2,
   Trash2,
@@ -10,6 +9,7 @@ import {
   Eye,
   Copy,
 } from "lucide-react";
+import { RefreshIconButton } from "../../../components/RefreshIconButton";
 import Chart from "../charts/Chart";
 import { useDialog } from "../../../components/modal/DialogContext";
 import { useTranslation } from "react-i18next";
@@ -102,16 +102,16 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
             >
               <Eye size={12} />
             </button>
-            <button
+            <RefreshIconButton
               onClick={(e) => {
                 e.stopPropagation();
                 refetch();
               }}
+              loading={loading}
+              size={12}
               title={t("common.refresh")}
               className="p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
-            >
-              <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
-            </button>
+            />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button

@@ -3,16 +3,16 @@ import { storageProvider } from '../../../providers/apiProvider';
 import { Dashboard } from '@/src/shared/types/types';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../i18n/i18n';
+import { t } from '../../../../i18n/i18n';
 
 export const deleteDashboardUseCase = {
   execute: async (dashboardId: string): Promise<Dashboard[]> => {
     const store = useDashboardsStore.getState();
 
     try {
-      // delete the dashboard from the API
-      await storageProvider.deleteDashboard(dashboardId);
+      // delete charts first, then the dashboard (to respect FK constraints)
       await storageProvider.deleteChartsByDashboard(dashboardId);
+      await storageProvider.deleteDashboard(dashboardId);
 
       // delete the dashboard from the store
       const dashboards = store.dashboards.filter(d => d.id !== dashboardId);
@@ -25,7 +25,7 @@ export const deleteDashboardUseCase = {
       return dashboards;
     } catch (error: unknown) {
       logger.error('deleteDashboard', error);
-      toast.error(i18n.t('common.errorOccurred'));
+      toast.error(t('common.errorOccurred'));
     }
     return [];
   }

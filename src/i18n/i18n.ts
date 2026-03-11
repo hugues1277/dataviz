@@ -50,6 +50,8 @@ i18n.on('languageChanged', (lng) => {
 
 export default i18n;
 
+export const t = i18n.t.bind(i18n);
+
 export const LANGUAGES: string[] = [
   'fr',
   'en',

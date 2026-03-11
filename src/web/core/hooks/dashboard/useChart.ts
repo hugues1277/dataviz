@@ -15,6 +15,7 @@ interface UseChartResult {
   annotations: AnnotationConfig[];
   addAnnotation: (annotation: AnnotationConfig) => void;
   removeAnnotation: (annotationId: string) => void;
+  updateAnnotation: (annotationId: string, updates: Partial<AnnotationConfig>) => void;
   handleXYAxisClick: (isX: boolean, value: string) => void;
 }
 /**
@@ -25,7 +26,7 @@ export const useChart = (
 ): UseChartResult => {
   const [chartConfig, setChartConfig] = useState<ChartConfig>(initialChartConfig);
   const [newAnnotation, setNewAnnotation] =
-    useState<AnnotationConfig>(initialChartConfig.annotations?.[0] || { ...DEFAULT_ANNOTATION, id: crypto.randomUUID() });
+    useState<AnnotationConfig>(() => ({ ...DEFAULT_ANNOTATION, id: crypto.randomUUID() }));
 
   const queryVariables = useMemo(
     () => getQueryVariablesNames(chartConfig.query),
@@ -79,6 +80,19 @@ export const useChart = (
   );
 
   /**
+   * Met à jour une annotation existante
+   */
+  const updateAnnotation = useCallback(
+    (annotationId: string, updates: Partial<AnnotationConfig>) => {
+      const annotations = (chartConfig.annotations || []).map((a) =>
+        a.id === annotationId ? { ...a, ...updates } : a
+      );
+      updateChartConfig({ annotations });
+    },
+    [chartConfig, updateChartConfig]
+  );
+
+  /**
    * Récupère toutes les annotations
    */
   const annotations = useMemo(
@@ -113,6 +127,7 @@ export const useChart = (
     annotations,
     addAnnotation,
     removeAnnotation,
+    updateAnnotation,
     handleXYAxisClick,
   };
 };

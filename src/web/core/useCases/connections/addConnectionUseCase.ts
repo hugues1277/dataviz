@@ -4,7 +4,7 @@ import { DBConnection } from '../../../../shared/types/types';
 import { DEFAULT_CONNECTION } from '../../../../shared/constants';
 import logger from '@/src/shared/utils/logger';
 import { toast } from 'react-toastify';
-import i18n from '../../../../i18n/i18n';
+import { t } from '../../../../i18n/i18n';
 
 export const addConnectionUseCase = {
   execute: async (connection?: Partial<DBConnection>): Promise<string> => {
@@ -26,7 +26,7 @@ export const addConnectionUseCase = {
       return id;
     } catch (error: unknown) {
       logger.error('addConnection', error);
-      toast.error(i18n.t('common.errorOccurred'));
+      toast.error(t('common.errorOccurred'));
     }
 
     return "";
