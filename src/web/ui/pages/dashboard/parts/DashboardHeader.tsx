@@ -21,6 +21,7 @@ interface DashboardHeaderProps {
   canDeleteDashboard: boolean;
   setIsLocked: (locked: boolean) => void;
   onAddChart: () => void;
+  canEdit?: boolean;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -30,6 +31,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   canDeleteDashboard,
   setIsLocked,
   onAddChart,
+  canEdit = true,
 }) => {
   const { t } = useTranslation();
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -121,6 +123,7 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
               onAddChart={onAddChart}
               onRenameDashboard={handleStartRename}
               onDeleteDashboard={handleDeleteDashboard}
+              canEdit={canEdit}
             />
           </div>
         </>

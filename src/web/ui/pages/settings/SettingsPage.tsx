@@ -1,20 +1,19 @@
 "use client";
 
 import React, { useRef, useState, useCallback, useEffect } from "react";
-import { LogOut } from "lucide-react";
 import Header from "../../components/layout/Header";
 import PageHeader from "../../components/layout/PageHeader";
 import { useDialog } from "../../components/modal/DialogContext";
 import { useTranslation } from "react-i18next";
 
 import { useRouter } from "next/navigation";
-import { signOut } from "@/src/web/providers/betterAuthWebClient";
 import { Button } from "../../components/Button";
 import { SettingsActionCard } from "./parts/SettingsActionCard";
 import { exportDataUseCase } from "../../../core/useCases/dataManagement/exportDataUseCase";
 import { importDataUseCase } from "../../../core/useCases/dataManagement/importDataUseCase";
 import { resetDataUseCase } from "../../../core/useCases/dataManagement/resetDataUseCase";
 import i18n, { LANGUAGES } from "../../../../i18n/i18n";
+import { useUserRole } from "@/src/web/core/hooks/useUserRole";
 
 export enum LoadingOperation {
   Export = "export",
@@ -25,6 +24,13 @@ export enum LoadingOperation {
 const SettingsPage: React.FC = () => {
   const router = useRouter();
   const { t, i18n: i18nInstance } = useTranslation();
+  const { canEdit, isAdmin, isLoading } = useUserRole();
+
+  useEffect(() => {
+    if (!isLoading && !isAdmin) {
+      router.replace("/connections");
+    }
+  }, [isAdmin, isLoading, router]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loadingOperation, setLoadingOperation] =
@@ -102,18 +108,9 @@ const SettingsPage: React.FC = () => {
     });
   }, [confirm, t, handleReset]);
 
-  const handleSignOut = useCallback(async () => {
-    confirm({
-      title: t("common.logoutConfirmTitle"),
-      description: t("common.logoutConfirmDesc"),
-      type: "info",
-      confirmLabel: t("common.logoutConfirmBtn"),
-      onConfirm: async () => {
-        await signOut();
-        router.push("/sign-in");
-      },
-    });
-  }, [router, confirm, t]);
+  if (!isLoading && !isAdmin) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -124,45 +121,44 @@ const SettingsPage: React.FC = () => {
           <PageHeader
             title={t("settings.title")}
             description={t("settings.desc")}
-            actions={
-              <Button onClick={handleSignOut}>
-                <LogOut size={16} /> {t("common.logout")}
-              </Button>
-            }
           />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SettingsActionCard
-              type="export"
-              isLoading={loadingOperation === LoadingOperation.Export}
-            >
-              <Button
-                onClick={handleExport}
+            {canEdit && (
+              <SettingsActionCard
+                type="export"
                 isLoading={loadingOperation === LoadingOperation.Export}
-                className="w-full"
               >
-                {t("settings.downloadJson")}
-              </Button>
-            </SettingsActionCard>
-            <SettingsActionCard
-              type="import"
-              isLoading={loadingOperation === LoadingOperation.ImportFile}
-            >
-              <Button
-                onClick={() => fileInputRef.current?.click()}
+                <Button
+                  onClick={handleExport}
+                  isLoading={loadingOperation === LoadingOperation.Export}
+                  className="w-full"
+                >
+                  {t("settings.downloadJson")}
+                </Button>
+              </SettingsActionCard>
+            )}
+            {canEdit && (
+              <SettingsActionCard
+                type="import"
                 isLoading={loadingOperation === LoadingOperation.ImportFile}
-                className="w-full hover:bg-green-600"
               >
-                {t("settings.fileJson")}
-              </Button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept=".json"
-                className="hidden"
-              />
-            </SettingsActionCard>
+                <Button
+                  onClick={() => fileInputRef.current?.click()}
+                  isLoading={loadingOperation === LoadingOperation.ImportFile}
+                  className="w-full hover:bg-green-600"
+                >
+                  {t("settings.fileJson")}
+                </Button>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".json"
+                  className="hidden"
+                />
+              </SettingsActionCard>
+            )}
 
             <SettingsActionCard type="language" isLoading={false}>
               <select
@@ -178,18 +174,20 @@ const SettingsPage: React.FC = () => {
               </select>
             </SettingsActionCard>
 
-            <SettingsActionCard
-              type="reset"
-              isLoading={loadingOperation === LoadingOperation.Reset}
-            >
-              <Button
-                onClick={handleFullResetRequest}
+            {canEdit && (
+              <SettingsActionCard
+                type="reset"
                 isLoading={loadingOperation === LoadingOperation.Reset}
-                className="w-full hover:bg-red-600"
               >
-                {t("settings.resetBtn")}
-              </Button>
-            </SettingsActionCard>
+                <Button
+                  onClick={handleFullResetRequest}
+                  isLoading={loadingOperation === LoadingOperation.Reset}
+                  className="w-full hover:bg-red-600"
+                >
+                  {t("settings.resetBtn")}
+                </Button>
+              </SettingsActionCard>
+            )}
           </div>
         </div>
       </div>

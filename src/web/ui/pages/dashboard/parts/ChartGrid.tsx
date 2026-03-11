@@ -7,6 +7,7 @@ import ReactGridLayout from "react-grid-layout";
 interface ChartGridProps {
   charts: ChartConfig[];
   isLocked: boolean;
+  canEdit?: boolean;
   dateRange: DateRange;
   variableValues: Record<string, string>;
   saveChart: (charts: ChartConfig[]) => void;
@@ -19,6 +20,7 @@ interface ChartGridProps {
 const ChartGrid: React.FC<ChartGridProps> = ({
   charts,
   isLocked,
+  canEdit = true,
   dateRange,
   variableValues,
   saveChart,
@@ -73,6 +75,7 @@ const ChartGrid: React.FC<ChartGridProps> = ({
                 dateRange={dateRange}
                 variableValues={variableValues}
                 isLocked={isLocked || isSmallScreen}
+                canEdit={canEdit}
                 onEdit={() => onEdit(chart)}
                 onClone={() => onClone(chart)}
                 onDelete={() => onDelete(chart)}

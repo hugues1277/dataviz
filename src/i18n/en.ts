@@ -26,6 +26,7 @@ export const en = {
         sidebar: {
             dashboards: "Dashboards",
             connections: "Connections",
+            users: "Users",
             settings: "Settings",
             myViews: "My views",
             newDashboard: "New dashboard"
@@ -313,7 +314,30 @@ export const en = {
             },
             auth: {
                 invalidSession: "Invalid or expired session"
+            },
+            users: {
+                forbidden: "Access denied. Only the administrator can manage users."
             }
+        },
+        users: {
+            pageTitle: "Users",
+            title: "User management",
+            description: "List, add and manage user permissions",
+            addUser: "Add user",
+            addUserDesc: "Create a new account with email and password",
+            editUser: "Edit user",
+            resetPassword: "Reset password",
+            resetPasswordPlaceholder: "Leave empty to keep current",
+            resetPasswordHint: "Fill only to set a new password",
+            deleteConfirmTitle: "Delete user",
+            deleteConfirmDesc: "Do you really want to delete user \"{{name}}\"?",
+            accessDenied: "Access denied",
+            accessDeniedDesc: "Only the administrator can access this page.",
+            role: "Permissions",
+            roleAdmin: "Administrator",
+            roleRead: "Read",
+            roleEdit: "Edit",
+            lastAdminError: "At least one administrator must remain."
         }
     }
 };

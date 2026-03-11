@@ -1,5 +1,7 @@
 import { databaseProvider } from '../providers/databaseProvider';
-import type { Dashboard } from '../../shared/types/types';
+
+const { queryWithRole } = databaseProvider;
+import type { Dashboard, DashboardVariable } from '../../shared/types/types';
 import ObjectRepositoryInterface from '../interfaces/objectRepositoryInterface';
 
 class DashboardRepository extends ObjectRepositoryInterface<Dashboard> {
@@ -19,88 +21,55 @@ class DashboardRepository extends ObjectRepositoryInterface<Dashboard> {
     `;
 
     async getAll(): Promise<Dashboard[]> {
-        const pool = databaseProvider.createPool();
-        try {
-            const result = await pool.query(`SELECT id, name, order_index, variables FROM dashboards ORDER BY order_index ASC`, []);
-
-            return result.rows.map(row => ({
-                id: row.id,
-                name: row.name,
-                order: row.order_index,
-                variables: row.variables || [],
-            }));
-        } finally {
-            await pool.end();
-        }
+        type DashboardRow = { id: string; name: string; order_index: number; variables: unknown[] };
+        const result = await queryWithRole<DashboardRow>(`SELECT id, name, order_index, variables FROM dashboards ORDER BY order_index ASC`, []);
+        return result.rows.map(row => ({
+            id: row.id,
+            name: row.name,
+            order: row.order_index,
+            variables: (row.variables || []) as DashboardVariable[],
+        }));
     }
 
     async get(id: string): Promise<Dashboard | null> {
-        const pool = databaseProvider.createPool();
-        try {
-            const result = await pool.query(`SELECT id, name, order_index, variables FROM dashboards WHERE id = $1`, [id]);
-
-            return {
-                id: result.rows[0].id,
-                name: result.rows[0].name,
-                order: result.rows[0].order_index,
-                variables: result.rows[0].variables || [],
-            };
-        } finally {
-            await pool.end();
-        }
+        const result = await queryWithRole<{ id: string; name: string; order_index: number; variables: unknown[] }>(`SELECT id, name, order_index, variables FROM dashboards WHERE id = $1`, [id]);
+        if (result.rows.length === 0) return null;
+        const row = result.rows[0];
+        return {
+            id: row.id,
+            name: row.name,
+            order: row.order_index,
+            variables: (row.variables || []) as DashboardVariable[],
+        };
     }
 
     async create(dashboard: Dashboard): Promise<void> {
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(this.createRequest, [
-                dashboard.id,
-                dashboard.name,
-                dashboard.order || 0,
-                JSON.stringify(dashboard.variables || []),
-            ]);
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(this.createRequest, [
+            dashboard.id,
+            dashboard.name,
+            dashboard.order || 0,
+            JSON.stringify(dashboard.variables || []),
+        ]);
     }
 
     async createMany(dashboards: Dashboard[]): Promise<void> {
-        const pool = databaseProvider.createPool();
-
-        try {
-            const values = dashboards.map(dashboard => {
-                const { id, name, order, variables } = dashboard;
-                return [id, name, order ?? 0, JSON.stringify(variables ?? [])];
-            });
-
-            const ids = values.map(v => v[0]);
-            const names = values.map(v => v[1]);
-            const orders = values.map(v => v[2]);
-            const variables = values.map(v => v[3]);
-
-            await pool.query(this.createManyRequest, [ids, names, orders, variables]);
-
-        } finally {
-            await pool.end();
-        }
+        const values = dashboards.map(dashboard => {
+            const { id, name, order, variables } = dashboard;
+            return [id, name, order ?? 0, JSON.stringify(variables ?? [])];
+        });
+        const ids = values.map(v => v[0]);
+        const names = values.map(v => v[1]);
+        const orders = values.map(v => v[2]);
+        const variables = values.map(v => v[3]);
+        await queryWithRole(this.createManyRequest, [ids, names, orders, variables]);
     }
 
     async delete(id: string): Promise<void> {
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(`DELETE FROM dashboards WHERE id = $1`, [id]);
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(`DELETE FROM dashboards WHERE id = $1`, [id]);
     }
 
     async clear(): Promise<void> {
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(`DELETE FROM dashboards`, []);
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(`DELETE FROM dashboards`, []);
     }
 };
 

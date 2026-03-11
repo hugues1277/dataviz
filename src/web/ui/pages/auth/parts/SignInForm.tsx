@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { signIn } from "../../../../providers/betterAuthWebClient";
 import { Button } from "@/components/ui/button";
 import logger from "../../../../../shared/utils/logger";
@@ -12,12 +13,12 @@ import { useTranslation } from "react-i18next";
  */
 export const SignInForm: React.FC = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,14 +47,16 @@ export const SignInForm: React.FC = () => {
         return;
       }
 
+      // Invalider le cache du rôle utilisateur pour forcer un refetch à l'arrivée
+      await queryClient.invalidateQueries({ queryKey: ["admin-me"] });
+
       // Redirection après connexion réussie
-      // Utiliser le paramètre redirect de l'URL si présent
       const urlParams = new URLSearchParams(window.location.search);
       const redirect = urlParams.get("redirect");
       const redirectPath = redirect && redirect.startsWith("/") ? redirect : "/";
-      
+
       router.push(redirectPath);
-      router.refresh(); // Rafraîchir pour mettre à jour la session
+      router.refresh();
     } catch (error: unknown) {
       logger.error("SignInForm", error);
       const errorMessage = error instanceof Error 

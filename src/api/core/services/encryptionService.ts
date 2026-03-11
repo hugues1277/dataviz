@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { createHash, randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
-import { t } from '../../../i18n/i18n';
+import { getServerMessage } from '../../../shared/messages/serverMessages';
 
 const ENCRYPT_KEY = process.env.ENCRYPT_KEY;
 
@@ -45,7 +45,7 @@ export const encryptionService = {
 
     // Vérifier que le buffer a la taille minimale requise
     if (buf.length < 29) {
-      throw new Error(t('exceptions.encryption.invalidPayloadTooShort'));
+      throw new Error(getServerMessage('exceptions.encryption.invalidPayloadTooShort'));
     }
 
     const iv = buf.subarray(0, 12);
@@ -54,7 +54,7 @@ export const encryptionService = {
 
     // Vérifier que le tag n'est pas vide
     if (tag.length === 0) {
-      throw new Error(t('exceptions.encryption.invalidPayloadEmptyTag'));
+      throw new Error(getServerMessage('exceptions.encryption.invalidPayloadEmptyTag'));
     }
 
     const decipher = createDecipheriv('aes-256-gcm', this.KEY, iv);

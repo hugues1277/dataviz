@@ -1,6 +1,6 @@
 import { auth } from '../../../../lib/auth';
 import { getUserCountUseCase } from './getUserCountUseCase';
-import { t } from '../../../i18n/i18n';
+import { getServerMessage } from '../../../shared/messages/serverMessages';
 
 export interface CreateFirstUserInput {
   email: string;
@@ -21,14 +21,14 @@ export interface CreateFirstUserOutput {
 export const createFirstUserUseCase = {
   execute: async (input: CreateFirstUserInput): Promise<CreateFirstUserOutput> => {
     if (!input.email || !input.password) {
-      throw new Error(t('exceptions.createFirstUser.emailPasswordRequired'));
+      throw new Error(getServerMessage('exceptions.createFirstUser.emailPasswordRequired'));
     }
 
     // Vérifier d'abord s'il y a déjà des utilisateurs
     const { hasUsers } = await getUserCountUseCase.execute();
 
     if (hasUsers) {
-      throw new Error(t('exceptions.createFirstUser.usersAlreadyExist'));
+      throw new Error(getServerMessage('exceptions.createFirstUser.usersAlreadyExist'));
     }
 
     // Créer le premier utilisateur en utilisant l'API serveur Better Auth
@@ -41,10 +41,19 @@ export const createFirstUserUseCase = {
       },
     });
 
+    // Définir le premier utilisateur comme admin
+    const { databaseProvider } = await import('../../providers/databaseProvider');
+    const pool = databaseProvider.createPool();
+    try {
+      await pool.query(`UPDATE "user" SET "role" = 'admin' WHERE "id" = $1`, [response.user.id]);
+    } finally {
+      await pool.end();
+    }
+
     return {
       success: true,
       user: response.user,
-      message: t('exceptions.createFirstUser.successMessage'),
+      message: getServerMessage('exceptions.createFirstUser.successMessage'),
     };
   },
 };

@@ -1,6 +1,6 @@
 import { auth } from '../../../lib/auth';
 import logger from '../../shared/utils/logger';
-import { t } from '../../i18n/i18n';
+import { getServerMessage } from '../../shared/messages/serverMessages';
 
 export interface AuthenticatedRequest {
   sessionToken: string;
@@ -23,7 +23,7 @@ export async function getAuthenticationData(headersRecord: Record<string, any>):
     });
 
     if (!session?.user) {
-      throw new Error(t('exceptions.auth.invalidSession'));
+      throw new Error(getServerMessage('exceptions.auth.invalidSession'));
     }
 
     // Extraire le token de session depuis les cookies pour compatibilité
@@ -41,7 +41,7 @@ export async function getAuthenticationData(headersRecord: Record<string, any>):
     };
   } catch (error: unknown) {
     logger.error('getAuthenticationData', error);
-    throw new Error(t('exceptions.auth.invalidSession'));
+    throw new Error(getServerMessage('exceptions.auth.invalidSession'));
   }
 }
 

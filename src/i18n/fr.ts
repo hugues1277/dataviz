@@ -26,6 +26,7 @@ export const fr = {
         sidebar: {
             dashboards: "Tableaux de bord",
             connections: "Connexions",
+            users: "Utilisateurs",
             settings: "Paramètres",
             myViews: "Mes vues",
             newDashboard: "Nouveau tableau de bord"
@@ -271,6 +272,26 @@ export const fr = {
                 "Erreur lors de la vérification des utilisateurs"
 
         },
+        users: {
+            pageTitle: "Utilisateurs",
+            title: "Gestion des utilisateurs",
+            description: "Listez, ajoutez et gérez les droits des utilisateurs",
+            addUser: "Ajouter un utilisateur",
+            addUserDesc: "Créez un nouveau compte avec email et mot de passe",
+            editUser: "Modifier l'utilisateur",
+            resetPassword: "Réinitialiser le mot de passe",
+            resetPasswordPlaceholder: "Laisser vide pour ne pas modifier",
+            resetPasswordHint: "Remplir uniquement pour définir un nouveau mot de passe",
+            deleteConfirmTitle: "Supprimer l'utilisateur",
+            deleteConfirmDesc: "Voulez-vous vraiment supprimer l'utilisateur \"{{name}}\" ?",
+            accessDenied: "Accès refusé",
+            accessDeniedDesc: "Seul l'administrateur peut accéder à cette page.",
+            role: "Droits",
+            roleAdmin: "Administrateur",
+            roleRead: "Lecture",
+            roleEdit: "Édition",
+            lastAdminError: "Il doit rester au moins un administrateur.",
+        },
         language: {
             title: "Langue",
             description: "Langue de l'application",
@@ -315,6 +336,9 @@ export const fr = {
             },
             auth: {
                 invalidSession: "Session invalide ou expirée",
+            },
+            users: {
+                forbidden: "Accès refusé. Seul l'administrateur peut gérer les utilisateurs.",
             }
         }
     }

@@ -11,6 +11,8 @@ import {
   ArrowUp,
   ArrowDown,
   ListOrdered,
+  Users,
+  LogOut,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSidebar } from "../../../core/context/useSidebar";
@@ -21,18 +23,24 @@ import { useDashboardsStore } from "../../../core/stores/dashboardsStore";
 import Image from "next/image";
 import { moveDashboardUseCase } from "@/src/web/core/useCases/dashboards/moveDashboardUseCase";
 import { addDashboardUseCase } from "@/src/web/core/useCases/dashboards/addDashboardUseCase";
+import { useUserRole } from "@/src/web/core/hooks/useUserRole";
+import { useDialog } from "../../components/modal/DialogContext";
+import { signOut } from "@/src/web/providers/betterAuthWebClient";
 
 const Sidebar: React.FC = () => {
   const { isSidebarOpen, closeSidebar } = useSidebar();
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
+  const { confirm } = useDialog();
   const { dashboards, activeDashboard } = useDashboardsStore();
+  const { isAdmin, canEdit } = useUserRole();
 
   const [reorderMode, setReorderMode] = useState(false);
 
-  const getActiveView = (): "dashboards" | "connections" | "settings" => {
+  const getActiveView = (): "dashboards" | "connections" | "users" | "settings" => {
     if (pathname?.startsWith("/connections")) return "connections";
+    if (pathname?.startsWith("/users")) return "users";
     if (pathname?.startsWith("/settings")) return "settings";
     return "dashboards";
   };
@@ -63,12 +71,24 @@ const Sidebar: React.FC = () => {
 
   const handleAddDashboard = useCallback(async () => {
     const newId = await addDashboardUseCase.execute();
-    // Attendre que le store se mette à jour avec le nouveau dashboard
     setTimeout(() => {
       router.push(`/dashboards/${newId}`);
     }, 50);
     closeSidebar();
   }, [router, closeSidebar]);
+
+  const handleSignOut = useCallback(() => {
+    confirm({
+      title: t("common.logoutConfirmTitle"),
+      description: t("common.logoutConfirmDesc"),
+      type: "info",
+      confirmLabel: t("common.logoutConfirmBtn"),
+      onConfirm: async () => {
+        await signOut();
+        router.push("/sign-in");
+      },
+    });
+  }, [confirm, t, router]);
 
   return (
     <>
@@ -137,26 +157,28 @@ const Sidebar: React.FC = () => {
                 <h3 className="text-[9px] font-black text-gray-600 uppercase tracking-[0.2em]">
                   {t("sidebar.myViews")}
                 </h3>
-                <div className="flex items-center gap-1">
-                  <button
-                    onClick={handleToggleReorder}
-                    className={`p-1 rounded transition-colors ${
-                      reorderMode
-                        ? "text-blue-400 bg-blue-400/10"
-                        : "text-gray-600 hover:text-gray-400"
-                    }`}
-                    title={t("common.reorder")}
-                  >
-                    <ListOrdered size={12} />
-                  </button>
-                  <button
-                    onClick={handleAddDashboard}
-                    className="p-1 text-gray-600 hover:text-blue-400"
-                    title={t("sidebar.newDashboard")}
-                  >
-                    <Plus size={12} />
-                  </button>
-                </div>
+                {canEdit && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={handleToggleReorder}
+                      className={`p-1 rounded transition-colors ${
+                        reorderMode
+                          ? "text-blue-400 bg-blue-400/10"
+                          : "text-gray-600 hover:text-gray-400"
+                      }`}
+                      title={t("common.reorder")}
+                    >
+                      <ListOrdered size={12} />
+                    </button>
+                    <button
+                      onClick={handleAddDashboard}
+                      className="p-1 text-gray-600 hover:text-blue-400"
+                      title={t("sidebar.newDashboard")}
+                    >
+                      <Plus size={12} />
+                    </button>
+                  </div>
+                )}
               </div>
               <div className="space-y-0.5">
                 {dashboards.map((dash, index) => (
@@ -188,7 +210,7 @@ const Sidebar: React.FC = () => {
                       )}
                     </button>
 
-                    {reorderMode && (
+                    {canEdit && reorderMode && (
                       <div className="flex items-center gap-0.5 pr-1 animate-in slide-in-from-right-2">
                         <button
                           disabled={index === 0}
@@ -235,20 +257,50 @@ const Sidebar: React.FC = () => {
                 {t("sidebar.connections")}
               </span>
             </Link>
-            <Link
-              href="/settings"
-              onClick={() => closeSidebar()}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
-                activeView === "settings"
-                  ? "bg-[#181b1f] text-blue-400"
-                  : "text-gray-500 hover:text-white"
-              }`}
+            {isAdmin && (
+              <Link
+                href="/users"
+                onClick={() => closeSidebar()}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
+                  activeView === "users"
+                    ? "bg-[#181b1f] text-blue-400"
+                    : "text-gray-500 hover:text-white"
+                }`}
+              >
+                <Users size={14} />
+                <span className="uppercase tracking-widest">
+                  {t("sidebar.users")}
+                </span>
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                href="/settings"
+                onClick={() => closeSidebar()}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors ${
+                  activeView === "settings"
+                    ? "bg-[#181b1f] text-blue-400"
+                    : "text-gray-500 hover:text-white"
+                }`}
+              >
+                <Settings size={14} />
+                <span className="uppercase tracking-widest">
+                  {t("sidebar.settings")}
+                </span>
+              </Link>
+            )}
+            <button
+              onClick={() => {
+                closeSidebar();
+                handleSignOut();
+              }}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded text-xs font-bold transition-colors text-gray-500 hover:text-white"
             >
-              <Settings size={14} />
+              <LogOut size={14} />
               <span className="uppercase tracking-widest">
-                {t("sidebar.settings")}
+                {t("common.logout")}
               </span>
-            </Link>
+            </button>
           </div>
         </aside>
       </div>

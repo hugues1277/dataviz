@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { DBConnection } from "../../../../shared/types/types";
+import { useUserRole } from "@/src/web/core/hooks/useUserRole";
 import Header from "../../components/layout/Header";
 import { Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -20,6 +21,7 @@ import { useDialog } from "../../components/modal/DialogContext";
 
 const ConnectionPage: React.FC = () => {
   const { t } = useTranslation();
+  const { canEdit } = useUserRole();
   const { connections } = useConnectionsStore();
   const { confirm } = useDialog();
 
@@ -103,9 +105,11 @@ const ConnectionPage: React.FC = () => {
             title={t("connections.title")}
             description={t("connections.manageDataSources")}
             actions={
-              <Button onClick={() => handleAdd()}>
-                <Plus size={16} /> {t("connections.new")}
-              </Button>
+              canEdit ? (
+                <Button onClick={() => handleAdd()}>
+                  <Plus size={16} /> {t("connections.new")}
+                </Button>
+              ) : undefined
             }
           />
 
@@ -116,18 +120,20 @@ const ConnectionPage: React.FC = () => {
               <ConnectionCard
                 key={conn.id}
                 connection={conn}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onSetDefault={handleSetDefault}
+                onEdit={canEdit ? handleEdit : undefined}
+                onDelete={canEdit ? handleDelete : undefined}
+                onSetDefault={canEdit ? handleSetDefault : undefined}
               />
             ))}
 
-            <ConnectionEditor
-              connection={newConn}
-              isAdding={isAdding}
-              onClose={resetForm}
-              onSave={handleSave}
-            />
+            {canEdit && (
+              <ConnectionEditor
+                connection={newConn}
+                isAdding={isAdding}
+                onClose={resetForm}
+                onSave={handleSave}
+              />
+            )}
           </div>
         </div>
       </div>

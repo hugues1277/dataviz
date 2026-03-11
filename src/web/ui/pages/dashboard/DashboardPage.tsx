@@ -18,9 +18,11 @@ import { useVariables } from "@/src/web/core/hooks/dashboard/useVariables";
 import PageLoading from "../../components/layout/PageLoading";
 import EmptyDashboardState from "./parts/EmptyDashboardState";
 import router from "next/router";
+import { useUserRole } from "@/src/web/core/hooks/useUserRole";
 
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
+  const { canEdit } = useUserRole();
   const [isLocked, setIsLocked] = useState(true);
   const [editingChart, setEditingChart] = useState<ChartConfig | null>(null);
   const [viewingChart, setViewingChart] = useState<ChartConfig | null>(null);
@@ -93,6 +95,8 @@ const DashboardPage: React.FC = () => {
     return <PageLoading />;
   }
 
+  const effectiveLocked = isLocked || !canEdit;
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <DashboardHeader
@@ -102,11 +106,12 @@ const DashboardPage: React.FC = () => {
         isLocked={isLocked}
         setIsLocked={setIsLocked}
         onAddChart={handleAddChart}
+        canEdit={canEdit}
       />
 
       <div className="px-2 md:px-4 pt-2.5 pb-1">
         <VariablesPicker
-          isLocked={isLocked}
+          isLocked={effectiveLocked}
           variables={variables}
           variableValues={variableValues}
           {...variableUtils}
@@ -115,11 +120,12 @@ const DashboardPage: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto p-0 md:p-2 md:pt-0 scrollbar-thin relative bg-[#0b0e14]">
         {charts.length === 0 && !editingChart ? (
-          <EmptyDashboardState onAddChart={handleAddChart} />
+          <EmptyDashboardState onAddChart={handleAddChart} canEdit={canEdit} />
         ) : (
           <ChartGrid
             charts={charts}
-            isLocked={isLocked}
+            isLocked={effectiveLocked}
+            canEdit={canEdit}
             dateRange={dateRange}
             variableValues={variableValues}
             saveChart={(chart: ChartConfig[]) =>

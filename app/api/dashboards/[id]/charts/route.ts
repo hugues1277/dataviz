@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import ChartRepository from '../../../../../src/api/repositories/chartRepository';
 import logger from '../../../../../src/shared/utils/logger';
+import { getAuthWithRole, requireEditOrAdmin } from '../../../../../src/api/utils/roleAuth';
 
 /**
  * Route API: GET /api/dashboards/[id]/charts
- * Récupère tous les charts d'un dashboard
+ * Récupère tous les charts d'un dashboard (auth requise)
  */
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await getAuthWithRole(request.headers);
     const { id } = await params;
     if (!id) {
       return NextResponse.json(
@@ -24,22 +26,24 @@ export async function GET(
     return NextResponse.json({ charts }, { status: 200 });
   } catch (error: unknown) {
     logger.error('dashboards charts GET API route', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erreur serveur' },
-      { status: 500 }
-    );
+    const msg = error instanceof Error ? error.message : 'Erreur serveur';
+    if (msg.includes('Session') || msg.includes('authentifié')) {
+      return NextResponse.json({ error: msg }, { status: 401 });
+    }
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
 
 /**
  * Route API: DELETE /api/dashboards/[id]/charts
- * Supprime tous les charts d'un dashboard
+ * Supprime tous les charts d'un dashboard (edit ou admin)
  */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await requireEditOrAdmin(request.headers);
     const { id } = await params;
     if (!id) {
       return NextResponse.json(
@@ -53,9 +57,13 @@ export async function DELETE(
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error: unknown) {
     logger.error('dashboards charts DELETE API route', error);
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Erreur serveur' },
-      { status: 400 }
-    );
+    const msg = error instanceof Error ? error.message : 'Erreur serveur';
+    if (msg.includes('Session') || msg.includes('authentifié')) {
+      return NextResponse.json({ error: msg }, { status: 401 });
+    }
+    if (msg.includes('lecture seule') || msg.includes('Droits')) {
+      return NextResponse.json({ error: msg }, { status: 403 });
+    }
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 }

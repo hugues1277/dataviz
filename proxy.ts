@@ -1,73 +1,74 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
+import { runDbMigration } from "@/src/api/providers/dbMigration";
+
+function isTablesMissingError(error: unknown): boolean {
+  const err = error as { code?: string; body?: { code?: string }; message?: string; cause?: unknown };
+  const msg = String(err?.message ?? (err?.cause as Error)?.message ?? "");
+  const bodyCode = (err?.body as { code?: string })?.code;
+  return (
+    err?.code === "42P01" ||
+    bodyCode === "42P01" ||
+    msg.includes("does not exist") ||
+    msg.includes('relation "')
+  );
+}
+
+async function getSessionWithMigration(headers: Headers): Promise<Awaited<ReturnType<typeof auth.api.getSession>> | null> {
+  try {
+    return await auth.api.getSession({ headers });
+  } catch (error) {
+    if (isTablesMissingError(error)) {
+      await runDbMigration();
+      return await auth.api.getSession({ headers });
+    }
+    throw error;
+  }
+}
 
 /**
- * Proxy amélioré avec validation complète de session Better Auth
- * Utilise auth.api.getSession() pour valider les sessions avec vérification en base de données
- * 
- * Note: Le proxy s'exécute toujours sur le runtime Node.js par défaut
+ * Proxy avec validation de session Better Auth.
+ * Exécute la migration DB si les tables n'existent pas (première requête).
  */
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Les routes API ne doivent pas être interceptées par le proxy
   if (pathname.startsWith("/api")) {
     return NextResponse.next();
   }
 
-  // Routes publiques qui ne nécessitent pas d'authentification
   const publicRoutes = ["/api/auth"];
   const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
 
-  // Route sign-in : vérifier si l'utilisateur est déjà connecté et rediriger automatiquement
   if (pathname === "/sign-in") {
     try {
-      const session = await auth.api.getSession({
-        headers: request.headers,
-      });
+      const session = await getSessionWithMigration(request.headers);
 
-      // Si l'utilisateur est déjà connecté, rediriger automatiquement vers la page d'accueil ou le paramètre redirect
       if (session?.user) {
         const redirectParam = request.nextUrl.searchParams.get("redirect");
-        // Valider que le paramètre redirect est une URL relative sécurisée
         let redirectPath = "/";
-
-        if (redirectParam) {
-          // Vérifier que c'est une URL relative qui commence par /
-          if (redirectParam.startsWith("/") && !redirectParam.startsWith("//")) {
-            redirectPath = redirectParam;
-          }
+        if (redirectParam?.startsWith("/") && !redirectParam.startsWith("//")) {
+          redirectPath = redirectParam;
         }
-
-        // Utiliser une redirection permanente (308) pour éviter les boucles
-        const redirectUrl = new URL(redirectPath, request.url);
-        return NextResponse.redirect(redirectUrl, { status: 308 });
+        return NextResponse.redirect(new URL(redirectPath, request.url), { status: 308 });
       }
 
-      // Sinon, permettre l'accès à la page de connexion
       return NextResponse.next();
     } catch (error) {
-      // En cas d'erreur, permettre l'accès à la page de connexion
       console.error("Proxy auth error for sign-in:", error);
       return NextResponse.next();
     }
   }
 
-  // Les autres routes publiques (comme /api/auth) sont autorisées
   if (isPublicRoute) {
     return NextResponse.next();
   }
 
-  // Routes protégées : valider la session
   try {
-    // Utiliser request.headers directement dans le proxy
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
+    const session = await getSessionWithMigration(request.headers);
 
     if (!session?.user) {
-      // Rediriger vers la page de connexion si non authentifié
       const signInUrl = new URL("/sign-in", request.url);
       signInUrl.searchParams.set("redirect", pathname);
       return NextResponse.redirect(signInUrl);
@@ -75,7 +76,6 @@ export async function proxy(request: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
-    // En cas d'erreur, rediriger vers la page de connexion
     console.error("Proxy auth error:", error);
     const signInUrl = new URL("/sign-in", request.url);
     signInUrl.searchParams.set("redirect", pathname);

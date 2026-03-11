@@ -24,6 +24,7 @@ import {
 interface ChartWidgetProps {
   chart: ChartConfig;
   isLocked: boolean;
+  canEdit?: boolean;
   dateRange: DateRange;
   variableValues: Record<string, string>;
   onEdit: () => void;
@@ -35,6 +36,7 @@ interface ChartWidgetProps {
 const ChartWidget: React.FC<ChartWidgetProps> = ({
   chart,
   isLocked,
+  canEdit = true,
   variableValues,
   dateRange,
   onEdit,
@@ -112,51 +114,53 @@ const ChartWidget: React.FC<ChartWidgetProps> = ({
               title={t("common.refresh")}
               className="p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  onClick={(e) => e.stopPropagation()}
-                  className="hidden md:block p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
+            {canEdit && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="hidden md:block p-1 hover:bg-[#1f2127] rounded text-gray-500 transition-colors"
+                  >
+                    <MoreVertical size={12} />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="end"
+                  className="w-32 border-[#2c3235] bg-[#181b1f] rounded-xl shadow-2xl"
                 >
-                  <MoreVertical size={12} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-32 border-[#2c3235] bg-[#181b1f] rounded-xl shadow-2xl"
-              >
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit();
-                  }}
-                  className="focus:bg-white/10 rounded-lg"
-                >
-                  <Edit2 className="mr-2" size={12} />
-                  {t("common.edit")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClone();
-                  }}
-                  className="focus:bg-white/10 rounded-lg"
-                >
-                  <Copy className="mr-2" size={12} />
-                  {t("common.clone")}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteRequest();
-                  }}
-                  className="text-red-500 focus:bg-white/10 rounded-lg"
-                >
-                  <Trash2 className="mr-2" size={12} />
-                  {t("common.delete")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit();
+                    }}
+                    className="focus:bg-white/10 rounded-lg"
+                  >
+                    <Edit2 className="mr-2" size={12} />
+                    {t("common.edit")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onClone();
+                    }}
+                    className="focus:bg-white/10 rounded-lg"
+                  >
+                    <Copy className="mr-2" size={12} />
+                    {t("common.clone")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteRequest();
+                    }}
+                    className="text-red-500 focus:bg-white/10 rounded-lg"
+                  >
+                    <Trash2 className="mr-2" size={12} />
+                    {t("common.delete")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         )}
       </div>

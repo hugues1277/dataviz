@@ -13,6 +13,16 @@ const baseURL = process.env.BETTER_AUTH_URL || process.env.PRODUCTION_URL || pro
 export const auth = betterAuth({
   baseURL,
   database: databaseProvider.createPool(),
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "edit",
+        input: false, // Seul l'admin peut modifier via l'API
+      },
+    },
+  },
   emailAndPassword: {
     enabled: true,
     disableSignUp: false,

@@ -9,10 +9,12 @@ import { useConnectionsStore } from "@/src/web/core/stores/connectionsStore";
 
 interface EmptyDashboardStateProps {
   onAddChart: () => void;
+  canEdit?: boolean;
 }
 
 const EmptyDashboardState: React.FC<EmptyDashboardStateProps> = ({
   onAddChart,
+  canEdit = true,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -28,13 +30,15 @@ const EmptyDashboardState: React.FC<EmptyDashboardStateProps> = ({
           <h2 className="text-lg font-bold text-white mb-2 max-w-sm">
             {t("dashboard.noCharts")}
           </h2>
-          <Button
-            onClick={onAddChart}
-            variant="primary"
-            icon={<Plus size={16} />}
-          >
-            {t("dashboard.newChart")}
-          </Button>
+          {canEdit && (
+            <Button
+              onClick={onAddChart}
+              variant="primary"
+              icon={<Plus size={16} />}
+            >
+              {t("dashboard.newChart")}
+            </Button>
+          )}
         </>
       ) : (
         <>

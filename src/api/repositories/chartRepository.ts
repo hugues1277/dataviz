@@ -1,5 +1,7 @@
 import { databaseProvider } from '../providers/databaseProvider';
-import type { ChartConfig } from '../../shared/types/types';
+
+const { queryWithRole } = databaseProvider;
+import type { ChartConfig, ChartType } from '../../shared/types/types';
 import ChartRepositoryInterface from '../interfaces/chartRepositoryInterface';
 
 class ChartRepository extends ChartRepositoryInterface {
@@ -28,150 +30,101 @@ class ChartRepository extends ChartRepositoryInterface {
             config = EXCLUDED.config
     `;
     async get(id: string): Promise<ChartConfig | null> {
-        const pool = databaseProvider.createPool();
-        try {
-            const result = await pool.query(`SELECT id, dashboard_id, title, query, connection_id, type, config FROM charts WHERE id = $1`, [id]);
-
-            return {
-                id: result.rows[0].id,
-                dashboardId: result.rows[0].dashboard_id,
-                title: result.rows[0].title,
-                query: result.rows[0].query,
-                connectionId: result.rows[0].connection_id,
-                type: result.rows[0].type,
-                ...result.rows[0].config
-            };
-        } finally {
-            await pool.end();
-        }
+        const result = await queryWithRole<{ id: string; dashboard_id: string; title: string; query: string; connection_id: string; type: string; config: Record<string, unknown> }>(`SELECT id, dashboard_id, title, query, connection_id, type, config FROM charts WHERE id = $1`, [id]);
+        if (result.rows.length === 0) return null;
+        const row = result.rows[0];
+        return {
+            id: row.id,
+            dashboardId: row.dashboard_id,
+            title: row.title,
+            query: row.query,
+            connectionId: row.connection_id,
+            type: row.type as ChartType,
+            ...row.config
+        };
     }
 
     async getAll(): Promise<ChartConfig[]> {
-        const pool = databaseProvider.createPool();
-        try {
-            const result = await pool.query(`SELECT id, dashboard_id, title, query, connection_id, type, config FROM charts`, []);
-
-            return result.rows.map(row => ({
-                id: row.id,
-                dashboardId: row.dashboard_id,
-                title: row.title,
-                query: row.query,
-                connectionId: row.connection_id,
-                type: row.type,
-                ...row.config
-            }));
-        } finally {
-            await pool.end();
-        }
+        type ChartRow = { id: string; dashboard_id: string; title: string; query: string; connection_id: string; type: string; config: Record<string, unknown> };
+        const result = await queryWithRole<ChartRow>(`SELECT id, dashboard_id, title, query, connection_id, type, config FROM charts`, []);
+        return result.rows.map(row => ({
+            id: row.id,
+            dashboardId: row.dashboard_id,
+            title: row.title,
+            query: row.query,
+            connectionId: row.connection_id,
+            type: row.type as ChartType,
+            ...row.config
+        }));
     }
 
     /**
      * Récupérer les charts d'un dashboard spécifique
      */
     async getByDashboard(id: string): Promise<ChartConfig[]> {
-        const pool = databaseProvider.createPool();
-        try {
-            const result = await pool.query(`
-        SELECT id, dashboard_id, title, query, connection_id, type, config
-        FROM charts 
-        WHERE dashboard_id = $1
-      `, [id]);
-
-            return result.rows.map(row => ({
-                id: row.id,
-                dashboardId: row.dashboard_id,
-                title: row.title,
-                query: row.query,
-                connectionId: row.connection_id,
-                type: row.type,
-                ...row.config
-            }));
-        } finally {
-            await pool.end();
-        }
+        type ChartRow = { id: string; dashboard_id: string; title: string; query: string; connection_id: string; type: string; config: Record<string, unknown> };
+        const result = await queryWithRole<ChartRow>(`
+            SELECT id, dashboard_id, title, query, connection_id, type, config
+            FROM charts 
+            WHERE dashboard_id = $1
+        `, [id]);
+        return result.rows.map(row => ({
+            id: row.id,
+            dashboardId: row.dashboard_id,
+            title: row.title,
+            query: row.query,
+            connectionId: row.connection_id,
+            type: row.type as ChartType,
+            ...row.config
+        }));
     }
 
     async create(chart: ChartConfig): Promise<void> {
         const { id, dashboardId, title, query, connectionId, type, ...config } = chart;
-
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(this.createRequest, [
-                id,
-                dashboardId,
-                title,
-                query,
-                connectionId,
-                type,
-                JSON.stringify(config),
-            ]);
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(this.createRequest, [
+            id,
+            dashboardId,
+            title,
+            query,
+            connectionId,
+            type,
+            JSON.stringify(config),
+        ]);
     }
 
     async createMany(objects: ChartConfig[]): Promise<void> {
-        const pool = databaseProvider.createPool();
-        try {
-            const values = objects.map(object => {
-                const { id, dashboardId, title, query, connectionId, type, ...config } = object;
-                return [id, dashboardId, title, query, connectionId, type, JSON.stringify(config)];
-            });
-
-            const ids = values.map(v => v[0]);
-            const dashboardIds = values.map(v => v[1]);
-            const titles = values.map(v => v[2]);
-            const queries = values.map(v => v[3]);
-            const connectionIds = values.map(v => v[4]);
-            const types = values.map(v => v[5]);
-            const configs = values.map(v => v[6]);
-
-            await pool.query(this.createManyRequest, [ids, dashboardIds, titles, queries, connectionIds, types, configs]);
-        } finally {
-            await pool.end();
-        }
+        const values = objects.map(object => {
+            const { id, dashboardId, title, query, connectionId, type, ...config } = object;
+            return [id, dashboardId, title, query, connectionId, type, JSON.stringify(config)];
+        });
+        const ids = values.map(v => v[0]);
+        const dashboardIds = values.map(v => v[1]);
+        const titles = values.map(v => v[2]);
+        const queries = values.map(v => v[3]);
+        const connectionIds = values.map(v => v[4]);
+        const types = values.map(v => v[5]);
+        const configs = values.map(v => v[6]);
+        await queryWithRole(this.createManyRequest, [ids, dashboardIds, titles, queries, connectionIds, types, configs]);
     }
 
     async update(object: ChartConfig): Promise<void> {
         const { id, dashboardId, title, query, connectionId, type, ...config } = object;
-
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(this.createRequest, [id, dashboardId, title, query, connectionId, type, JSON.stringify(config)]
-            );
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(this.createRequest, [id, dashboardId, title, query, connectionId, type, JSON.stringify(config)]);
     }
 
     async delete(id: string): Promise<void> {
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(`DELETE FROM charts WHERE id = $1`, [id]);
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(`DELETE FROM charts WHERE id = $1`, [id]);
     }
 
     /**
      * Supprimer tous les charts d'un dashboard
      */
     async deleteByDashboardId(dashboardId: string): Promise<void> {
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(`DELETE FROM charts WHERE dashboard_id = $1`, [dashboardId]);
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(`DELETE FROM charts WHERE dashboard_id = $1`, [dashboardId]);
     }
 
     async clear(): Promise<void> {
-        const pool = databaseProvider.createPool();
-        try {
-            await pool.query(`DELETE FROM charts`, []);
-        } finally {
-            await pool.end();
-        }
+        await queryWithRole(`DELETE FROM charts`, []);
     }
 };
 

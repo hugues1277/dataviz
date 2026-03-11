@@ -17,8 +17,8 @@ import { useTranslation } from "react-i18next";
 
 interface ConnectionCardProps {
   connection: DBConnection;
-  onEdit: (connection: DBConnection) => void;
-  onDelete: (id: string, name: string) => void;
+  onEdit?: (connection: DBConnection) => void;
+  onDelete?: (id: string, name: string) => void;
   onSetDefault?: (id: string) => void;
 }
 
@@ -64,18 +64,22 @@ const ConnectionCard: React.FC<ConnectionCardProps> = ({
               />
             </button>
           )}
-          <button
-            onClick={() => onEdit(connection)}
-            className="p-2 text-gray-600 hover:text-blue-400 transition-all hover:bg-blue-500/10 rounded-xl"
-          >
-            <Edit size={18} />
-          </button>
-          <button
-            onClick={() => onDelete(connection.id, connection.name)}
-            className="p-2 text-gray-600 hover:text-red-400 transition-all hover:bg-red-500/10 rounded-xl"
-          >
-            <Trash2 size={18} />
-          </button>
+          {onEdit && (
+            <button
+              onClick={() => onEdit(connection)}
+              className="p-2 text-gray-600 hover:text-blue-400 transition-all hover:bg-blue-500/10 rounded-xl"
+            >
+              <Edit size={18} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(connection.id, connection.name)}
+              className="p-2 text-gray-600 hover:text-red-400 transition-all hover:bg-red-500/10 rounded-xl"
+            >
+              <Trash2 size={18} />
+            </button>
+          )}
         </div>
       </div>
 

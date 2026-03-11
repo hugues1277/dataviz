@@ -10,6 +10,8 @@ interface ModalProps {
   header?: React.ReactNode;
   children: React.ReactNode;
   actions?: React.ReactNode;
+  /** Modale compacte : max 90vh, centrée, scrollable */
+  compact?: boolean;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -21,12 +23,19 @@ const Modal: React.FC<ModalProps> = ({
   header,
   children,
   actions,
+  compact = false,
 }) => {
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 lg:p-3 animate-in fade-in duration-300">
-      <div className="bg-[#111217] w-full max-w-[1400px] h-full lg:h-[94vh] lg:rounded-xl border border-[#1f2127] flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden">
+      <div
+        className={`bg-[#111217] border border-[#1f2127] flex flex-col shadow-[0_0_100px_rgba(0,0,0,0.8)] overflow-hidden ${
+          compact
+            ? "w-full max-w-md max-h-[90vh] rounded-2xl"
+            : "w-full max-w-[1400px] h-full lg:h-[94vh] lg:rounded-xl"
+        }`}
+      >
         <div className="px-4 py-2.5 border-b border-[#1f2127] flex items-center justify-between bg-[#111217] shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 bg-blue-600/10 rounded-lg flex items-center justify-center border border-blue-500/20 text-blue-500 shrink-0">
@@ -56,7 +65,11 @@ const Modal: React.FC<ModalProps> = ({
             </button>
           </div>
         </div>
-        {children}
+        {compact ? (
+          <div className="flex-1 overflow-y-auto min-h-0">{children}</div>
+        ) : (
+          children
+        )}
         {actions && (
           <div className="px-4 py-2.5 border-t border-[#1f2127] flex items-center justify-end bg-[#111217] shrink-0 gap-3">
             {actions}

@@ -28,6 +28,7 @@ interface DashboardActionsProps {
   onRenameDashboard: () => void;
   onDeleteDashboard: () => void;
   onCloseDropdown?: () => void;
+  canEdit?: boolean;
 }
 
 const DashboardActions: React.FC<DashboardActionsProps> = ({
@@ -40,6 +41,7 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({
   onRenameDashboard,
   onCloseDropdown,
   onDeleteDashboard,
+  canEdit = true,
 }) => {
   const { t } = useTranslation();
   const { confirm, showAlert } = useDialog();
@@ -78,6 +80,8 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({
     t,
   ]);
 
+  const showEditActions = canEdit && activeDashboard;
+
   return (
     <div className="hidden lg:flex items-center gap-2 shrink-0">
       {/* Bouton Refresh */}
@@ -87,7 +91,7 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({
         title={t("header.refreshTip")}
         className="p-2 rounded-lg text-gray-600 hover:text-white hover:bg-[#181b1f] transition-colors"
       />
-      {!isLocked && (
+      {canEdit && !isLocked && (
         <button
           onClick={() => {
             setIsLocked(!isLocked);
@@ -101,7 +105,7 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({
       )}
 
       {/* Dropdown Menu pour toutes les autres actions */}
-      {activeDashboard && (
+      {showEditActions && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-[#181b1f] transition-colors">

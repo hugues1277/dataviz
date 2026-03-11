@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { signIn } from "../../../../providers/betterAuthWebClient";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import logger from "../../../../../shared/utils/logger";
 import { useTranslation } from "react-i18next";
 
@@ -12,12 +13,13 @@ import { useTranslation } from "react-i18next";
  */
 export const CreateFirstUserForm: React.FC = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("Admin");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,13 +58,13 @@ export const CreateFirstUserForm: React.FC = () => {
         if (signInResult.error) {
           setError(t("auth.userCreatedButSignInError"));
           setIsLoading(false);
-          // Recharger la page pour afficher le formulaire de connexion
           window.location.reload();
           return;
         }
 
-        // Redirection vers la page d'accueil
+        await queryClient.invalidateQueries({ queryKey: ["admin-me"] });
         router.push("/");
+        router.refresh();
       } catch {
         setError(t("auth.userCreatedButSignInError"));
         setIsLoading(false);
